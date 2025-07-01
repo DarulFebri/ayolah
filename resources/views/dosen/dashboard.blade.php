@@ -18,20 +18,28 @@
             --text-color: #2d3748;
             --light-gray: #f8fafc;
             --white: #ffffff;
-            --success: #22c55e;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --info: #3b82f6;
+            --success: #198754;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #0dcaf0;
             --transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    
+            --card-width: 300px;
+            --card-height: 200px;
+            --card-icon-size: 48px;
+            --card-title-size: 20px;
+            --card-padding: 25px;
+            --card-border-radius: 12px;
+            --card-gap: 25px;
         }
-
+    
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+    
         body {
             display: flex;
             min-height: 100vh;
@@ -40,124 +48,227 @@
             transition: var(--transition);
         }
 
+        /*tambahan*/
+        .form-row {
+            display: flex; /* INI KUNCI UTAMA agar elemen di dalamnya sejajar */
+            margin-bottom: 20px;
+            align-items: center; /* Untuk mensejajarkan secara vertikal di tengah */
+        }
+
+        .form-label {
+            width: 200px; /* Memberikan lebar tetap pada label */
+            font-weight: 600;
+            color: var(--primary-700);
+            /* Tambahkan margin-right jika Anda ingin spasi antara label dan input */
+            margin-right: 15px; /* Opsional: memberikan sedikit spasi */
+        }
+
+        .form-input {
+            flex: 1; /* INI KUNCI KEDUA agar input mengambil sisa lebar yang tersedia */
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+        .alertpkl {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.6s 0.3s both;
+        }
+        
+        .alert-infopkl {
+            background-color: var(--primary-100);
+            color: var(--primary-700);
+            border-left: 4px solid var(--primary-500);
+        }
+
+        .form-container {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            animation: fadeIn 0.6s 0.4s both;
+        }
+
+        .form-title {
+            color: var(--primary-700);
+            margin-bottom: 25px;
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-title i {
+            margin-right: 15px;
+            color: var(--primary-500);
+        }
+
+        .student-info {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            animation: fadeIn 0.6s 0.3s both;
+        }
+        
+        .info-card {
+            background: linear-gradient(135deg, var(--primary-100), var(--white));
+            border-radius: 10px;
+            padding: 15px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--primary-500);
+            transition: var(--transition);
+        }
+
+        .document-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            animation: fadeIn 0.6s 0.5s both;
+        }
+        
+        .document-table thead tr {
+            background-color: var(--primary-600);
+            color: var(--white);
+            text-align: left;
+        }
+        
+        .document-table th,
+        .document-table td {
+            padding: 15px 20px;
+        }
+        
+        .document-table tbody tr {
+            border-bottom: 1px solid #eee;
+        }
+        
+        .document-table tbody tr:nth-of-type(even) {
+            background-color: var(--light-gray);
+        }
+        
+        .document-table tbody tr:last-of-type {
+            border-bottom: 2px solid var(--primary-600);
+        }
+        
+        .document-table tbody tr:hover {
+            background-color: var(--primary-100);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        .status-uploaded {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+        
+        .status-pending {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+        
+        .btn-gray {
+            background-color: #d1d5db;
+            color: var(--text-color);
+        }
+        
+        .btn-gray:hover {
+            background-color: #b3b7bc;
+        }
+        
+        .btn-blue {
+            background: linear-gradient(45deg, var(--primary-500), var(--primary-600));
+            color: white;
+        }
+        
+        .btn-blue.loading::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        
+        .btn-blue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 136, 255, 0.3);
+        }
+    
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
+    
         @keyframes slideInLeft {
             from { transform: translateX(-20px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-
+    
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.03); }
             100% { transform: scale(1); }
         }
-
+    
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        /* Loading overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
+    
+        /* Layout Utama */
+        .container {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            min-height: 100vh;
         }
-
-        .loading-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .loading-spinner {
-            border: 5px solid var(--primary-100);
-            border-top: 5px solid var(--primary-600);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-
-        /* Notification popup */
-        .notification-popup {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: var(--white);
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            z-index: 2000;
-            transform: translateX(120%);
-            transition: transform 0.4s ease;
-        }
-
-        .notification-popup.show {
-            transform: translateX(0);
-        }
-
-        .notification-popup.success {
-            border-left: 4px solid #10b981;
-        }
-
-        .notification-popup.error {
-            border-left: 4px solid #ef4444;
-        }
-
-        .notification-popup.info {
-            border-left: 4px solid var(--primary-500);
-        }
-
-        .notification-icon {
-            font-size: 22px;
-            margin-right: 12px;
-        }
-
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .notification-message {
-            font-size: 14px;
-            color: var(--text-color);
-        }
-
-        .notification-close {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 16px;
-            cursor: pointer;
-            margin-left: 15px;
-            transition: color 0.3s;
-        }
-
-        .notification-close:hover {
-            color: var(--primary-600);
-        }
-
+    
         /* Sidebar */
         .sidebar {
             width: 280px;
@@ -172,52 +283,52 @@
             transition: var(--transition);
             overflow-x: hidden;
         }
-
+    
         .sidebar.collapsed {
             width: 80px;
         }
-
+    
         .sidebar.collapsed .logo-img {
             width: 40px;
             margin: 0 auto;
         }
-
+    
         .sidebar.collapsed .menu-title,
         .sidebar.collapsed .menu-item span,
         .sidebar.collapsed .submenu {
             display: none;
         }
-
+    
         .sidebar.collapsed .menu-item {
             justify-content: center;
             padding: 14px 0;
             margin: 5px 0;
         }
-
+    
         .sidebar.collapsed .menu-item i {
             margin-right: 0;
             font-size: 20px;
         }
-
+    
         .sidebar.collapsed .submenu-item {
             padding: 12px 0;
             justify-content: center;
         }
-
+    
         .sidebar.collapsed .submenu-item i {
             margin-right: 0;
         }
-
+    
         .logo-container {
             padding: 0 20px 20px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             transition: var(--transition);
         }
-
+    
         .logo-container:hover {
             transform: translateY(-3px);
         }
-
+    
         .logo-img {
             width: 100%;
             height: auto;
@@ -226,7 +337,7 @@
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
             transition: var(--transition);
         }
-
+    
         .menu-title {
             padding: 15px 20px;
             font-size: 13px;
@@ -236,7 +347,7 @@
             margin-top: 10px;
             transition: var(--transition);
         }
-
+    
         .menu-item {
             padding: 14px 20px;
             cursor: pointer;
@@ -248,24 +359,24 @@
             position: relative;
             overflow: hidden;
         }
-
+    
         .menu-item i {
             margin-right: 12px;
             font-size: 18px;
             width: 24px;
             text-align: center;
         }
-
+    
         .menu-item:hover {
             background-color: rgba(255,255,255,0.15);
             transform: translateX(5px);
         }
-
+    
         .menu-item.active {
             background: linear-gradient(90deg, var(--primary-600), var(--primary-400));
             box-shadow: 0 4px 12px rgba(26, 136, 255, 0.3);
         }
-
+    
         .menu-item.active::before {
             content: '';
             position: absolute;
@@ -275,7 +386,7 @@
             width: 4px;
             background-color: var(--white);
         }
-
+    
         .submenu {
             padding-left: 20px;
             max-height: 0;
@@ -283,12 +394,12 @@
             transition: max-height 0.4s ease-out, opacity 0.3s ease;
             opacity: 0;
         }
-
+    
         .submenu.show {
-            max-height: 300px;
+            max-height: 300px; /* Adjusted to fit more items if needed */
             opacity: 1;
         }
-
+    
         .submenu-item {
             padding: 12px 20px 12px 50px;
             cursor: pointer;
@@ -299,17 +410,17 @@
             display: flex;
             align-items: center;
         }
-
+    
         .submenu-item i {
             margin-right: 10px;
             font-size: 12px;
         }
-
+    
         .submenu-item:hover {
             background-color: rgba(255,255,255,0.1);
             color: var(--primary-200);
         }
-
+    
         /* Main Content */
         .main-content {
             flex: 1;
@@ -318,11 +429,11 @@
             animation: fadeIn 0.6s 0.2s both;
             transition: var(--transition);
         }
-
+    
         .main-content.expanded {
             margin-left: 80px;
         }
-
+    
         /* Header with Profile Dropdown */
         .header {
             position: relative;
@@ -337,14 +448,14 @@
             margin-bottom: 25px;
             animation: fadeIn 0.6s 0.3s both;
         }
-
+    
         .header-content {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             width: 100%;
+            align-items: center;
         }
-
+    
         .toggle-sidebar {
             background: none;
             border: none;
@@ -354,114 +465,12 @@
             margin-right: 15px;
             transition: var(--transition);
         }
-
+    
         .toggle-sidebar:hover {
             transform: scale(1.1);
             color: var(--primary-700);
         }
-
-        /* Page Title in Header */
-        .header-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-700);
-            flex-grow: 1; /* Allows title to take available space */
-            text-align: left;
-            margin-left: 15px; /* Space from toggle button */
-            animation: fadeIn 0.6s 0.4s both;
-        }
-
-        /* Profile Dropdown */
-        .user-profile {
-            position: relative;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            padding: 8px 15px;
-            border-radius: 30px;
-            transition: var(--transition);
-            z-index: 20;
-            background: var(--primary-100);
-            border: 1px solid var(--primary-200);
-        }
-
-        .user-profile:hover {
-            background-color: var(--primary-200);
-        }
-
-        .profile-info {
-            display: flex;
-            flex-direction: column;
-            margin-right: 12px;
-            text-align: right;
-        }
-
-        .profile-name {
-            font-weight: 600;
-            color: var(--primary-700);
-            font-size: 14px;
-        }
-
-        .profile-role {
-            font-size: 12px;
-            color: var(--primary-500);
-        }
-
-        .profile-pic {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 10px;
-            border: 2px solid var(--white);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .profile-dropdown {
-            position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            background-color: var(--white);
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            width: 200px;
-            padding: 10px 0;
-            z-index: 1000;
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .profile-dropdown.show {
-            display: block;
-        }
-
-        .dropdown-item {
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            transition: var(--transition);
-            color: var(--text-color);
-            text-decoration: none;
-        }
-
-        .dropdown-item i {
-            margin-right: 10px;
-            color: var(--primary-500);
-            width: 20px;
-            text-align: center;
-        }
-
-        .dropdown-item:hover {
-            background-color: var(--primary-100);
-            color: var(--primary-600);
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background-color: #e2e8f0;
-            margin: 5px 0;
-        }
-
+    
         /* Welcome Box */
         .welcome-box {
             background: linear-gradient(135deg, var(--primary-100), var(--white));
@@ -476,296 +485,344 @@
             z-index: 1;
             margin-top: 10px;
         }
-
+    
         .welcome-box:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 24px rgba(26, 136, 255, 0.15);
         }
-
+    
         .welcome-title {
             color: var(--primary-700);
             margin-bottom: 10px;
             font-size: 24px;
             font-weight: 700;
-            display: flex;
-            align-items: center;
         }
-
-        .welcome-title i {
-            margin-right: 12px;
-            color: var(--primary-500);
-            background: var(--primary-100);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
+    
         .welcome-box p {
             color: var(--text-color);
             line-height: 1.6;
-            padding-left: 62px;
         }
-
-        /* Stats Cards */
-        .stats-container {
+    
+        /* Card Container */
+        .card-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(var(--card-width), 1fr));
+            gap: var(--card-gap);
             margin-bottom: 30px;
         }
-
-        .stat-card {
+    
+        /* Card styling */
+        .card {
             background-color: var(--white);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-radius: var(--card-border-radius);
+            padding: var(--card-padding);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            animation: fadeIn 0.6s 0.5s both;
+            border-top: 3px solid var(--primary-500);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: var(--card-height);
+            width: 100%;
+        }
+    
+        .card.small {
+            --card-height: 150px;
+            --card-icon-size: 36px;
+            --card-title-size: 18px;
+        }
+    
+        .card.medium {
+            --card-height: 200px;
+            --card-icon-size: 48px;
+            --card-title-size: 20px;
+        }
+    
+        .card.large {
+            --card-height: 250px;
+            --card-icon-size: 60px;
+            --card-title-size: 22px;
+        }
+    
+        .card.wide {
+            grid-column: span 2;
+        }
+    
+        .card:nth-child(1) { animation-delay: 0.5s; }
+        .card:nth-child(2) { animation-delay: 0.6s; }
+        .card:nth-child(3) { animation-delay: 0.7s; }
+    
+        .clickable-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+    
+        .clickable-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(26, 136, 255, 0.2);
+        }
+    
+        .card-icon {
+            font-size: var(--card-icon-size);
+            color: var(--primary-500);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+    
+        .clickable-card:hover .card-icon {
+            transform: scale(1.1);
+            color: var(--primary-600);
+        }
+    
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+            width: 100%;
+        }
+    
+        .card-title {
+            color: var(--primary-600);
+            font-size: var(--card-title-size);
+            font-weight: 600;
+            text-align: center;
+        }
+    
+        /* Profile Dropdown */
+        .user-profile {
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            border-radius: 30px;
+            transition: var(--transition);
+            z-index: 20;
+        }
+    
+        .user-profile:hover {
+            background-color: var(--primary-100);
+        }
+    
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 200px;
+            padding: 10px 0;
+            z-index: 1000;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+    
+        .profile-dropdown.show {
+            display: block;
+        }
+    
+        .dropdown-item {
+            padding: 10px 20px;
             display: flex;
             align-items: center;
             transition: var(--transition);
-            animation: fadeIn 0.6s 0.5s both;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+    
+        .dropdown-item i {
+            margin-right: 10px;
+            color: var(--primary-500);
+            width: 20px;
+            text-align: center;
+        }
+    
+        .dropdown-item:hover {
+            background-color: var(--primary-100);
+            color: var(--primary-600);
+        }
+    
+        .dropdown-divider {
+            height: 1px;
+            background-color: #e2e8f0;
+            margin: 5px 0;
+        }
+    
+        /* Tooltips */
+        .tooltip {
+            position: relative;
+        }
+    
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+            width: 120px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-left: 15px;
+            font-size: 12px;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+    
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            margin-top: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent #555 transparent transparent;
+        }
+    
+        .sidebar:not(.collapsed) .menu-item .tooltiptext {
+            display: none;
+        }
+    
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    
+        /* Table Styling */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            animation: fadeIn 0.5s both;
+        }
+    
+        .section-title {
+            font-size: 24px;
+            color: var(--primary-700);
+            font-weight: 600;
+        }
+    
+        .section-title i {
+            margin-right: 12px;
+        }
+    
+        .table-container {
+            background: var(--white);
+            border-radius: var(--card-border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+            animation: fadeIn 0.5s 0.3s both;
+        }
+    
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+    
+        .data-table th {
+            background-color: var(--primary-100);
+            color: var(--primary-700);
+            font-weight: 600;
+            text-align: left;
+            padding: 16px 20px;
+            border-bottom: 2px solid var(--primary-200);
+        }
+    
+        .data-table td {
+            padding: 14px 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+    
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+    
+        .data-table tr:hover {
+            background-color: var(--primary-50);
+        }
+    
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+    
+        .status-active {
+            background-color: rgba(25, 135, 84, 0.15);
+            color: var(--success);
+        }
+    
+        .status-inactive {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: var(--danger);
+        }
+    
+        .action-cell {
+            display: flex;
+            gap: 10px;
+        }
+    
+        .action-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            transition: var(--transition);
         }
-
-        .stat-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    
+        .view-icon {
+            background-color: rgba(26, 136, 255, 0.15);
+            color: var(--primary-600);
         }
-
-        .stat-icon {
+    
+        .action-icon:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
             width: 60px;
             height: 60px;
+            background: linear-gradient(45deg, var(--primary-500), var(--primary-600));
+            color: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            margin-right: 15px;
-        }
-
-        .stat-content {
-            flex: 1;
-        }
-
-        .stat-number {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .stat-title {
-            font-size: 14px;
-            color: var(--text-color);
-            opacity: 0.8;
-        }
-
-        .card-1 .stat-icon {
-            background-color: rgba(59, 130, 246, 0.15);
-            color: var(--info);
-        }
-
-        .card-2 .stat-icon {
-            background-color: rgba(34, 197, 94, 0.15);
-            color: var(--success);
-        }
-
-        .card-3 .stat-icon {
-            background-color: rgba(245, 158, 11, 0.15);
-            color: var(--warning);
-        }
-
-        .card-4 .stat-icon {
-            background-color: rgba(239, 68, 68, 0.15);
-            color: var(--danger);
-        }
-
-        /* Content Section */
-        .content-section {
-            background-color: var(--white);
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
-            animation: fadeIn 0.6s 0.6s both;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            color: var(--primary-600);
-            font-size: 20px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-        }
-
-        .section-title i {
-            margin-right: 10px;
-            color: var(--primary-500);
-        }
-
-        .section-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-filter {
-            background-color: var(--primary-100);
-            border: 1px solid var(--primary-200);
-            color: var(--primary-600);
-            padding: 8px 15px;
-            border-radius: 6px;
+            box-shadow: 0 4px 20px rgba(26, 136, 255, 0.4);
             cursor: pointer;
-            display: flex;
-            align-items: center;
             transition: var(--transition);
+            z-index: 5;
+            animation: pulse 2s infinite;
         }
-
-        .btn-filter:hover {
-            background-color: var(--primary-200);
+    
+        .fab:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 6px 25px rgba(26, 136, 255, 0.6);
+            animation: none;
         }
-
-        .btn-filter i {
-            margin-right: 5px;
-        }
-
-        /* Table Styles */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        table thead th {
-            text-align: left;
-            padding: 12px 15px;
-            background-color: var(--primary-100);
-            color: var(--primary-700);
-            font-weight: 600;
-            border-bottom: 2px solid var(--primary-200);
-        }
-
-        table tbody tr {
-            transition: var(--transition);
-        }
-
-        table tbody tr:hover {
-            background-color: var(--primary-100);
-        }
-
-        table tbody td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--light-gray);
-            vertical-align: middle;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            margin: 2px;
-        }
-
-        .btn i {
-            margin-right: 5px;
-        }
-
-        .btn-view {
-            background-color: var(--primary-500);
-            color: white;
-        }
-
-        .btn-view:hover {
-            background-color: var(--primary-600);
-            transform: translateY(-2px);
-        }
-
-        .btn-detail {
-            background-color: #22c55e;
-            color: white;
-        }
-
-        .btn-detail:hover {
-            background-color: #16a34a;
-            transform: translateY(-2px);
-        }
-
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .status-waiting {
-            background-color: #fef3c7;
-            color: #d97706;
-        }
-
-        .status-approved {
-            background-color: #dcfce7;
-            color: #16a34a;
-        }
-
-        .status-rejected {
-            background-color: #fee2e2;
-            color: #dc2626;
-        }
-
-        .status-review {
-            background-color: #dbeafe;
-            color: #2563eb;
-        }
-
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        .pagination button {
-            margin: 0 3px;
-            padding: 8px 12px;
-            border: 1px solid var(--light-gray);
-            background-color: var(--white);
-            cursor: pointer;
-            border-radius: 6px;
-            transition: var(--transition);
-        }
-
-        .pagination button:hover:not(:disabled) {
-            background-color: var(--primary-100);
-            color: var(--primary-600);
-        }
-
-        .pagination button.active {
-            background-color: var(--primary-500);
-            color: white;
-            border-color: var(--primary-500);
-        }
-
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
+    
         /* Notification Popup */
         .notification-modal {
             display: none;
@@ -782,55 +839,59 @@
             z-index: 3000;
             animation: fadeIn 0.3s ease;
         }
-
+    
         .notification-modal.show {
             display: block;
         }
-
+    
         .notification-icon {
             font-size: 40px;
             margin-bottom: 15px;
         }
-
+    
         .notification-message {
             font-size: 18px;
             color: var(--primary-700);
             font-weight: 500;
         }
-
+    
         .notification-confirm {
             color: var(--warning);
         }
-
+    
         .notification-success {
             color: var(--success);
         }
-
+    
         /* Custom Buttons for Notification Modal */
-        .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
+        /* These .btn styles are for specific modal buttons, not the general ones */
+        .btn.btn-gray { /* Specificity for modal buttons */
+            background-color: #d1d5db;
+            color: var(--text-color);
+            padding: 10px 20px; /* Keep consistent with general btn */
+            border-radius: 6px; /* Keep consistent with general btn */
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
             border: none;
         }
-
-        .btn-gray {
-            background-color: #d1d5db;
-            color: var(--text-color);
-        }
-
-        .btn-gray:hover {
+    
+        .btn.btn-gray:hover {
             background-color: #b3b7bc;
         }
-
-        .btn-blue {
+    
+        .btn.btn-blue { /* Specificity for modal buttons */
             background: linear-gradient(45deg, var(--primary-500), var(--primary-600));
             color: white;
+            padding: 10px 20px; /* Keep consistent with general btn */
+            border-radius: 6px; /* Keep consistent with general btn */
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
         }
-
-        .btn-blue.loading::after {
+    
+        .btn.btn-blue.loading::after {
             content: '';
             display: inline-block;
             width: 16px;
@@ -841,6 +902,342 @@
             animation: spin 1s linear infinite;
             margin-left: 8px;
             vertical-align: middle;
+        }
+    
+        .btn.btn-blue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 136, 255, 0.3);
+        }
+    
+    
+        /* --- Form Styling adapted and revised --- */
+    
+        .main-card { /* Corresponds to .form-container in data-mahasiswa.html */
+            background: var(--white);
+            border-radius: var(--card-border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 30px;
+            margin-bottom: 30px;
+            animation: fadeIn 0.6s 0.4s both;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-top: 3px solid var(--primary-500); /* Added from data-mahasiswa.html */
+            transition: var(--transition);
+        }
+    
+        .main-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+    
+        /* Form Title - matching data-mahasiswa.html's .form-title */
+        .main-card h2.form-title {
+            font-size: 20px;
+            color: var(--primary-600);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+    
+        .main-card h2.form-title i {
+            margin-right: 10px;
+        }
+    
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Always one column for vertical stacking */
+            gap: 20px; /* Gap between each form-group */
+        }
+    
+        .form-group {
+            /margin-bottom: 0; /* Managed by grid gap */
+        }
+    
+        /* Label styling - combined from previous and data-mahasiswa.html */
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-700); /* Darker color from data-mahasiswa.html */
+            display: flex; /* For icon alignment */
+            align-items: center;
+        }
+    
+        .form-group label i {
+            margin-right: 8px; /* Space between icon and label text */
+            font-size: 16px;
+            color: var(--primary-500); /* Color for icons in label */
+        }
+    
+        /* Input field styling */
+        .form-group .form-input { /* Using .form-input class from your blade file */
+            width: 100%;
+            padding: 12px 15px; /* Increased padding slightly for better look */
+            border: 1px solid #ddd; /* Lighter border from data-mahasiswa.html */
+            border-radius: 6px; /* Slightly smaller radius from data-mahasiswa.html */
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+    
+        .form-group .form-input:focus {
+            outline: none;
+            border-color: var(--primary-400); /* Focus color from data-mahasiswa.html */
+            box-shadow: 0 0 0 3px var(--primary-100); /* Focus shadow from data-mahasiswa.html */
+        }
+    
+        /* Alert messages - ensure consistency */
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+    
+        .alert-success {
+            background-color: rgba(40, 167, 69, 0.15);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+    
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+    
+        .invalid-feedback {
+            color: var(--danger);
+            font-size: 0.875em;
+            margin-top: 5px;
+        }
+    
+        /* Form Actions and Buttons */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px; /* Added padding-top and border-top from data-mahasiswa.html */
+            border-top: 1px dashed #ddd;
+            gap: 15px;
+        }
+    
+        .btn {
+            padding: 10px 20px; /* Consistent padding from data-mahasiswa.html */
+            border: none;
+            border-radius: 6px; /* Consistent border-radius from data-mahasiswa.html */
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px; /* Space for icon */
+            text-decoration: none;
+        }
+    
+        .btn-primary {
+            background-color: var(--primary-500); /* Solid color from data-mahasiswa.html */
+            color: white;
+            box-shadow: none; /* Remove previous shadow if you want data-mahasiswa style */
+        }
+    
+        .btn-primary:hover {
+            background-color: var(--primary-600); /* Darker hover color */
+            transform: translateY(-2px); /* Lift effect */
+            box-shadow: none; /* Keep consistent with primary */
+        }
+    
+        .btn-secondary {
+            background-color: #e2e8f0; /* Light gray from data-mahasiswa.html */
+            color: #4a5568; /* Dark text color */
+            border: none;
+        }
+    
+        .btn-secondary:hover {
+            background-color: #cbd5e0; /* Darker gray on hover */
+            transform: translateY(-2px); /* Lift effect */
+        }
+    
+    
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            :root {
+                --card-width: 100%;
+                --card-gap: 15px;
+            }
+    
+            .card.wide {
+                grid-column: span 1;
+            }
+    
+            .sidebar {
+                width: 80px;
+            }
+    
+            .sidebar .menu-title,
+            .sidebar .menu-item span,
+            .sidebar .submenu {
+                display: none;
+            }
+    
+            .main-content {
+                margin-left: 80px;
+                padding: 15px;
+            }
+    
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px;
+            }
+    
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+    
+            .user-profile {
+                margin-top: 15px;
+                width: 100%;
+                justify-content: space-between;
+            }
+    
+            .profile-dropdown {
+                right: auto;
+                left: 0;
+                width: 100%;
+            }
+    
+            .card-container {
+                grid-template-columns: 1fr;
+            }
+    
+            .welcome-box h1 {
+                font-size: 20px;
+            }
+            .welcome-box p {
+                font-size: 14px;
+            }
+            .card-title {
+                font-size: 1.3rem;
+            }
+            .card-description {
+                font-size: 0.9rem;
+            }
+            /* Form specific adjustments for small screens */
+            .form-grid {
+                grid-template-columns: 1fr; /* Stack inputs on smaller screens */
+            }
+    
+            .form-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+    
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* New additions below */
+
+        /* Improved Sidebar Icons */
+        .menu-item .fa-bell { color: #f59e0b; }
+        .menu-item .fa-clock { color: #3b82f6; }
+        .menu-item .fa-calendar-check { color: #10b981; }
+
+        /* Better Mobile Table Handling */
+        @media (max-width: 768px) {
+            .data-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .table-container {
+                padding: 10px;
+                border-radius: 8px;
+            }
+            
+            .section-actions .btn {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+
+        /* Enhanced Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+
+        .loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Better Hover Effects */
+        .action-icon {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .action-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Accessibility Improvements */
+        button:focus, a:focus, .action-icon:focus {
+            outline: 2px solid var(--primary-500);
+            outline-offset: 2px;
+        }
+
+        /* Improved Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-badge i {
+            font-size: 12px;
+        }
+
+        /* Card Improvements */
+        .card:hover .card-icon {
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Print Styles */
+        @media print {
+            .sidebar, .header, .fab, .section-actions {
+                display: none !important;
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+                padding: 20px !important;
+            }
+            
+            .table-container {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+            }
         }
     </style>
 </head>
@@ -859,37 +1256,38 @@
     </div>
 
     <div class="sidebar" id="sidebar">
-        <div class="logo-container">
-            {{-- Pastikan asset 'images/logo_white.png' ada --}}
-            <img src="{{ asset('images/logo_white.png') }}" alt="SIPRAKTA Logo" class="logo-img">
-        </div>
-        <div class="menu">
-            {{-- Mengubah route() menjadi '#' atau javascript:void(0); --}}
-            <div class="menu-item active" onclick="location.href='#'">
-                <i class="fas fa-home"></i>
-                <span>Dashboard</span>
+            <div class="logo-container">
+                <img src="{{ asset('assets/images/sipraktawhite2.png') }}" alt="Logo SIPRAKTA" class="logo-img">
             </div>
-            <div class="menu-item has-submenu" id="pengajuanMenu">
-                <i class="fas fa-file-alt"></i>
-                <span>Manajemen Pengajuan <i class="fas fa-chevron-down dropdown-arrow"></i></span>
-            </div>
-            <div class="submenu" id="submenuPengajuan">
-                <div class="submenu-item" onclick="location.href='#'">
-                    <i class="fas fa-clock"></i> Pengajuan Pending
+
+            <div class="menu-title">Menu Utama</div>
+            <a href="{{ route('dosen.dashboard') }}" style="text-decoration: none; color: inherit;">
+                <div class="menu-item {{ Request::routeIs('mahasiswa.dashboard') ? 'active' : '' }} tooltip">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
                 </div>
-                <div class="submenu-item" onclick="location.href='#'">
-                    <i class="fas fa-check-circle"></i> Pengajuan Disetujui
+            </a>
+
+            <a href="{{ route('dosen.dashboard') }}" style="text-decoration: none; color: inherit;">
+                <div class="menu-item {{ Request::routeIs('mahasiswa.dashboard') ? 'active' : '' }} tooltip">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Notifikasi terbaru</span>
                 </div>
-                <div class="submenu-item" onclick="location.href='#'">
-                    <i class="fas fa-times-circle"></i> Pengajuan Ditolak
+            </a>
+
+            <a href="{{ route('dosen.dashboard') }}" style="text-decoration: none; color: inherit;">
+                <div class="menu-item {{ Request::routeIs('mahasiswa.dashboard') ? 'active' : '' }} tooltip">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Pengajuan Terbaru Menunggu Persetujuan Anda</span>
                 </div>
-            </div>
-            {{-- Tambahkan menu Notifikasi --}}
-            <div class="menu-item" onclick="location.href='#'">
-                <i class="fas fa-bell"></i>
-                <span>Notifikasi</span>
-            </div>
-        </div>
+            </a>
+
+            <a href="{{ route('dosen.dashboard') }}" style="text-decoration: none; color: inherit;">
+                <div class="menu-item {{ Request::routeIs('mahasiswa.dashboard') ? 'active' : '' }} tooltip">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Jadwal Sidang terbaru</span>
+                </div>
+            </a>
     </div>
 
     <div class="main-content" id="mainContent">
@@ -900,7 +1298,6 @@
                 </button>
                 <h1 class="header-title">Dashboard Dosen</h1>
                 <div class="user-profile" id="userProfile">
-                    {{-- Pastikan Auth::user()->profile_picture ada atau sediakan default --}}
                     <img src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : asset('images/default_profile.png') }}" alt="Profile Picture" class="profile-pic">
                     <div class="profile-info">
                         <span class="profile-name">{{ Auth::user()->name ?? 'Nama Dosen' }}</span>
@@ -922,59 +1319,62 @@
                 </div>
             </div>
         </div>
-
+    
         <div class="welcome-box">
             <div class="welcome-title">
                 <i class="fas fa-hand-sparkles"></i> Selamat Datang, {{ Auth::user()->name ?? 'Dosen' }}!
             </div>
             <p>Selamat datang di Dashboard Dosen SIPRAKTA. Di sini Anda dapat mengelola pengajuan, melihat jadwal sidang, dan lainnya.</p>
         </div>
-
-        <div class="stats-container">
-            <div class="stat-card card-1" onclick="location.href='#'">
-                <div class="stat-icon"><i class="fas fa-clock"></i></div>
-                <div class="stat-content">
-                    {{-- Pastikan variabel ini tersedia dari controller --}}
+    
+        <div class="card-container">
+            <div class="card clickable-card small" onclick="location.href='{{ route('dosen.pengajuan.index') }}'"> {{-- Adjusted for Pengajuan --}}
+                <div class="card-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="card-title">
                     <div class="stat-number">{{ $totalPengajuanPending ?? 0 }}</div>
                     <div class="stat-title">Pengajuan Pending</div>
                 </div>
             </div>
-            <div class="stat-card card-2" onclick="location.href='#'">
-                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
-                <div class="stat-content">
-                    {{-- Pastikan variabel ini tersedia dari controller --}}
+            <div class="card clickable-card small" onclick="location.href='{{ route('dosen.pengajuan.index', ['status' => 'approved']) }}'"> {{-- Adjusted for Pengajuan Disetujui (assuming status filter) --}}
+                <div class="card-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="card-title">
                     <div class="stat-number">{{ $totalPengajuanApproved ?? 0 }}</div>
                     <div class="stat-title">Pengajuan Disetujui</div>
                 </div>
             </div>
-            <div class="stat-card card-3" onclick="location.href='#'">
-                <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
-                <div class="stat-content">
-                    {{-- Pastikan variabel ini tersedia dari controller --}}
+            <div class="card clickable-card small" onclick="location.href='{{ route('dosen.dashboard') }}'"> {{-- Adjusted for Sidang Mendatang (can link to dashboard or a dedicated sidang page if available) --}}
+                <div class="card-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="card-title">
                     <div class="stat-number">{{ $totalSidangUpcoming ?? 0 }}</div>
                     <div class="stat-title">Sidang Mendatang</div>
                 </div>
             </div>
-             <div class="stat-card card-4" onclick="location.href='#'">
-                <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
-                <div class="stat-content">
-                    {{-- Pastikan variabel ini tersedia dari controller --}}
+            <div class="card clickable-card small" onclick="location.href='{{ route('dosen.pengajuan.index', ['status' => 'rejected']) }}'"> {{-- Adjusted for Pengajuan Ditolak (assuming status filter) --}}
+                <div class="card-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="card-title">
                     <div class="stat-number">{{ $totalPengajuanRejected ?? 0 }}</div>
                     <div class="stat-title">Pengajuan Ditolak</div>
                 </div>
             </div>
         </div>
-
-        <div class="content-section">
-            <div class="section-header">
-                <h3 class="section-title"><i class="fas fa-bell"></i> Notifikasi Terbaru</h3>
-                <div class="section-actions">
-                    <a href="#" class="btn btn-filter">Lihat Semua <i class="fas fa-arrow-right"></i></a>
-                </div>
+    
+        <div class="section-header">
+            <h3 class="section-title"><i class="fas fa-bell"></i> Notifikasi Terbaru</h3>
+            <div class="section-actions">
+                <a href="{{ route('dosen.dashboard') }}" class="btn btn-blue">Lihat Semua <i class="fas fa-arrow-right"></i></a> {{-- No specific route for all notifications, linking to dashboard --}}
             </div>
-            {{-- Pastikan variabel $notifications tersedia dan merupakan Collection --}}
+        </div>
+        <div class="table-container">
             @if (!empty($notifications) && $notifications->count() > 0)
-                <table>
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>Tipe</th>
@@ -988,23 +1388,28 @@
                             <tr>
                                 <td>
                                     @if ($notification->type == 'new_submission')
-                                        <span class="status-badge status-review">Pengajuan Baru</span>
+                                        <span class="status-badge status-pending">Pengajuan Baru</span>
                                     @elseif ($notification->type == 'sidang_scheduled')
-                                        <span class="status-badge status-info">Jadwal Sidang</span>
+                                        <span class="status-badge status-active">Jadwal Sidang</span>
                                     @elseif ($notification->type == 'submission_status_update')
-                                        <span class="status-badge status-warning">Update Status</span>
+                                        <span class="status-badge status-inactive">Update Status</span>
                                     @endif
                                 </td>
                                 <td>{{ $notification->message }}</td>
                                 <td>{{ \Carbon\Carbon::parse($notification->created_at)->diffForHumans() }}</td>
-                                <td>
-                                    {{-- Mengubah route() menjadi '#' --}}
+                                <td class="action-cell">
                                     @if ($notification->type == 'new_submission' && isset($notification->data['pengajuan_id']))
-                                        <a href="#" class="btn btn-view"><i class="fas fa-eye"></i> Lihat</a>
+                                        <a href="{{ route('dosen.pengajuan.show', $notification->data['pengajuan_id']) }}" class="action-icon view-icon" title="Lihat">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                     @elseif ($notification->type == 'sidang_scheduled' && isset($notification->data['sidang_id']))
-                                        <a href="#" class="btn btn-view"><i class="fas fa-eye"></i> Lihat Sidang</a>
+                                        <a href="{{ route('dosen.jadwal.show', $notification->data['sidang_id']) }}" class="action-icon view-icon" title="Lihat Sidang">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                     @elseif ($notification->type == 'submission_status_update' && isset($notification->data['pengajuan_id']))
-                                        <a href="#" class="btn btn-view"><i class="fas fa-eye"></i> Lihat Pengajuan</a>
+                                        <a href="{{ route('dosen.pengajuan.show', $notification->data['pengajuan_id']) }}" class="action-icon view-icon" title="Lihat Pengajuan">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                     @else
                                         -
                                     @endif
@@ -1014,20 +1419,23 @@
                     </tbody>
                 </table>
             @else
-                <p class="no-items-message">Tidak ada notifikasi baru.</p>
+                <div class="alertpkl alert-infopkl">
+                    <i class="fas fa-info-circle" style="margin-right: 10px;"></i>
+                    Tidak ada notifikasi baru.
+                </div>
             @endif
         </div>
-
-        <div class="content-section">
-            <div class="section-header">
-                <h3 class="section-title"><i class="fas fa-calendar-check"></i> Jadwal Sidang Saya</h3>
-                <div class="section-actions">
-                    <a href="#" class="btn btn-filter">Lihat Semua Sidang <i class="fas fa-arrow-right"></i></a>
-                </div>
+    
+        <div class="section-header">
+            <h3 class="section-title"><i class="fas fa-calendar-check"></i> Jadwal Sidang Saya</h3>
+            <div class="section-actions">
+                {{-- Assuming a route for "all schedules" --}}
+                <a href="{{ route('dosen.dashboard') }}" class="btn btn-blue">Lihat Semua Sidang <i class="fas fa-arrow-right"></i></a> {{-- No specific route for all sidang, linking to dashboard for now --}}
             </div>
-            {{-- Pastikan variabel $jadwalSidang tersedia dan merupakan Collection --}}
+        </div>
+        <div class="table-container">
             @if (!empty($jadwalSidang) && $jadwalSidang->count() > 0)
-                <table>
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>Mahasiswa</th>
@@ -1048,8 +1456,7 @@
                                 <td>{{ $sidang->ruangan_sidang ?? 'N/A' }}</td>
                                 <td>
                                     @php
-                                        // Pastikan $dosenLoginId tersedia dari controller atau Auth::id()
-                                        $dosenLoginId = Auth::id(); // Atau dapatkan dari parameter $dosenLoginId yang dilewatkan ke view
+                                        $dosenLoginId = Auth::id();
                                         $roleDisplayed = '';
                                         if (isset($sidang->dosen_pembimbing_id) && $sidang->dosen_pembimbing_id == $dosenLoginId) $roleDisplayed = 'Pembimbing';
                                         elseif (isset($sidang->dosen_penguji1_id) && $sidang->dosen_penguji1_id == $dosenLoginId) $roleDisplayed = 'Penguji 1';
@@ -1059,38 +1466,41 @@
                                 </td>
                                 <td>
                                     @if (($sidang->status_sidang ?? 'pending') == 'pending')
-                                        <span class="status-badge status-waiting">Menunggu</span>
+                                        <span class="status-badge status-pending">Menunggu</span>
                                     @elseif (($sidang->status_sidang ?? 'pending') == 'approved')
-                                        <span class="status-badge status-approved">Disetujui</span>
+                                        <span class="status-badge status-active">Disetujui</span>
                                     @elseif (($sidang->status_sidang ?? 'pending') == 'rejected')
-                                        <span class="status-badge status-danger">Ditolak</span>
+                                        <span class="status-badge status-inactive">Ditolak</span>
                                     @else
-                                        <span class="status-badge status-review">{{ ucfirst($sidang->status_sidang ?? 'N/A') }}</span>
+                                        <span class="status-badge">{{ ucfirst($sidang->status_sidang ?? 'N/A') }}</span>
                                     @endif
                                 </td>
-                                <td>
-                                    {{-- Mengubah route() menjadi '#' --}}
-                                    <a href="#" class="btn btn-detail"><i class="fas fa-info-circle"></i> Detail</a>
+                                <td class="action-cell">
+                                    <a href="{{ route('dosen.jadwal.show', $sidang->id) }}" class="action-icon view-icon" title="Detail">
+                                        <i class="fas fa-info-circle"></i>
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             @else
-                <p class="no-items-message">Tidak ada jadwal sidang mendatang.</p>
+                <div class="alertpkl alert-infopkl">
+                    <i class="fas fa-info-circle" style="margin-right: 10px;"></i>
+                    Tidak ada jadwal sidang mendatang.
+                </div>
             @endif
         </div>
-
-        <div class="content-section">
-            <div class="section-header">
-                <h3 class="section-title"><i class="fas fa-file-import"></i> Pengajuan Terbaru Menunggu Persetujuan Anda</h3>
-                <div class="section-actions">
-                    <a href="#" class="btn btn-filter">Lihat Semua Pengajuan Pending <i class="fas fa-arrow-right"></i></a>
-                </div>
+    
+        <div class="section-header">
+            <h3 class="section-title"><i class="fas fa-file-import"></i> Pengajuan Terbaru Menunggu Persetujuan Anda</h3>
+            <div class="section-actions">
+                <a href="{{ route('dosen.pengajuan.index', ['status' => 'pending']) }}" class="btn btn-blue">Lihat Semua Pengajuan Pending <i class="fas fa-arrow-right"></i></a> {{-- Link to pengajuan index with pending filter --}}
             </div>
-            {{-- Pastikan variabel $pengajuanMenunggu tersedia dan merupakan Collection --}}
+        </div>
+        <div class="table-container">
             @if (!empty($pengajuanMenunggu) && $pengajuanMenunggu->count() > 0)
-                <table>
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>Mahasiswa</th>
@@ -1106,20 +1516,24 @@
                                 <td>{{ $pengajuan->mahasiswa->nama_lengkap ?? 'N/A' }} ({{ $pengajuan->mahasiswa->nim ?? 'N/A' }})</td>
                                 <td>{{ strtoupper(str_replace('_', ' ', $pengajuan->jenis_pengajuan ?? 'N/A')) }}</td>
                                 <td>{{ \Carbon\Carbon::parse($pengajuan->created_at)->translatedFormat('d F Y') }}</td>
-                                <td><span class="status-badge status-waiting">Pending</span></td>
-                                <td>
-                                    {{-- Mengubah route() menjadi '#' --}}
-                                    <a href="#" class="btn btn-detail"><i class="fas fa-info-circle"></i> Detail</a>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                                <td class="action-cell">
+                                    <a href="{{ route('dosen.pengajuan.show', $pengajuan->id) }}" class="action-icon view-icon" title="Detail">
+                                        <i class="fas fa-info-circle"></i>
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             @else
-                <p class="no-items-message">Tidak ada pengajuan yang menunggu persetujuan Anda saat ini.</p>
+                <div class="alertpkl alert-infopkl">
+                    <i class="fas fa-info-circle" style="margin-right: 10px;"></i>
+                    Tidak ada pengajuan yang menunggu persetujuan Anda saat ini.
+                </div>
             @endif
         </div>
-
+    
         <div class="notification-modal" id="logoutConfirmationModal">
             <i class="fas fa-question-circle notification-icon notification-confirm"></i>
             <p class="notification-message">Apakah Anda yakin ingin logout?</p>
@@ -1128,14 +1542,13 @@
                 <button class="btn btn-blue" id="confirmLogoutBtn">Ya, Logout</button>
             </div>
         </div>
-
+    
         <div class="notification-modal" id="logoutSuccessModal">
             <i class="fas fa-check-circle notification-icon notification-success"></i>
             <p class="notification-message">Berhasil Logout!</p>
         </div>
-
-        {{-- Form logout ini akan berfungsi jika route 'dosen.logout' didefinisikan --}}
-        <form id="logout-form" action="{{ '#' }}" method="POST" style="display: none;">
+    
+        <form id="logout-form" action="{{ route('dosen.logout') }}" method="POST" style="display: none;"> {{-- Adjusted for logout route --}}
             @csrf
         </form>
     </div>

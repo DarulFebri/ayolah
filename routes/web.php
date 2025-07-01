@@ -183,8 +183,7 @@ Route::prefix('mahasiswa')->group(function () {
 // Dosen Routes
 Route::post('/dosen/notifications/{notification}/mark-as-read', function (\Illuminate\Notifications\DatabaseNotification $notification) {
     $notification->markAsRead();
-    return back()->with('success', 'Notifikasi ditandai sudah dibaca.');
-})->name('dosen.notifications.markAsRead')->middleware(['auth', 'dosen']);
+    return back()->with('success', 'Notifikasi ditandai sudah dibaca.');})->name('dosen.notifications.markAsRead')->middleware(['auth', 'dosen']);
 Route::prefix('dosen')->group(function () {
     // Public routes
     Route::get('/login', [DosenController::class, 'loginForm'])->name('dosen.login');
