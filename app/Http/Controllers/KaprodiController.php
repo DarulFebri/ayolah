@@ -47,11 +47,6 @@ class KaprodiController extends Controller
             'ruangan_sidang' => 'required|string|max:255',
         ];
 
-        // Ketua sidang hanya wajib untuk PKL, karena untuk TA ditentukan otomatis
-        if ($isPkl) {
-            $rules['ketua_sidang_id'] = 'required|exists:dosens,id';
-        }
-
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();

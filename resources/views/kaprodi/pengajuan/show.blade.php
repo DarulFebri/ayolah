@@ -340,21 +340,6 @@
                     @csrf
                     @method('PUT')
                     
-                    {{-- Untuk TA, ketua sidang ditentukan otomatis, jadi tidak ada inputan. Untuk PKL, dipilih manual. --}}
-                    @if ($pengajuan->jenis_pengajuan === 'pkl')
-                        <div class="form-group">
-                            <label for="ketua_sidang_id">Ketua Sidang:</label>
-                            <select name="ketua_sidang_id" id="ketua_sidang_id" class="form-control">
-                                <option value="">Pilih Ketua Sidang</option>
-                                @foreach ($dosens as $dosen)
-                                    <option value="{{ $dosen->id }}" {{ optional($pengajuan->sidang)->ketua_sidang_dosen_id == $dosen->id ? 'selected' : '' }}>
-                                        {{ $dosen->nama }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    @endif
-                    
                     <div class="form-group">
                         <label for="sekretaris_sidang_id">Sekretaris Sidang:</label>
                         <select name="sekretaris_sidang_id" id="sekretaris_sidang_id" class="form-control" required>
