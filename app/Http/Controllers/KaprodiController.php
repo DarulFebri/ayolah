@@ -378,18 +378,21 @@ class KaprodiController extends Controller
         $bisaDifinalisasi = false;
         if ($pengajuan->sidang && $pengajuan->status === 'menunggu_persetujuan_dosen') {
             $sidang = $pengajuan->sidang;
-            $semuaSetuju = $sidang->persetujuan_dosen_pembimbing === 'setuju' &&
-                           $sidang->persetujuan_sekretaris_sidang === 'setuju' &&
-                           $sidang->persetujuan_anggota1_sidang === 'setuju';
-
-            if ($pengajuan->jenis_pengajuan === 'ta') {
-                $semuaSetuju = $semuaSetuju && $sidang->persetujuan_dosen_penguji1 === 'setuju';
-            }
+            
+            // Periksa persetujuan semua anggota selain pembimbing dan penguji 1
+            $anggotaSetuju = $sidang->persetujuan_sekretaris_sidang === 'setuju' &&
+                             $sidang->persetujuan_anggota1_sidang === 'setuju';
             if ($sidang->anggota2_sidang_dosen_id) {
-                $semuaSetuju = $semuaSetuju && $sidang->persetujuan_anggota2_sidang === 'setuju';
+                $anggotaSetuju = $anggotaSetuju && $sidang->persetujuan_anggota2_sidang === 'setuju';
             }
 
-            $bisaDifinalisasi = $semuaSetuju;
+            // Untuk TA, periksa apakah ada calon ketua yang valid
+            if ($pengajuan->jenis_pengajuan === 'ta') {
+                $adaCalonKetua = $sidang->persetujuan_dosen_pembimbing === 'setuju' || $sidang->persetujuan_dosen_penguji1 === 'setuju';
+                $bisaDifinalisasi = $anggotaSetuju && $adaCalonKetua;
+            } else { // Untuk PKL, semua harus setuju
+                $bisaDifinalisasi = $anggotaSetuju && $sidang->persetujuan_dosen_pembimbing === 'setuju';
+            }
         }
     
         // Ambil daftar dosen untuk dropdown di form penjadwalan
