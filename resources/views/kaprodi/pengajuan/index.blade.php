@@ -294,27 +294,20 @@
                             <td>{{ $pengajuan->id }}</td>
                             <td>{{ $pengajuan->mahasiswa->nama_lengkap }} <br> ({{ $pengajuan->mahasiswa->nim }})</td>
                             <td>{{ strtoupper(str_replace('_', ' ', $pengajuan->jenis_pengajuan)) }}</td>
-                            <td>{{ $pengajuan->judul_pengajuan ?? 'Belum Ada Judul' }}</td>
+                            <td>{{ $pengajuan->judul }}</td>
                             <td>
-                                <span class="status-badge {{
-                                    $pengajuan->status == 'diajukan_mahasiswa' ? 'menunggu' :
-                                    ($pengajuan->status == 'diverifikasi_admin' ? 'menunggu' :
-                                    ($pengajuan->status == 'menunggu_persetujuan_dosen' ? 'menunggu' :
-                                    ($pengajuan->status == 'disetujui_kaprodi' ? 'setuju' :
-                                    ($pengajuan->status == 'sidang_selesai' ? 'setuju' :
-                                    ($pengajuan->status == 'ditolak_admin' || $pengajuan->status == 'ditolak_kaprodi' ? 'tolak' : 'default')))))
-                                }}">
+                                <span class="status-badge {{ str_contains($pengajuan->status, 'ditolak') ? 'tolak' : (str_contains($pengajuan->status, 'setuju') || str_contains($pengajuan->status, 'final') ? 'setuju' : 'menunggu') }}">
                                     {{ ucfirst(str_replace('_', ' ', $pengajuan->status)) }}
                                 </span>
                             </td>
-                            <td>{{ $pengajuan->sidang->dosenPembimbing->nama ?? 'Belum Terpilih' }}</td>
-                            <td>{{ $pengajuan->sidang->dosenPenguji1->nama ?? 'Belum Terpilih' }}</td>
-                            <td>{{ $pengajuan->sidang->ketuaSidang->nama ?? 'Belum Terpilih' }}</td>
-                            <td>{{ $pengajuan->sidang->sekretarisSidang->nama ?? 'Belum Terpilih' }}</td>
-                            <td>{{ $pengajuan->sidang->anggota1Sidang->nama ?? 'Belum Terpilih' }}</td>
-                            <td>{{ $pengajuan->sidang->anggota2Sidang->nama ?? 'Belum Terpilih' }}</td>
-                            <td>{{ $pengajuan->sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y, H:i') : 'Belum Dijadwalkan' }}</td>
-                            <td>{{ $pengajuan->sidang->ruangan_sidang ?? 'Belum Ditentukan' }}</td>
+                            <td>{{ $pengajuan->sidang->dosenPembimbing->nama ?? 'N/A' }}</td>
+                            <td>{{ $pengajuan->sidang->dosenPenguji1->nama ?? 'N/A' }}</td>
+                            <td>{{ $pengajuan->sidang->ketuaSidang->nama ?? 'N/A' }}</td>
+                            <td>{{ $pengajuan->sidang->sekretarisSidang->nama ?? 'N/A' }}</td>
+                            <td>{{ $pengajuan->sidang->anggota1Sidang->nama ?? 'N/A' }}</td>
+                            <td>{{ $pengajuan->sidang->anggota2Sidang->nama ?? 'N/A' }}</td>
+                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y, H:i') : 'N/A' }}</td>
+                            <td>{{ optional($pengajuan->sidang)->ruangan_sidang ?? 'N/A' }}</td>
                             <td class="action-buttons">
                                 <a href="{{ route('kaprodi.pengajuan.show', $pengajuan->id) }}" class="btn btn-info">
                                     <i class="fas fa-eye"></i> Detail & Jadwalkan
@@ -324,7 +317,7 @@
                     @endforeach
                 </tbody>
             </table>
-        </div> {{-- Tutup div.table-responsive --}}
+        </div>
     @endif
 
     <hr>
@@ -336,7 +329,6 @@
             Tidak ada pengajuan yang telah selesai Anda tangani.
         </p>
     @else
-        {{-- Bungkus tabel dengan div baru ini juga --}}
         <div class="table-responsive">
             <table>
                 <thead>
@@ -363,27 +355,20 @@
                             <td>{{ $pengajuan->id }}</td>
                             <td>{{ $pengajuan->mahasiswa->nama_lengkap }} <br> ({{ $pengajuan->mahasiswa->nim }})</td>
                             <td>{{ strtoupper(str_replace('_', ' ', $pengajuan->jenis_pengajuan)) }}</td>
-                            <td>{{ $pengajuan->judul_pengajuan ?? 'Belum Ada Judul' }}</td>
+                            <td>{{ $pengajuan->judul }}</td>
                             <td>
-                                <span class="status-badge {{
-                                    $pengajuan->status == 'diajukan_mahasiswa' ? 'menunggu' :
-                                    ($pengajuan->status == 'diverifikasi_admin' ? 'menunggu' :
-                                    ($pengajuan->status == 'menunggu_persetujuan_dosen' ? 'menunggu' :
-                                    ($pengajuan->status == 'disetujui_kaprodi' ? 'setuju' :
-                                    ($pengajuan->status == 'sidang_selesai' ? 'setuju' :
-                                    ($pengajuan->status == 'ditolak_admin' || $pengajuan->status == 'ditolak_kaprodi' ? 'tolak' : 'default')))))
-                                }}">
+                                <span class="status-badge {{ str_contains($pengajuan->status, 'ditolak') ? 'tolak' : 'setuju' }}">
                                     {{ ucfirst(str_replace('_', ' ', $pengajuan->status)) }}
                                 </span>
                             </td>
-                            <td>{{ $pengajuan->sidang->dosenPembimbing->nama ?? 'Belum Terpilih' }}</td>
-                            <td>{{ $pengajuan->sidang->dosenPenguji1->nama ?? 'Belum Terpilih' }}</td>
-                            <td>{{ $pengajuan->sidang->ketuaSidang->nama ?? 'Belum Terpilih' }}</td>
-                            <td>{{ $pengajuan->sidang->sekretarisSidang->nama ?? 'Belum Terpilih' }}</td>
-                            <td>{{ $pengajuan->sidang->anggota1Sidang->nama ?? 'Belum Terpilih' }}</td>
-                            <td>{{ $pengajuan->sidang->anggota2Sidang->nama ?? 'Belum Terpilih' }}</td>
-                            <td>{{ $pengajuan->sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y, H:i') : 'Belum Dijadwalkan' }}</td>
-                            <td>{{ $pengajuan->sidang->ruangan_sidang ?? 'Belum Ditentukan' }}</td>
+                            <td>{{ $pengajuan->sidang->dosenPembimbing->nama ?? 'N/A' }}</td>
+                            <td>{{ $pengajuan->sidang->dosenPenguji1->nama ?? 'N/A' }}</td>
+                            <td>{{ $pengajuan->sidang->ketuaSidang->nama ?? 'N/A' }}</td>
+                            <td>{{ $pengajuan->sidang->sekretarisSidang->nama ?? 'N/A' }}</td>
+                            <td>{{ $pengajuan->sidang->anggota1Sidang->nama ?? 'N/A' }}</td>
+                            <td>{{ $pengajuan->sidang->anggota2Sidang->nama ?? 'N/A' }}</td>
+                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y, H:i') : 'N/A' }}</td>
+                            <td>{{ optional($pengajuan->sidang)->ruangan_sidang ?? 'N/A' }}</td>
                             <td>
                                 <a href="{{ route('kaprodi.pengajuan.show', $pengajuan->id) }}" class="btn btn-info">
                                     <i class="fas fa-info-circle"></i> Detail
@@ -393,7 +378,7 @@
                     @endforeach
                 </tbody>
             </table>
-        </div> {{-- Tutup div.table-responsive --}}
+        </div>
     @endif
     </div>
 </html>

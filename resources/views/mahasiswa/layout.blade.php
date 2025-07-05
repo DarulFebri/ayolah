@@ -1144,6 +1144,95 @@
         }
     </style>
     @stack('styles') {{-- Allows child views to push additional styles --}}
+    <style>
+        /* Dosen Select Modal Styles */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1040;
+            display: none;
+        }
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            width: 90%;
+            max-width: 500px;
+            z-index: 1050;
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-700);
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: #000;
+            text-shadow: 0 1px 0 #fff;
+            opacity: .5;
+            cursor: pointer;
+        }
+        .modal-close:hover {
+            opacity: .75;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .dosen-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .dosen-list li {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        .dosen-list li:last-child {
+            border-bottom: none;
+        }
+        .dosen-list li:hover {
+            background-color: var(--primary-100);
+        }
+        .dosen-list li .text-muted {
+            font-size: 0.85em;
+        }
+        .form-dosen-select {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-dosen-select .form-control[readonly] {
+            background-color: #e9ecef;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -1164,8 +1253,8 @@
             <a href="{{ route('mahasiswa.profile.edit') }}" style="text-decoration: none; color: inherit;">
                 <div class="menu-item {{ Request::routeIs('mahasiswa.profile.edit') ? 'active' : '' }} tooltip">
                     <i class="fas fa-user-graduate"></i>
-                    <span>Mahasiswa</span>
-                    <span class="tooltiptext">Mahasiswa</span>
+                    <span>Profil Mahasiswa</span>
+                    <span class="tooltiptext">Profil Mahasiswa</span>
                 </div>
             </a>
 
@@ -1183,11 +1272,19 @@
                         <span class="tooltiptext">Daftar Pengajuan</span>
                     </div>
                 </a>
-                <a href="{{ route('mahasiswa.pengajuan.pilih') }}" style="text-decoration: none; color: inherit;">
-                    <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.pengajuan.pilih') || Request::routeIs('mahasiswa.pengajuan.detail') ? 'active' : '' }}">
+                {{-- Rute 'mahasiswa.pengajuan.pilih' tidak ada lagi, langsung ke create PKL/TA --}}
+                <a href="{{ route('mahasiswa.pengajuan.create', 'pkl') }}" style="text-decoration: none; color: inherit;">
+                    <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.pengajuan.create') && request()->route('jenis_pengajuan') == 'pkl' ? 'active' : '' }}">
                         <i class="fas fa-chevron-right"></i>
-                        <span>Buat Pengajuan</span>
-                        <span class="tooltiptext">Buat Pengajuan</span>
+                        <span>Buat Pengajuan PKL</span>
+                        <span class="tooltiptext">Buat Pengajuan PKL</span>
+                    </div>
+                </a>
+                <a href="{{ route('mahasiswa.pengajuan.create', 'ta') }}" style="text-decoration: none; color: inherit;">
+                    <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.pengajuan.create') && request()->route('jenis_pengajuan') == 'ta' ? 'active' : '' }}">
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Buat Pengajuan TA</span>
+                        <span class="tooltiptext">Buat Pengajuan TA</span>
                     </div>
                 </a>
             </div>
@@ -1286,7 +1383,7 @@
 
         // Toggle submenu
         function toggleSubmenu(menu, event) {
-            event.preventDefault(); // Prevent default link behavior
+            // event.preventDefault(); // Prevent default link behavior, but not needed if parent is not a direct link
             const submenu = document.getElementById(`${menu}-submenu`);
             const menuItem = event.currentTarget;
 
@@ -1303,7 +1400,7 @@
             // Update active state of the parent menu item
             document.querySelectorAll('.menu-item').forEach(item => {
                 // Keep Dashboard active if it's the current route
-                if (item.querySelector('.fa-tachometer-alt') && "{{ Request::routeIs('mahasiswa.dashboard') }}" === "1") {
+                if (item.querySelector('.fa-tachometer-alt') && "{{ Request::routeIs('home') }}" === "1") {
                     item.classList.add('active');
                 } else if (item === menuItem) { // If it's the clicked menu item
                     if (submenu.classList.contains('show')) {
@@ -1365,7 +1462,7 @@
             }, 1500);
         }
 
-        // Card hover effects
+        // Card hover effects (might not be needed in layout directly, but kept for completeness)
         document.querySelectorAll('.clickable-card').forEach(card => {
             card.addEventListener('mouseenter', () => {
                 card.style.transform = 'translateY(-5px) scale(1.02)';
@@ -1399,7 +1496,73 @@
                 cardElement.style.setProperty('--card-title-size', sizes[size].title);
             }
         }
+
+        // Initial active state for submenus on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if any pengajuan route is active
+            const pengajuanRoutes = [
+                'mahasiswa.pengajuan.index',
+                'mahasiswa.pengajuan.create',
+                'mahasiswa.pengajuan.detail',
+                'mahasiswa.pengajuan.edit'
+            ];
+            let isPengajuanActive = false;
+            for (let i = 0; i < pengajuanRoutes.length; i++) {
+                if (window.location.href.includes(pengajuanRoutes[i].replace(/\./g, '/'))) {
+                    isPengajuanActive = true;
+                    break;
+                }
+            }
+
+            if (isPengajuanActive) {
+                const pengajuanMenuItem = document.querySelector('.menu-item.tooltip[onclick*="pengajuan"]');
+                const pengajuanSubmenu = document.getElementById('pengajuan-submenu');
+                if (pengajuanMenuItem && pengajuanSubmenu) {
+                    pengajuanMenuItem.classList.add('active');
+                    pengajuanSubmenu.classList.add('show');
+                }
+            }
+        });
+
     </script>
     @stack('scripts') {{-- Allows child views to push additional scripts --}}
+    <script>
+        // Dosen Select Modal Functions
+        function openDosenModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.getElementById(modalId + '-backdrop').style.display = 'block';
+        }
+
+        function closeDosenModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.getElementById(modalId + '-backdrop').style.display = 'none';
+        }
+
+        function filterDosenList(modalId) {
+            const input = document.getElementById(modalId + '-search');
+            const filter = input.value.toUpperCase();
+            const ul = document.querySelector(`#${modalId} .dosen-list`);
+            const li = ul.getElementsByTagName('li');
+
+            for (let i = 0; i < li.length; i++) {
+                const txtValue = li[i].textContent || li[i].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
+            }
+        }
+
+        function selectDosen(modalId, inputName, displayName, element) {
+            const dosenId = element.getAttribute('data-id');
+            const dosenName = element.getAttribute('data-name');
+            
+            document.querySelector(`input[name="${inputName}"]`).value = dosenId;
+            document.getElementById(displayName).value = dosenName;
+            
+            closeDosenModal(modalId);
+        }
+    </script>
 </body>
 </html>

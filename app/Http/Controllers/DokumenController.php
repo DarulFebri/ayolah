@@ -139,4 +139,35 @@ class DokumenController extends Controller
     // Namun, untuk alur pengajuan dokumen persyaratan, PengajuanController sudah cukup.
 
     // Contoh: Jika Anda ingin mahasiswa bisa menghapus dokumen satu per satu
+
+    public function lihatDokumenAdmin(Dokumen $dokumen)
+    {
+        // Pastikan pengguna yang login adalah admin atau peran yang diizinkan
+        if (!Auth::check() || !in_array(Auth::user()->role, ['admin', 'kaprodi', 'dosen', 'kajur'])) {
+            abort(403, 'Anda tidak memiliki akses untuk melihat dokumen ini.');
+        }
+
+        // Ambil path dari database, contoh: /storage/dokumen_pengajuan/file.pdf
+        $dbPath = $dokumen->path_file;
+
+        // Hapus awalan '/storage/' yang tidak konsisten dari path.
+        $relativePath = str_replace('/storage/', '', $dbPath);
+
+        // Bangun path absolut yang benar ke file di dalam storage/app/public/
+        $path = storage_path('app/public/' . $relativePath);
+
+        // Periksa apakah file benar-benar ada sebelum mengirimkannya
+        if (!file_exists($path)) {
+            abort(404, 'File tidak ditemukan. Path yang dihasilkan: ' . $path);
+        }
+
+        // Siapkan header untuk respons
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $dokumen->nama_file . '"',
+        ];
+
+        // Kembalikan file sebagai response dengan header yang sudah ditentukan
+        return response()->file($path, $headers);
+    }
 }

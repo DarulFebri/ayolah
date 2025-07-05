@@ -429,7 +429,7 @@
                 @foreach ($pengajuan->dokumens as $dokumen)
                     <li class="document-item">
                         <span>{{ $dokumen->nama_file }}</span>
-                        <a href="{{ asset('storage/' . $dokumen->path_file) }}" target="_blank" class="document-link">
+                        <a href="{{ Storage::url($dokumen->path_file) }}" target="_blank" class="document-link">
                             <i class="fas fa-external-link-alt"></i> Lihat Dokumen
                         </a>
                     </li>

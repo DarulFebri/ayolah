@@ -236,8 +236,8 @@
             <li class="document-item">
                 {{-- Tampilkan nama dokumen dari kolom 'nama_file' --}}
                 <span>{{ $dokumen->nama_file }}</span>
-                {{-- Gunakan path_file dari database --}}
-                <a href="{{ Storage::url($dokumen->path_file) }}" target="_blank">Lihat Dokumen</a>
+                {{-- Gunakan rute baru untuk admin --}}
+                <a href="{{ route('admin.dokumen.lihat', ['dokumen' => $dokumen->id]) }}" target="_blank">Lihat Dokumen</a>
             </li>
             @empty
             <li class="document-item">Tidak ada dokumen terlampir.</li>

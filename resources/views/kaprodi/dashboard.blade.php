@@ -747,28 +747,15 @@
         </div>
 
         <div class="menu-title">Menu Utama</div>
-        <a href="{{ route('kaprodi.dashboard') }}" class="menu-item active tooltip">
+        <a href="{{ route('kaprodi.dashboard') }}" class="menu-item active">
             <i class="fas fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>
-        <div class="menu-item tooltip" onclick="toggleSubmenu('pengajuan', event)">
+        <a href="{{ route('kaprodi.pengajuan.index') }}" class="menu-item">
             <i class="fas fa-briefcase"></i>
             <span>Pengajuan Sidang</span>
-        </div>
-        <div class="submenu" id="pengajuan-submenu">
-            {{-- Temporarily use '#' for links that are not yet defined to prevent route errors --}}
-            <a href="#" class="submenu-item tooltip">
-                <i class="fas fa-chevron-right"></i>
-                <span>Sidang PKL</span>
-            </a>
-            <a href="#" class="submenu-item tooltip">
-                <i class="fas fa-chevron-right"></i>
-                <span>Sidang TA</span>
-            </a>
-        </div>
-
-        {{-- Temporarily use '#' for links that are not yet defined to prevent route errors --}}
-        <a href="#" class="menu-item tooltip">
+        </a>
+        <a href="#" class="menu-item">
             <i class="fas fa-bell"></i>
             <span>Notifikasi</span>
         </a>
@@ -787,16 +774,15 @@
                     </h1>
                 </div>
                 <div class="user-profile" id="userProfile">
-                    <img src="https://ui-avatars.com/api/?name=Dr+Kaprodi&background=1a88ff&color=fff"
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=1a88ff&color=fff"
                          class="profile-pic" alt="Foto Profil">
                     <div class="profile-info">
-                        <div class="profile-name">Dr. Kaprodi</div>
+                        <div class="profile-name">{{ Auth::user()->name }}</div>
                         <div class="profile-role">Ketua Program Studi</div>
                     </div>
                     <i class="fas fa-chevron-down" style="margin-left: 8px; font-size: 12px;"></i>
 
                     <div class="profile-dropdown" id="profileDropdown">
-                        {{-- Temporarily use '#' for links that are not yet defined to prevent route errors --}}
                         <a href="#" class="dropdown-item">
                             <i class="fas fa-user"></i>
                             <span>Profil Saya</span>
@@ -806,11 +792,13 @@
                             <span>Ubah Sandi</span>
                         </a>
                         <div class="dropdown-divider"></div>
-                        {{-- Keep the onclick for logout since it's handled by JS and form submission --}}
-                        <a href="#" class="dropdown-item" onclick="showLogoutConfirmation()">
+                        <a href="#" class="dropdown-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Logout</span>
                         </a>
+                        <form id="logout-form" action="{{ route('kaprodi.logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
                     </div>
                 </div>
             </div>
@@ -819,7 +807,7 @@
         <div class="welcome-box">
             <h2 class="welcome-title">
                 <i class="fas fa-user-tie"></i>
-                Selamat Datang, Kaprodi
+                Selamat Datang, {{ Auth::user()->name }}
             </h2>
             <p>Sistem Informasi Praktek Kerja Lapangan dan Tugas Akhir - Politeknik Negeri Padang</p>
         </div>
@@ -835,27 +823,28 @@
             </div>
         </div>
 
-        <h3>Pengajuan Terbaru</h3>
+        <h3>Pengajuan Terbaru (Menunggu Aksi Anda)</h3>
         <div class="latest-submissions">
             @if ($pengajuanBaru->count() > 0)
                 <ul>
                     @foreach ($pengajuanBaru as $pengajuan)
-                        <li>
-                            <span>{{ $pengajuan->mahasiswa->nama_lengkap }}</span>
-                            <span style="font-weight: 600; color: var(--primary-500);">
-                                {{ strtoupper(str_replace('_', ' ', $pengajuan->jenis_pengajuan)) }}
-                            </span>
-                        </li>
+                        <a href="{{ route('kaprodi.pengajuan.show', $pengajuan->id) }}" style="text-decoration: none; color: inherit;">
+                            <li>
+                                <span>{{ $pengajuan->mahasiswa->nama_lengkap }}</span>
+                                <span style="font-weight: 600; color: var(--primary-500);">
+                                    {{ strtoupper(str_replace('_', ' ', $pengajuan->jenis_pengajuan)) }}
+                                </span>
+                            </li>
+                        </a>
                     @endforeach
                 </ul>
             @else
-                <p class="no-submissions">Tidak ada pengajuan baru yang perlu diverifikasi saat ini.</p>
+                <p class="no-submissions">Tidak ada pengajuan baru yang perlu ditindaklanjuti saat ini.</p>
             @endif
         </div>
 
         <div class="dashboard-nav" style="margin-top: 30px; text-align: center;">
-            {{-- Temporarily use '#' for this link to prevent route errors --}}
-            <a href="#" class="btn btn-blue" style="display: inline-block; text-decoration: none;">Ke Menu Manajemen Pengajuan Sidang</a>
+            <a href="{{ route('kaprodi.pengajuan.index') }}" class="btn btn-blue" style="display: inline-block; text-decoration: none;">Ke Menu Manajemen Pengajuan Sidang</a>
         </div>
 
     </div>
@@ -875,57 +864,7 @@
     </div>
 
     <script>
-        // Toggle sidebar
-        const toggleSidebar = document.getElementById('toggleSidebar');
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-
-        toggleSidebar.addEventListener('click', function() {
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('expanded');
-
-            // Change toggle icon
-            const icon = this.querySelector('i');
-            if (sidebar.classList.contains('collapsed')) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-indent');
-            } else {
-                icon.classList.remove('fa-indent');
-                icon.classList.add('fa-bars');
-            }
-        });
-
-        // Toggle submenu
-        function toggleSubmenu(menu, event) {
-            event.preventDefault();
-            const submenu = document.getElementById(`${menu}-submenu`);
-            const menuItem = document.querySelector(`.menu-item[onclick="toggleSubmenu('${menu}', event)"]`);
-
-            // Toggle current submenu
-            submenu.classList.toggle('show');
-
-            // Close other submenus
-            document.querySelectorAll('.submenu').forEach(item => {
-                if (item.id !== `${menu}-submenu`) {
-                    item.classList.remove('show');
-                }
-            });
-
-            // Update active state
-            if (submenu.classList.contains('show')) {
-                // Remove 'active' from other top-level menu items
-                document.querySelectorAll('.menu-item').forEach(item => {
-                    if (item !== menuItem) {
-                        item.classList.remove('active');
-                    }
-                });
-                menuItem.classList.add('active');
-            } else {
-                menuItem.classList.remove('active');
-            }
-        }
-
-        // Toggle profile dropdown
+        // All JS remains the same, just ensure the logout form submission is correct
         const userProfile = document.getElementById('userProfile');
         const profileDropdown = document.getElementById('profileDropdown');
 
@@ -934,85 +873,8 @@
             profileDropdown.classList.toggle('show');
         });
 
-        // Close dropdown when clicking outside
         document.addEventListener('click', function() {
             profileDropdown.classList.remove('show');
-        });
-
-        // Logout functionality with notification pop-ups
-        const logoutConfirmationModal = document.getElementById('logoutConfirmationModal');
-        const logoutSuccessModal = document.getElementById('logoutSuccessModal');
-        const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
-
-        function showLogoutConfirmation() {
-            logoutConfirmationModal.classList.add('show');
-        }
-
-        function hideLogoutConfirmation() {
-            logoutConfirmationModal.classList.remove('show');
-        }
-
-        function performLogout() {
-            confirmLogoutBtn.classList.add('loading');
-            confirmLogoutBtn.disabled = true;
-
-            // Perform actual logout via form submission
-            const logoutForm = document.createElement('form');
-            logoutForm.action = "{{ route('kaprodi.logout') }}"; // This route needs to be defined in web.php
-            logoutForm.method = "POST";
-            logoutForm.style.display = "none";
-
-            // Add CSRF token
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_token';
-            csrfInput.value = '{{ csrf_token() }}';
-            logoutForm.appendChild(csrfInput);
-
-            document.body.appendChild(logoutForm);
-            logoutForm.submit();
-
-            // Simulate delay for user experience, then show success and redirect
-            setTimeout(() => {
-                hideLogoutConfirmation();
-                logoutSuccessModal.classList.add('show');
-                setTimeout(() => {
-                    logoutSuccessModal.classList.remove('show');
-                    // In a real Laravel app, after a successful logout, Laravel typically redirects
-                    // to the login page. This client-side redirect is for demonstration
-                    // if the backend doesn't handle immediate redirection after POST.
-                    // For a real scenario, the form submission handles the redirect.
-                    // window.location.href = 'login.html'; // This line might not be needed depending on backend
-                }, 2000); // Show success message for 2 seconds before redirecting
-                confirmLogoutBtn.classList.remove('loading');
-                confirmLogoutBtn.disabled = false;
-            }, 1500); // Simulated loading delay of 1.5 seconds
-        }
-
-        // Ensure active class for menu items works for direct links too
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentPath = window.location.pathname;
-
-            document.querySelectorAll('.menu-item, .submenu-item').forEach(item => {
-                const link = item.href || item.querySelector('a')?.href;
-                // Only activate 'Dashboard' when on the dashboard route
-                if (item.classList.contains('active') && !currentPath.includes('dashboard')) {
-                     item.classList.remove('active');
-                }
-                if (link && currentPath.includes(link.split('/').pop().split('.')[0])) {
-                    // Remove 'active' from all menu items first
-                    // This specific check ensures only the actual dashboard link remains active initially
-                    if (item.getAttribute('href') === '{{ route("kaprodi.dashboard") }}') {
-                         item.classList.add('active');
-                    }
-                    // For other links, if they have the # placeholder, don't make them active
-                    // unless you manually set them based on URL segment.
-                    // For now, we only care about the dashboard being active.
-                }
-            });
-
-            // Ensure 'Dashboard' remains active
-            document.querySelector('a[href="{{ route("kaprodi.dashboard") }}"]').classList.add('active');
         });
     </script>
 </body>

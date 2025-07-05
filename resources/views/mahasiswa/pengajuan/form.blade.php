@@ -1,235 +1,320 @@
-@extends('layouts.mahasiswa')
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ isset($pengajuan) ? 'Edit Pengajuan' : 'Buat Pengajuan' }} {{ strtoupper($jenis) }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #007bff;
+            --dark-blue: #0056b3;
+            --light-blue-bg: #e6f2ff;
+            --white: #ffffff;
+            --light-grey: #f8f9fa;
+            --medium-grey: #ced4da;
+            --dark-grey: #495057;
+            --text-color: #343a40;
+            --border-color: #dee2e6;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --draft-button-bg: #6c757d;
+            --draft-button-hover: #5a6268;
+        }
 
-@section('title', 'Pengajuan Sidang PKL')
-@section('page_title', ' Pengajuan Sidang PKL ')
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--light-grey);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
 
-@section('content')
-    <div class="alertpkl alert-infopkl">
-        <i class="fas fa-info-circle"></i>
-        <div>
-            <strong>Informasi Penting!</strong> Semua dokumen persyaratan untuk mengajukan sidang PKL sudah lengkap. 
-            Anda dapat melanjutkan ke proses finalisasi pengajuan.
-        </div>
-    </div>
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+        }
 
-    <div class="form-container">
-        <h2 class="form-title">
-            <i class="fas fa-user"></i>
-            Informasi Mahasiswa
-        </h2>
-        <div class="student-info">
-            <div class="info-card">
-                <div class="info-group">
-                    <label><i class="fas fa-user"></i> Nama</label>
-                    <input type="text" value="Mahasiswa" disabled>
-                </div>
-            </div>
-            <div class="info-card">
-                <div class="info-group">
-                    <label><i class="fas fa-id-card"></i> NIM</label>
-                    <input type="text" value="1234567890" disabled>
-                </div>
-            </div>
-            <div class="info-card">
-                <div class="info-group">
-                    <label><i class="fas fa-graduation-cap"></i> Program Studi</label>
-                    <input type="text" value="Teknik Informatika" disabled>
-                </div>
-            </div>
-            <div class="info-card">
-                <div class="info-group">
-                    <label><i class="fas fa-file-alt"></i> Judul Laporan PKL</label>
-                    <textarea id="reportTitle" placeholder="Masukkan judul laporan PKL"></textarea>
-                </div>
-            </div>
-            <div class="info-card">
-                <div class="info-group">
-                    <label><i class="fas fa-user-tie"></i> Dosen Pembimbing</label>
-                    <select id="dosenPembimbing">
-                        <option value="">Pilih Dosen Pembimbing</option>
-                        <option value="Dr. John Doe, M.T.">Dr. John Doe, M.T.</option>
-                        <option value="Prof. Jane Smith, M.Kom.">Prof. Jane Smith, M.Kom.</option>
-                        <option value="Dr. Ahmad Yani, M.T.">Dr. Ahmad Yani, M.T.</option>
-                    </select>
-                </div>
-            </div>
-        </div>
+        h2 {
+            text-align: center;
+            color: var(--primary-blue);
+            margin-bottom: 30px;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+        }
 
-        <h2 class="form-title">
-            <i class="fas fa-file-upload"></i>
-            Berkas Persyaratan Pengajuan PKL
-        </h2>
-        
-        <table class="document-table">
-            <thead>
-                <tr>
-                    <th>Berkas Dokumen</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>Laporan PKL sebanyak 2 rangkap</strong></td>
-                    <td><span class="status-badge status-uploaded">Sudah Diunggah</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-outline btn-sm" onclick="viewFile('Laporan PKL sebanyak 2 rangkap')">Lihat</button>
-                            <button class="btn btn-primary btn-sm" onclick="showUploadModal('Laporan PKL sebanyak 2 rangkap')">Ubah</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Buku PKL</strong></td>
-                    <td><span class="status-badge status-uploaded">Sudah Diunggah</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-outline btn-sm" onclick="viewFile('Buku PKL')">Lihat</button>
-                            <button class="btn btn-primary btn-sm" onclick="showUploadModal('Buku PKL')">Ubah</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Kuisioner survey PKL yang telah diisi dan ditandatangani serta distempel perusahaan</strong></td>
-                    <td><span class="status-badge status-uploaded">Sudah Diunggah</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-outline btn-sm" onclick="viewFile('Kuisioner survey PKL yang telah diisi dan ditandatangani serta distempel perusahaan')">Lihat</button>
-                            <button class="btn btn-primary btn-sm" onclick="showUploadModal('Kuisioner survey PKL yang telah diisi dan ditandatangani serta distempel perusahaan')">Ubah</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Kuisioner Kelulusan (jika ada)</strong></td>
-                    <td><span class="status-badge status-uploaded">Sudah Diunggah</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-outline btn-sm" onclick="viewFile('Kuisioner Kelulusan (jika ada)')">Lihat</button>
-                            <button class="btn btn-primary btn-sm" onclick="showUploadModal('Kuisioner Kelulusan (jika ada)')">Ubah</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Kuisioner balikan PKL</strong></td>
-                    <td><span class="status-badge status-uploaded">Sudah Diunggah</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-outline btn-sm" onclick="viewFile('Kuisioner balikan PKL')">Lihat</button>
-                            <button class="btn btn-primary btn-sm" onclick="showUploadModal('Kuisioner balikan PKL')">Ubah</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Lembaran Rekomendasi Penguji</strong></td>
-                    <td><span class="status-badge status-uploaded">Sudah Diunggah</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-outline btn-sm" onclick="viewFile('Lembaran Rekomendasi Penguji')">Lihat</button>
-                            <button class="btn btn-primary btn-sm" onclick="showUploadModal('Lembaran Rekomendasi Penguji')">Ubah</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Surat Permohonan Sidang PKL</strong></td>
-                    <td><span class="status-badge status-uploaded">Sudah Diunggah</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-outline btn-sm" onclick="viewFile('Surat Permohonan Sidang PKL')">Lihat</button>
-                            <button class="btn btn-primary btn-sm" onclick="showUploadModal('Surat Permohonan Sidang PKL')">Ubah</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Lembar Penilaian Sidang PKL (Penguji)</strong></td>
-                    <td><span class="status-badge status-uploaded">Sudah Diunggah</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-outline btn-sm" onclick="viewFile('Lembar Penilaian Sidang PKL (Penguji)')">Lihat</button>
-                            <button class="btn btn-primary btn-sm" onclick="showUploadModal('Lembar Penilaian Sidang PKL (Penguji)')">Ubah</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Surat keterangan pelaksanaan PKL (Asli, distempel dan ditandatangani pihak perusahaan)</strong></td>
-                    <td><span class="status-badge status-uploaded">Sudah Diunggah</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-outline btn-sm" onclick="viewFile('Surat keterangan pelaksanaan PKL (Asli, distempel dan ditandatangani pihak perusahaan)')">Lihat</button>
-                            <button class="btn btn-primary btn-sm" onclick="showUploadModal('Surat keterangan pelaksanaan PKL (Asli, distempel dan ditandatangani pihak perusahaan)')">Ubah</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Fotocopy cover laporan PKL yang ada tanda tangan persetujuan sidang dari dosen pembimbing PKL</strong></td>
-                    <td><span class="status-badge status-uploaded">Sudah Diunggah</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-outline btn-sm" onclick="viewFile('Fotocopy cover laporan PKL yang ada tanda tangan persetujuan sidang dari dosen pembimbing PKL')">Lihat</button>
-                            <button class="btn btn-primary btn-sm" onclick="showUploadModal('Fotocopy cover laporan PKL yang ada tanda tangan persetujuan sidang dari dosen pembimbing PKL')">Ubah</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Fotocopy lembar penilaian dari pembimbing di industri (ditandatangani pembimbing industri)</strong></td>
-                    <td><span class="status-badge status-uploaded">Sudah Diunggah</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-outline btn-sm" onclick="viewFile('Fotocopy lembar penilaian dari pembimbing di industri (ditandatangani pembimbing industri)')">Lihat</button>
-                            <button class="btn btn-primary btn-sm" onclick="showUploadModal('Fotocopy lembar penilaian dari pembimbing di industri (ditandatangani pembimbing industri)')">Ubah</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Fotocopy lembar penilaian dari dosen pembimbing PKL (ditandatangani pembimbing kampus)</strong></td>
-                    <td><span class="status-badge status-uploaded">Sudah Diunggah</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-outline btn-sm" onclick="viewFile('Fotocopy lembar penilaian dari dosen pembimbing PKL (ditandatangani pembimbing kampus)')">Lihat</button>
-                            <button class="btn btn-primary btn-sm" onclick="showUploadModal('Fotocopy lembar penilaian dari dosen pembimbing PKL (ditandatangani pembimbing kampus)')">Ubah</button>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Fotocopy lembar konsultasi bimbingan PKL (diisi dan ditandatangani pembimbing kampus)</strong></td>
-                    <td><span class="status-badge status-uploaded">Sudah Diunggah</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-outline btn-sm" onclick="viewFile('Fotocopy lembar konsultasi bimbingan PKL (diisi dan ditandatangani pembimbing kampus)')">Lihat</button>
-                            <button class="btn btn-primary btn-sm" onclick="showUploadModal('Fotocopy lembar konsultasi bimbingan PKL (diisi dan ditandatangani pembimbing kampus)')">Ubah</button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        
-        <div class="footer-buttons">
-            <button class="btn btn-outline" onclick="window.history.back()">Kembali</button>
-            <button class="btn btn-primary" id="finalizeBtn" onclick="showConfirmationModal()">Finalisasi Pengajuan</button>
-        </div>
-    </div>
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background-color: var(--primary-blue);
+            border-radius: 2px;
+        }
 
-    <div class="main-card custom-form-card"> {{-- Tambahkan class custom-form-card di sini --}}
+        h3 {
+            color: var(--dark-blue);
+            margin-top: 30px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-grey);
+        }
+
+        input[type="file"],
+        select,
+        input[type="text"] { /* Added input[type="text"] */
+            border: 1px solid var(--medium-grey);
+            padding: 10px 12px;
+            border-radius: 6px;
+            width: calc(100% - 24px); /* Account for padding */
+            background-color: var(--light-blue-bg);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="file"]:focus,
+        select:focus,
+        input[type="text"]:focus { /* Added input[type="text"] */
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            outline: none;
+        }
+
+        button {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-right: 15px;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: var(--dark-blue);
+            transform: translateY(-2px);
+        }
+
+        .button-draft {
+            background-color: var(--draft-button-bg);
+        }
+
+        .button-draft:hover {
+            background-color: var(--draft-button_hover);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+            color: var(--dark-blue);
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .current-file {
+            font-size: 0.9em;
+            color: var(--dark-grey);
+            margin-top: 5px;
+        }
+
+        .current-file a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+
+        .current-file a:hover {
+            text-decoration: underline;
+        }
+
+        small {
+            color: var(--dark-grey);
+            font-size: 0.8em;
+            margin-top: 5px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>{{ isset($pengajuan) ? 'Edit Pengajuan' : 'Buat Pengajuan' }} {{ strtoupper($jenis) }}</h2>
+
         @if (session('success'))
-            <div class="alert alert-success success-animation">
+            <div class="alert alert-success">
                 {{ session('success') }}
             </div>
         @endif
 
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
         @if ($errors->any())
-            <div class="alert alert-danger error-animation">
-                <ul>
+            <div class="alert alert-danger">
+                <ul> 
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
             </div>
         @endif
-    </div>
-    
-@endsection
 
-@push('scripts')
-    <script>
-        // Any specific scripts for edit_profile can go here.
-    </script>
-@endpush
+        <form action="{{ isset($pengajuan) ? route('mahasiswa.pengajuan.update', $pengajuan->id) : route('mahasiswa.pengajuan.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @if (isset($pengajuan))
+                @method('PUT')
+            @endif
+            <input type="hidden" name="jenis_pengajuan" value="{{ $jenis }}">
+
+            <div class="form-group">
+                <label for="judul_pengajuan">
+                    @if ($jenis == 'ta')
+                        Judul Tugas Akhir:
+                    @elseif ($jenis == 'pkl')
+                        Judul Laporan PKL:
+                    @else
+                        Judul Pengajuan:
+                    @endif
+                </label>
+                <input type="text" name="judul_pengajuan" id="judul_pengajuan" 
+                       value="{{ old('judul_pengajuan', $pengajuan->judul_pengajuan ?? '') }}" 
+                       placeholder="{{ $jenis == 'ta' ? 'Masukkan judul Tugas Akhir Anda' : ($jenis == 'pkl' ? 'Masukkan judul Laporan PKL Anda' : 'Masukkan judul pengajuan') }}">
+                @error('judul_pengajuan')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="dosen_pembimbing1_id">Pilih Dosen Pembimbing 1:</label>
+                <select name="dosen_pembimbing1_id" id="dosen_pembimbing1_id" required>
+                    <option value="">-- Pilih Dosen --</option>
+                    @foreach ($dosens as $dosen)
+                        <option value="{{ $dosen->id }}" {{ (isset($pengajuan) && $pengajuan->sidang && $pengajuan->sidang->dosen_pembimbing_id == $dosen->id) ? 'selected' : (old('dosen_pembimbing1_id') == $dosen->id ? 'selected' : '') }}>
+                            {{ $dosen->nama }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('dosen_pembimbing1_id')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
+            </div>
+
+            @if ($jenis == 'ta') {{-- Only show Pembimbing 2 for TA --}}
+                <div class="form-group">
+                    <label for="dosen_pembimbing2_id">Pilih Dosen Pembimbing 2:</label>
+                    <select name="dosen_pembimbing2_id" id="dosen_pembimbing2_id">
+                        <option value="">-- Pilih Dosen --</option>
+                        @foreach ($dosens as $dosen)
+                            <option value="{{ $dosen->id }}" {{ (isset($pengajuan) && $pengajuan->sidang && $pengajuan->sidang->dosen_penguji1_id == $dosen->id) ? 'selected' : (old('dosen_pembimbing2_id') == $dosen->id ? 'selected' : '') }}>
+                                {{ $dosen->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('dosen_pembimbing2_id')
+                        <span class="error-message">{{ $message }}</span>
+                    @enderror
+                </div>
+            @endif
+            
+            <h3>Unggah Dokumen Persyaratan:</h3>
+            @foreach ($dokumenSyarat as $key => $namaDokumen)
+                <div class="form-group">
+                    <label for="dokumen_file_{{ $key }}">{{ $loop->iteration }}. {{ $namaDokumen }}</label>
+                    <input type="file" name="dokumen[{{ $key }}]" id="dokumen_file_{{ $key }}" accept=".pdf,.jpg,.jpeg,.png">
+
+                    @if (isset($dokumenTerupload[$namaDokumen]))
+                        <div class="current-file">
+                            File saat ini: <a href="{{ Storage::url($dokumenTerupload[$namaDokumen]->path_file) }}" target="_blank">{{ $dokumenTerupload[$namaDokumen]->nama_file }}</a>
+                            <input type="hidden" name="existing_dokumen_file_check[{{ $key }}]" value="1">
+                        </div>
+                    @endif
+                    @error("dokumen.{$key}")
+                        <span class="error-message">{{ $message }}</span>
+                    @enderror
+                    @if ($jenis == 'ta' && $key == 'nilai_toeic')
+                        <small>Jika belum mencukupi, fotokopi kartu nilai TOEIC terakhir dan fotokopi bukti pendaftaran tes TOEIC berikutnya.</small>
+                    @endif
+                     @if ($jenis == 'pkl' && $key == 'kuisioner_kelulusan')
+                        <small>Opsional jika tidak ada.</small>
+                    @endif
+                     @if ($jenis == 'ta' && $key == 'ipk_terakhir')
+                        <small>(Lampiran Rapor Semester 1 s.d 5 (D3) dan 1 s.d 7 (D4))</small>
+                    @endif
+                </div>
+            @endforeach
+
+            <p style="font-size: 0.9em; color: var(--dark-grey); margin-top: 20px;">Catatan: Untuk "Map Plastik", akan diurus secara fisik dan tidak perlu diunggah.</p>
+
+            <button type="submit" name="action" value="submit">Ajukan {{ strtoupper($jenis) }}</button>
+            <button type="submit" name="action" value="draft" class="button-draft">Simpan sebagai Draft</button>
+        </form>
+
+        <a href="{{ route('mahasiswa.dashboard') }}" class="back-link">Kembali ke Dashboard</a>
+    </div>
+
+</body>
+</html>

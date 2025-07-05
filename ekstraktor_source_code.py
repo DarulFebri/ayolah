@@ -2,7 +2,8 @@ import os
 import re
 
 # Frasa spesifik yang akan disisipkan setelah setiap blok kelas
-SPECIFIC_PHRASE = "saya akan memebrikan beberapa kode yang telah saya buat. jangan melakukan analisis atau memberikan kode yang sudah dimodifikasi untuk memenuhi alur diatas sebelum saya mengatakan kata \"selesai sudah\""
+#SPECIFIC_PHRASE = "saya akan memebrikan beberapa kode yang telah saya buat. jangan melakukan analisis atau memberikan kode yang sudah dimodifikasi untuk memenuhi alur diatas sebelum saya mengatakan kata \"selesai sudah\""
+SPECIFIC_PHRASE = " "
 
 def extract_classes_from_content(file_content):
     """

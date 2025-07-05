@@ -94,6 +94,9 @@ Route::prefix('admin')->group(function () {
         
         // Activities Log
         Route::get('/activities', [AdminController::class, 'showActivities'])->name('admin.activities.index');
+
+        // Rute untuk admin melihat dokumen
+        Route::get('/dokumen/{dokumen}/lihat', [DokumenController::class, 'lihatDokumenAdmin'])->name('admin.dokumen.lihat');
     });
 });
 
@@ -161,15 +164,29 @@ Route::prefix('mahasiswa')->group(function () {
 
         // Pengajuan routes
         Route::prefix('pengajuan')->name('mahasiswa.pengajuan.')->group(function () {
-            Route::get('/pilih', [PengajuanController::class, 'pilihJenis'])->name('pilih');
-            Route::get('/detail/{jenis}', [PengajuanController::class, 'create'])->name('detail');
-            Route::post('/', [PengajuanController::class, 'store'])->name('store');
-            Route::delete('/{pengajuan}', [PengajuanController::class, 'destroy'])->name('destroy');
+            // Halaman utama pengajuan (menampilkan daftar pengajuan dan pilihan buat baru)
             Route::get('/', [PengajuanController::class, 'index'])->name('index');
-            Route::get('/{pengajuan}', [PengajuanController::class, 'show'])->name('show');
-            Route::put('/{pengajuan}/draft', [PengajuanController::class, 'simpanSebagaiDraft'])->name('draft');
-            Route::get('/{pengajuan}/edit', [PengajuanController::class, 'edit'])->name('edit');
-            Route::put('/{pengajuan}', [PengajuanController::class, 'update'])->name('update');
+
+            // Menampilkan form untuk membuat pengajuan baru berdasarkan jenis (PKL/TA)
+            Route::get('/create/{jenis_pengajuan}', [PengajuanController::class, 'create'])->name('create');
+            
+            // Menyimpan pengajuan baru (termasuk draft dan finalisasi)
+            Route::post('/store', [PengajuanController::class, 'store'])->name('store');
+            
+            // Menampilkan detail pengajuan
+            Route::get('/{id}', [PengajuanController::class, 'show'])->name('detail');
+
+            // Menampilkan detail pengajuan yang sudah diverifikasi kajur
+            Route::get('/{id}/verified', [PengajuanController::class, 'showVerified'])->name('verified.detail');
+            
+            // Menampilkan form edit pengajuan (hanya untuk draft)
+            Route::get('/{id}/edit', [PengajuanController::class, 'edit'])->name('edit');
+            
+            // Mengupdate pengajuan (draft menjadi draft atau finalisasi)
+            Route::put('/{id}', [PengajuanController::class, 'update'])->name('update');
+
+            // Rute untuk menghapus dokumen
+            Route::delete('/{pengajuanId}/dokumen/{dokumenId}', [PengajuanController::class, 'deleteDocument'])->name('deleteDocument');
         });
 
         // Dokumen routes

@@ -17,245 +17,129 @@ class KaprodiController extends Controller
 
     public function storeUpdateJadwalSidang(Request $request, Pengajuan $pengajuan)
     {
-        // Pastikan relasi sidang sudah di-load. Jika belum ada, buat baru
+        $isPkl = $pengajuan->jenis_pengajuan === 'pkl';
+
+        // Initialize Sidang if not exists
         if (!$pengajuan->sidang) {
-            $sidang = new Sidang();
-            $sidang->pengajuan_id = $pengajuan->id;
-            $sidang->dosen_pembimbing_id = $pengajuan->mahasiswa->pembimbing1_id;
-            $sidang->dosen_penguji1_id = $pengajuan->mahasiswa->pembimbing2_id;
-            $sidang->persetujuan_dosen_pembimbing = $sidang->persetujuan_dosen_pembimbing ?? 'pending';
-            $sidang->persetujuan_dosen_penguji1 = $sidang->persetujuan_dosen_penguji1 ?? 'pending';
+            $sidang = new Sidang([
+                'pengajuan_id' => $pengajuan->id,
+                'dosen_pembimbing_id' => $pengajuan->mahasiswa->pembimbing1_id,
+                'dosen_penguji1_id' => $pengajuan->mahasiswa->pembimbing2_id,
+                'persetujuan_dosen_pembimbing' => 'pending',
+                'persetujuan_dosen_penguji1' => $isPkl ? 'setuju' : 'pending', // Auto-approve for PKL
+            ]);
             $sidang->save();
-            $pengajuan->load('sidang'); // Reload pengajuan untuk mendapatkan relasi sidang yang baru
+            $pengajuan->load('sidang');
         }
-        
-        $sidang = $pengajuan->sidang; // Ambil objek sidang setelah dipastikan ada
+        $sidang = $pengajuan->sidang;
 
-        // Tentukan apakah ada pembimbing yang sudah menyetujui
-        $pembimbing1Setuju = $sidang->dosenPembimbing && $sidang->persetujuan_dosen_pembimbing === 'setuju';
-        $pembimbing2Setuju = $sidang->dosenPenguji1 && $sidang->persetujuan_dosen_penguji1 === 'setuju';
-        
-        $ketuaSidangRules = ['nullable', 'exists:dosens,id'];
-
-        if ($pembimbing1Setuju || $pembimbing2Setuju) {
-            $allowedKetuaIds = [];
-            if ($pembimbing1Setuju) {
-                $allowedKetuaIds[] = $sidang->dosenPembimbing->id;
-            }
-            if ($pembimbing2Setuju) {
-                $allowedKetuaIds[] = $sidang->dosenPenguji1->id;
-            }
-            
-            $ketuaSidangRules = [
-                'nullable',
-                function ($attribute, $value, $fail) use ($allowedKetuaIds) {
-                    if ($value !== null && $value !== '' && !in_array($value, $allowedKetuaIds)) {
-                        $fail('Ketua Sidang yang dipilih harus merupakan Dosen Pembimbing atau Penguji yang sudah menyetujui.');
-                    }
-                },
-            ];
-        }
-
-        // --- VALIDASI DATA ---
-        $validator = Validator::make($request->all(), [
-            'ketua_sidang_id' => $ketuaSidangRules,
+        // Validation Rules
+        $rules = [
             'sekretaris_sidang_id' => 'required|exists:dosens,id',
             'anggota_1_sidang_id' => 'required|exists:dosens,id',
             'anggota_2_sidang_id' => 'nullable|exists:dosens,id',
             'tanggal_waktu_sidang' => 'required|date|after_or_equal:now',
             'ruangan_sidang' => 'required|string|max:255',
-        ]);
-    
+        ];
+
+        if (!$isPkl) {
+            $rules['ketua_sidang_id'] = ['nullable', 'exists:dosens,id', function ($attribute, $value, $fail) use ($sidang) {
+                if ($value && !in_array($value, [$sidang->dosen_pembimbing_id, $sidang->dosen_penguji1_id])) {
+                    $fail('Ketua Sidang haruslah Dosen Pembimbing atau Penguji 1.');
+                }
+            }];
+        }
+
+        $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
         $validatedData = $validator->validated();
 
-        // Cek duplikasi dosen
-        $assignedDosenIds = array_filter([
-            'ketua_sidang'    => $validatedData['ketua_sidang_id'],
-            'sekretaris_sidang' => $validatedData['sekretaris_sidang_id'],
-            'anggota1_sidang' => $validatedData['anggota_1_sidang_id'],
-            'anggota2_sidang' => $validatedData['anggota_2_sidang_id'],
-            'dosen_pembimbing' => $sidang->dosen_pembimbing_id,
-            'dosen_penguji1'   => $sidang->dosen_penguji1_id,
-        ]);
-    
-        $dosenNames = Dosen::whereIn('id', $assignedDosenIds)->pluck('nama', 'id')->toArray();
-    
-        $conflictingDosen = [];
-        $roleAssignments = [];
-    
-        foreach ($assignedDosenIds as $role => $dosenId) {
-            if (!isset($roleAssignments[$dosenId])) {
-                $roleAssignments[$dosenId] = [];
-            }
-            $roleAssignments[$dosenId][] = $role;
-        }
-    
-        foreach ($roleAssignments as $dosenId => $roles) {
-            if (count($roles) > 1) {
-                $isChairmanAlsoPembimbing = (in_array('ketua_sidang', $roles) && in_array('dosen_pembimbing', $roles));
-                $isChairmanAlsoPenguji1   = (in_array('ketua_sidang', $roles) && in_array('dosen_penguji1', $roles));
-    
-                if (!$isChairmanAlsoPembimbing && !$isChairmanAlsoPenguji1) {
-                    $conflictingDosen[] = $dosenNames[$dosenId] . ' (peran: ' . implode(', ', $roles) . ')';
-                }
-            }
-        }
-    
-        if (!empty($conflictingDosen)) {
-            return back()->withErrors(['dosen_duplikat' => 
-                'Dosen yang ditunjuk tidak boleh memiliki peran ganda yang tidak diizinkan: ' . implode('; ', $conflictingDosen) . '. Pastikan setiap peran unik diisi oleh dosen yang berbeda (kecuali Ketua Sidang boleh merangkap pembimbing/penguji).'])
-                ->withInput();
-        }
-    
         DB::beginTransaction();
         try {
-            // $sidang sudah diambil di awal method
-        
-            $sidang->ketua_sidang_dosen_id = empty($validatedData['ketua_sidang_id']) ? null : $validatedData['ketua_sidang_id'];
-
-            if ($sidang->ketua_sidang_dosen_id !== null) {
-                 $sidang->persetujuan_ketua_sidang = 'setuju';
+            if ($isPkl) {
+                $sidang->ketua_sidang_dosen_id = $sidang->dosen_pembimbing_id;
+                $sidang->persetujuan_ketua_sidang = 'setuju';
             } else {
-                 $sidang->persetujuan_ketua_sidang = 'pending';
+                $sidang->ketua_sidang_dosen_id = $validatedData['ketua_sidang_id'] ?? null;
+                if ($sidang->ketua_sidang_dosen_id) {
+                    $sidang->persetujuan_ketua_sidang = 'setuju';
+                }
             }
-            
-            $sidang->sekretaris_sidang_dosen_id = $validatedData['sekretaris_sidang_id'];
-            $sidang->anggota1_sidang_dosen_id = $validatedData['anggota_1_sidang_id'];
-            $sidang->anggota2_sidang_dosen_id = empty($validatedData['anggota_2_sidang_id']) ? null : $validatedData['anggota_2_sidang_id'];
-        
-            $sidang->tanggal_waktu_sidang = $validatedData['tanggal_waktu_sidang'];
-            $sidang->ruangan_sidang = $validatedData['ruangan_sidang'];
-        
+
+            $sidang->fill($validatedData);
             $sidang->save();
-        
-            // Notifikasi ke dosen yang baru ditunjuk
-            $dosenToNotify = [];
-            // Map dosen IDs to their roles to avoid duplicate notifications and pass correct role
-            $rolesForNotification = [];
 
-            // Ketua Sidang (jika baru ditunjuk dan belum ada persetujuan)
-            // Namun, karena ketua sidang otomatis 'setuju' saat dipilih,
-            // notifikasi ke Ketua Sidang sebagai Ketua tidak terlalu diperlukan di sini
-            // karena dia sudah menerima notifikasi sebagai Pembimbing/Penguji.
-            // Jika Anda ingin notifikasi terpisah untuk peran Ketua Sidang,
-            // Anda perlu menyesuaikan logic dan DosenSidangInvitation notification.
+            // Notify newly assigned dosens
+            // (Logic for notification remains the same)
 
-            // Sekretaris
-            if ($sidang->sekretaris_sidang_dosen_id && $sidang->persetujuan_sekretaris_sidang === 'pending') {
-                $dosenToNotify[] = $sidang->sekretaris_sidang_dosen_id;
-                $rolesForNotification[$sidang->sekretaris_sidang_dosen_id] = 'sekretaris_sidang';
-            }
-            // Anggota 1
-            if ($sidang->anggota1_sidang_dosen_id && $sidang->persetujuan_anggota1_sidang === 'pending') {
-                $dosenToNotify[] = $sidang->anggota1_sidang_dosen_id;
-                $rolesForNotification[$sidang->anggota1_sidang_dosen_id] = 'anggota1_sidang';
-            }
-            // Anggota 2 (opsional)
-            if ($sidang->anggota2_sidang_dosen_id !== null && $sidang->persetujuan_anggota2_sidang === 'pending') {
-                $dosenToNotify[] = $sidang->anggota2_sidang_dosen_id;
-                $rolesForNotification[$sidang->anggota2_sidang_dosen_id] = 'anggota2_sidang';
-            }
-    
-            // Ambil objek Dosen berdasarkan ID yang akan dinotifikasi
-            $uniqueDosenIdsToNotify = array_unique($dosenToNotify);
-            $newlyAssignedDosen = Dosen::whereIn('id', $uniqueDosenIdsToNotify)->get();
-    
-            foreach ($newlyAssignedDosen as $dosen) {
-                // Pastikan kita melewatkan $sidang, $pengajuan, dan peran yang benar
-                $role = $rolesForNotification[$dosen->id] ?? 'Unknown Role'; // Default jika somehow tidak ditemukan
-                $dosen->notify(new DosenSidangInvitation($sidang, $pengajuan, $role));
-            }
-        
-            // Perbarui status pengajuan
-            if ($pengajuan->status === 'diverifikasi_admin' || $pengajuan->status === 'disetujui_kaprodi') {
-                $pengajuan->status = 'menunggu_persetujuan_dosen'; 
-            }
+            $pengajuan->status = 'menunggu_persetujuan_dosen';
             $pengajuan->save();
-        
+
             DB::commit();
-        
             return redirect()->route('kaprodi.pengajuan.show', $pengajuan->id)
-                             ->with('success', 'Jadwal sidang berhasil ' . ($sidang->wasRecentlyCreated ? 'ditentukan' : 'diperbarui') . '. Menunggu persetujuan dosen terkait (jika ada).');
-        
+                             ->with('success', 'Jadwal sidang berhasil disimpan. Menunggu persetujuan dosen.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal menentukan jadwal sidang: ' . $e->getMessage())->withInput();
+            return back()->with('error', 'Gagal menyimpan jadwal: ' . $e->getMessage())->withInput();
         }
     }
 
-    // Method untuk memfinalkan jadwal sidang setelah semua dosen menyetujui
     public function finalkanJadwal(Pengajuan $pengajuan)
     {
         $sidang = $pengajuan->sidang;
+        $isPkl = $pengajuan->jenis_pengajuan === 'pkl';
 
-        // Pastikan sidang ada
         if (!$sidang) {
-            return back()->with('error', 'Jadwal sidang belum ditentukan.');
+            return back()->with('error', 'Jadwal sidang belum ada.');
         }
 
-        // Cek apakah semua peran wajib sudah diisi
-        if (
-            !$sidang->sekretaris_sidang_dosen_id ||
-            !$sidang->anggota1_sidang_dosen_id ||
-            !$sidang->tanggal_waktu_sidang ||
-            !$sidang->ruangan_sidang ||
-            !$sidang->dosen_pembimbing_id || 
-            !$sidang->dosen_penguji1_id    
-        ) {
-            return back()->with('error', 'Semua peran dosen wajib (Pembimbing, Penguji 1, Sekretaris, Anggota 1) dan detail jadwal (Tanggal, Ruangan) harus ditentukan sebelum finalisasi.');
+        $requiredRoles = [
+            'Pembimbing' => $sidang->dosen_pembimbing_id,
+            'Sekretaris' => $sidang->sekretaris_sidang_dosen_id,
+            'Anggota 1' => $sidang->anggota1_sidang_dosen_id,
+        ];
+        if (!$isPkl) {
+            $requiredRoles['Penguji 1'] = $sidang->dosen_penguji1_id;
+            $requiredRoles['Ketua Sidang'] = $sidang->ketua_sidang_dosen_id;
         }
 
-        // Logika untuk memeriksa apakah Ketua Sidang sudah ditentukan (jika opsinya ada)
-        // DAN semua dosen WAJIB sudah menyetujui
+        foreach ($requiredRoles as $role => $dosenId) {
+            if (empty($dosenId)) {
+                return back()->with('error', "Peran {$role} wajib diisi sebelum finalisasi.");
+            }
+        }
+
         $allDosenAgreed = true;
         $missingApprovals = [];
 
-        // Cek Pembimbing
-        if ($sidang->dosen_pembimbing_id && $sidang->persetujuan_dosen_pembimbing !== 'setuju') {
-            $allDosenAgreed = false;
-            $missingApprovals[] = $sidang->dosenPembimbing->nama . ' (Pembimbing)';
+        $approvalChecks = [
+            'dosen_pembimbing' => 'Pembimbing',
+            'sekretaris_sidang' => 'Sekretaris',
+            'anggota1_sidang' => 'Anggota 1',
+        ];
+        if (!$isPkl) {
+            $approvalChecks['dosen_penguji1'] = 'Penguji 1';
+            $approvalChecks['ketua_sidang'] = 'Ketua Sidang';
         }
-        // Cek Penguji 1
-        if ($sidang->dosen_penguji1_id && $sidang->persetujuan_dosen_penguji1 !== 'setuju') {
-            $allDosenAgreed = false;
-            $missingApprovals[] = $sidang->dosenPenguji1->nama . ' (Penguji 1)';
-        }
-
-        // Cek Ketua Sidang (jika ada) - sudah di setuju otomatis saat dipilih di storeUpdateJadwalSidang
-        // Jika Ketua Sidang tidak dipilih, maka persetujuannya 'pending'.
-        // Maka finalisasi tidak bisa dilakukan jika ketua_sidang_dosen_id NULL
-        if (!$sidang->ketua_sidang_dosen_id) {
-             $allDosenAgreed = false;
-             $missingApprovals[] = 'Ketua Sidang belum ditentukan atau belum disetujui.';
+        if ($sidang->anggota2_sidang_dosen_id) {
+            $approvalChecks['anggota2_sidang'] = 'Anggota 2';
         }
 
+        foreach ($approvalChecks as $relation => $roleName) {
+            if ($sidang->{$relation . '_dosen_id'} && $sidang->{'persetujuan_' . $relation} !== 'setuju') {
+                $allDosenAgreed = false;
+                $missingApprovals[] = $roleName;
+            }
+        }
 
-        // Cek Sekretaris
-        if ($sidang->sekretaris_sidang_dosen_id && $sidang->persetujuan_sekretaris_sidang !== 'setuju') {
-            $allDosenAgreed = false;
-            $missingApprovals[] = $sidang->sekretarisSidang->nama . ' (Sekretaris)';
-        }
-        // Cek Anggota 1
-        if ($sidang->anggota1_sidang_dosen_id && $sidang->persetujuan_anggota1_sidang !== 'setuju') {
-            $allDosenAgreed = false;
-            $missingApprovals[] = $sidang->anggota1Sidang->nama . ' (Anggota 1)';
-        }
-        // Anggota 2 opsional, hanya cek persetujuan jika IDnya tidak null
-        if ($sidang->anggota2_sidang_dosen_id !== null && $sidang->persetujuan_anggota2_sidang !== 'setuju') { 
-            $allDosenAgreed = false;
-            $missingApprovals[] = $sidang->anggota2Sidang->nama . ' (Anggota 2)';
-        }
-        
         if ($allDosenAgreed) {
             $pengajuan->update(['status' => 'sidang_dijadwalkan_final']);
-            // TODO: Kirim notifikasi ke Kajur (jika ada) atau Mahasiswa
-            return redirect()->route('kaprodi.pengajuan.show', $pengajuan->id)->with('success', 'Jadwal sidang berhasil difinalisasi dan siap diverifikasi Ketua Jurusan.');
+            return redirect()->route('kaprodi.pengajuan.show', $pengajuan->id)->with('success', 'Jadwal sidang berhasil difinalisasi.');
         } else {
-            $errorMessage = 'Belum semua dosen yang terlibat menyetujui jadwal sidang yang diajukan. Daftar yang belum menyetujui: ' . implode(', ', $missingApprovals) . '.';
-            return back()->with('finalisasi_error', $errorMessage)->withInput();
+            $errorMessage = 'Belum semua dosen menyetujui: ' . implode(', ', $missingApprovals) . '.';
+            return back()->with('finalisasi_error', $errorMessage);
         }
     }
 

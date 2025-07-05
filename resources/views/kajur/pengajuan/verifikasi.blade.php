@@ -148,6 +148,11 @@
             </form>
           </div>
         </div>
+      @elseif($pengajuan->status === 'diverifikasi_kajur')
+        <div class="alert alert-success text-center" style="font-size:1.1em;">
+            <i class="fas fa-check-circle"></i>
+            Pengajuan diverifikasi
+        </div>
       @else
         <div class="alert alert-info text-center" style="font-size:1.1em;">
           <i class="fas fa-info-circle"></i>

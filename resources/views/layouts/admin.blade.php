@@ -677,6 +677,13 @@
                 <i class="fas fa-chevron-down" style="margin-left: auto;"></i>
             </div>
             <div class="submenu" id="pengajuan-submenu">
+                <a href="{{ route('admin.pengajuan.verifikasi.index') }}" style="text-decoration: none; color: inherit;">
+                    <div class="submenu-item tooltip {{ request()->routeIs('admin.pengajuan.verifikasi.index') ? 'active' : '' }}">
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Daftar Pengajuan Mahasiswa</span>
+                        <span class="tooltiptext">Verifikasi Pengajuan</span>
+                    </div>
+                </a>
                 <a href="{{ route('admin.pengajuan.sidang.pkl') }}" style="text-decoration: none; color: inherit;">
                     <div class="submenu-item tooltip {{ request()->routeIs('admin.pengajuan.sidang.pkl') ? 'active' : '' }}">
                         <i class="fas fa-chevron-right"></i>
