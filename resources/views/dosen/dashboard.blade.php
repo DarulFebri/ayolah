@@ -1493,6 +1493,62 @@
         </div>
     
         <div class="section-header">
+            <h3 class="section-title"><i class="fas fa-bell"></i> Undangan Sidang Menunggu Respon Anda</h3>
+            <div class="section-actions">
+                <a href="{{ route('dosen.dashboard') }}" class="btn btn-blue">Lihat Semua <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+        <div class="table-container">
+            @if (!empty($sidangInvitations) && $sidangInvitations->count() > 0)
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Mahasiswa</th>
+                            <th>Jenis Sidang</th>
+                            <th>Tanggal & Waktu</th>
+                            <th>Ruangan</th>
+                            <th>Peran Anda</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($sidangInvitations as $sidang)
+                            <tr>
+                                <td>{{ $sidang->pengajuan->mahasiswa->nama_lengkap ?? 'N/A' }} ({{ $sidang->pengajuan->mahasiswa->nim ?? 'N/A' }})</td>
+                                <td>{{ strtoupper(str_replace('_', ' ', $sidang->pengajuan->jenis_pengajuan ?? 'N/A')) }}</td>
+                                <td>{{ \Carbon\Carbon::parse($sidang->tanggal_waktu_sidang)->translatedFormat('l, d F Y H:i') }} WIB</td>
+                                <td>{{ $sidang->ruangan_sidang ?? 'N/A' }}</td>
+                                <td>
+                                    @php
+                                        $dosenLoginId = Auth::user()->dosen->id;
+                                        $roleDisplayed = '';
+                                        if ($sidang->ketua_sidang_dosen_id == $dosenLoginId) $roleDisplayed = 'Ketua Sidang';
+                                        elseif ($sidang->sekretaris_sidang_dosen_id == $dosenLoginId) $roleDisplayed = 'Sekretaris Sidang';
+                                        elseif ($sidang->anggota1_sidang_dosen_id == $dosenLoginId) $roleDisplayed = 'Anggota Sidang 1';
+                                        elseif ($sidang->anggota2_sidang_dosen_id == $dosenLoginId) $roleDisplayed = 'Anggota Sidang 2';
+                                        elseif ($sidang->dosen_pembimbing_id == $dosenLoginId) $roleDisplayed = 'Dosen Pembimbing 1';
+                                        elseif ($sidang->dosen_penguji1_id == $dosenLoginId) $roleDisplayed = 'Dosen Pembimbing 2';
+                                        echo $roleDisplayed ?: 'N/A';
+                                    @endphp
+                                </td>
+                                <td class="action-cell">
+                                    <a href="{{ route('dosen.sidang.respon.form', $sidang->id) }}" class="btn btn-blue" title="Respon Undangan">
+                                        Respon <i class="fas fa-reply"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @else
+                <div class="alertpkl alert-infopkl">
+                    <i class="fas fa-info-circle" style="margin-right: 10px;"></i>
+                    Tidak ada undangan sidang yang menunggu respon Anda saat ini.
+                </div>
+            @endif
+        </div>
+
+        <div class="section-header">
             <h3 class="section-title"><i class="fas fa-file-import"></i> Pengajuan Terbaru Menunggu Persetujuan Anda</h3>
             <div class="section-actions">
                 <a href="{{ route('dosen.pengajuan.index', ['status' => 'pending']) }}" class="btn btn-blue">Lihat Semua Pengajuan Pending <i class="fas fa-arrow-right"></i></a> {{-- Link to pengajuan index with pending filter --}}

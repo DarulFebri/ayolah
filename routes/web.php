@@ -230,11 +230,14 @@ Route::prefix('dosen')->group(function () {
         Route::get('/sidang/{sidang}/nilai', [DosenController::class, 'formNilaiSidang'])->name('dosen.sidang.nilai.edit');
         Route::post('/sidang/{sidang}/nilai', [DosenController::class, 'simpanNilaiSidang'])->name('dosen.sidang.nilai.store');
 
-        // === Tambahkan ini di sini ===
-        Route::prefix('sidang')->name('dosen.sidang.')->group(function () {
-            Route::get('/{sidang}/respon', [DosenController::class, 'formResponSidang'])->name('respon.form'); // Form respon dosen
-            Route::post('/{sidang}/respon', [DosenController::class, 'submitResponSidang'])->name('respon.submit'); // Submit respon dosen
-        });
+        // Sidang routes
+        Route::get('/sidang/{sidang}/laporan', [DosenController::class, 'unduhLaporan'])->name('dosen.sidang.laporan');
+        Route::get('/sidang/{sidang}/nilai', [DosenController::class, 'formNilaiSidang'])->name('dosen.sidang.nilai.edit');
+        Route::post('/sidang/{sidang}/nilai', [DosenController::class, 'simpanNilaiSidang'])->name('dosen.sidang.nilai.store');
+
+        // Dosen Sidang Invitation Response
+        Route::get('/sidang/{sidang}/respon', [DosenController::class, 'formResponSidang'])->name('dosen.sidang.respon.form');
+        Route::post('/sidang/{sidang}/respon', [DosenController::class, 'submitResponSidang'])->name('dosen.sidang.respon.submit');
         
         // Import routes
         Route::get('/import/form', [DosenController::class, 'importForm'])->name('dosen.import.form');
