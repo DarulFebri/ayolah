@@ -275,17 +275,17 @@
                 
                 {{-- Dosen Pembimbing (selalu ada) --}}
                 @if ($pengajuan->sidang->dosenPembimbing)
-                    <p><strong>Dosen Pembimbing:</strong> {{ $pengajuan->sidang->dosenPembimbing->nama }} (<span class="status-badge {{ $pengajuan->sidang->persetujuan_dosen_pembimbing === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_dosen_pembimbing === 'tolak' ? 'ditolak' : 'menunggu') }}">{{ ucfirst($pengajuan->sidang->persetujuan_dosen_pembimbing) }}</span>)</p>
+                    <p><strong>Dosen Pembimbing 1:</strong> {{ $pengajuan->sidang->dosenPembimbing->nama }} (<span class="status-badge {{ $pengajuan->sidang->persetujuan_dosen_pembimbing === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_dosen_pembimbing === 'tolak' ? 'ditolak' : 'menunggu') }}">{{ ucfirst($pengajuan->sidang->persetujuan_dosen_pembimbing) }}</span>)</p>
                 @else
-                    <p><strong>Dosen Pembimbing:</strong> N/A</p>
+                    <p><strong>Dosen Pembimbing 1:</strong> N/A</p>
                 @endif
 
                 {{-- Dosen Penguji 1 (hanya untuk TA) --}}
                 @if ($pengajuan->jenis_pengajuan === 'ta')
                     @if ($pengajuan->sidang->dosenPenguji1)
-                        <p><strong>Dosen Penguji 1:</strong> {{ $pengajuan->sidang->dosenPenguji1->nama }} (<span class="status-badge {{ $pengajuan->sidang->persetujuan_dosen_penguji1 === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_dosen_penguji1 === 'tolak' ? 'ditolak' : 'menunggu') }}">{{ ucfirst($pengajuan->sidang->persetujuan_dosen_penguji1) }}</span>)</p>
+                        <p><strong>Dosen Pembimbing 2:</strong> {{ $pengajuan->sidang->dosenPenguji1->nama }} (<span class="status-badge {{ $pengajuan->sidang->persetujuan_dosen_penguji1 === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_dosen_penguji1 === 'tolak' ? 'ditolak' : 'menunggu') }}">{{ ucfirst($pengajuan->sidang->persetujuan_dosen_penguji1) }}</span>)</p>
                     @else
-                        <p><strong>Dosen Penguji 1:</strong> N/A</p>
+                        <p><strong>Dosen Pembimbing 2:</strong> N/A</p>
                     @endif
                 @endif
 
