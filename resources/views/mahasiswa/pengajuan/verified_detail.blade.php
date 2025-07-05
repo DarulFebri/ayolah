@@ -153,9 +153,6 @@
                 <ul class="dosen-list">
                     <li><strong>Ketua Sidang:</strong> {{ optional($pengajuan->sidang->ketuaSidang)->nama ?? 'N/A' }}</li>
                     <li><strong>Sekretaris Sidang:</strong> {{ optional($pengajuan->sidang->sekretarisSidang)->nama ?? 'N/A' }}</li>
-                    @if($pengajuan->jenis_pengajuan === 'ta')
-                        <li><strong>Dosen Penguji 1:</strong> {{ optional($pengajuan->sidang->dosenPenguji1)->nama ?? 'N/A' }}</li>
-                    @endif
                     <li><strong>Anggota Sidang 1:</strong> {{ optional($pengajuan->sidang->anggota1Sidang)->nama ?? 'N/A' }}</li>
                     <li><strong>Anggota Sidang 2:</strong> {{ optional($pengajuan->sidang->anggota2Sidang)->nama ?? 'N/A' }}</li>
                 </ul>
