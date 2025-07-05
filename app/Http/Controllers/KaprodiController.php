@@ -19,17 +19,22 @@ class KaprodiController extends Controller
     {
         $isPkl = $pengajuan->jenis_pengajuan === 'pkl';
 
-        // Initialize Sidang if not exists
+        // Initialize Sidang if not exists or ensure correct initial values
         if (!$pengajuan->sidang) {
             $sidang = new Sidang([
                 'pengajuan_id' => $pengajuan->id,
                 'dosen_pembimbing_id' => $pengajuan->mahasiswa->pembimbing1_id,
-                'dosen_penguji1_id' => $pengajuan->mahasiswa->pembimbing2_id,
                 'persetujuan_dosen_pembimbing' => 'pending',
+                'dosen_penguji1_id' => $pengajuan->mahasiswa->pembimbing2_id,
                 'persetujuan_dosen_penguji1' => $isPkl ? 'setuju' : 'pending', // Auto-approve for PKL
             ]);
-            $sidang->save();
-            $pengajuan->load('sidang');
+            // For PKL, Dosen Pembimbing 1 is always Ketua Sidang and auto-approved on initialization
+        if ($isPkl) {
+            $sidang->ketua_sidang_dosen_id = $pengajuan->mahasiswa->pembimbing1_id;
+            $sidang->persetujuan_ketua_sidang = 'setuju';
+        }
+        $sidang->save();
+        $pengajuan->load('sidang');
         }
         $sidang = $pengajuan->sidang;
 
@@ -63,30 +68,7 @@ class KaprodiController extends Controller
             $oldPersetujuanAnggota1Sidang = $sidang->persetujuan_anggota1_sidang;
             $oldPersetujuanAnggota2Sidang = $sidang->persetujuan_anggota2_sidang;
 
-            // Determine ketua_sidang_dosen_id based on approval statuses
-            $pembimbingSetuju = $sidang->persetujuan_dosen_pembimbing === 'setuju';
-            $penguji1Setuju = $sidang->persetujuan_dosen_penguji1 === 'setuju';
-
-            $newKetuaSidangId = null;
-            if ($pembimbingSetuju && $penguji1Setuju) {
-                $newKetuaSidangId = $sidang->dosen_pembimbing_id;
-            } elseif (!$pembimbingSetuju && $penguji1Setuju) {
-                $newKetuaSidangId = $sidang->dosen_penguji1_id;
-            } elseif ($pembimbingSetuju && !$penguji1Setuju) {
-                $newKetuaSidangId = $sidang->dosen_pembimbing_id;
-            } else { // Both reject
-                $newKetuaSidangId = null; // No ketua sidang
-                $pengajuan->status = 'perlu_penjadwalan_ulang'; // Set status to re-schedule
-            }
-
-            // Update ketua_sidang_dosen_id and its approval status
-            if ($sidang->ketua_sidang_dosen_id !== $newKetuaSidangId) {
-                $sidang->ketua_sidang_dosen_id = $newKetuaSidangId;
-                $sidang->persetujuan_ketua_sidang = 'pending'; // Reset approval if ketua changes
-            } else {
-                // If ketua did not change, retain old approval status
-                $sidang->persetujuan_ketua_sidang = $oldPersetujuanKetuaSidang;
-            }
+            
 
             // Map form input names to database column names and set approval status
             if (isset($validatedData['sekretaris_sidang_id'])) {
@@ -157,6 +139,14 @@ class KaprodiController extends Controller
             return back()->with('error', 'Jadwal sidang belum ada.');
         }
 
+        // Panggil metode baru untuk menentukan ketua sidang untuk TA
+        if (!$isPkl) {
+            $penentuanKetua = $this->tentukanKetuaSidang($pengajuan);
+            if ($penentuanKetua['status'] === 'error') {
+                return back()->with('error', $penentuanKetua['message']);
+            }
+        }
+        
         if ($pengajuan->status === 'perlu_penjadwalan_ulang') {
             return back()->with('error', 'Jadwal sidang perlu dijadwalkan ulang karena dosen pembimbing dan penguji 1 menolak.');
         }
@@ -205,6 +195,53 @@ class KaprodiController extends Controller
             $errorMessage = 'Belum semua dosen menyetujui: ' . implode(', ', $missingApprovals) . '.';
             return back()->with('finalisasi_error', $errorMessage);
         }
+    }
+
+    private function tentukanKetuaSidang(Pengajuan $pengajuan)
+    {
+        $sidang = $pengajuan->sidang;
+        if (!$sidang) {
+            return ['status' => 'error', 'message' => 'Sidang tidak ditemukan.'];
+        }
+
+        $persetujuanPembimbing = $sidang->persetujuan_dosen_pembimbing;
+        $persetujuanPenguji1 = $sidang->persetujuan_dosen_penguji1;
+        $pembimbingId = $sidang->dosen_pembimbing_id;
+        $penguji1Id = $sidang->dosen_penguji1_id;
+
+        $ketuaSidangId = null;
+
+        if ($persetujuanPembimbing === 'setuju' && $persetujuanPenguji1 === 'setuju') {
+            $ketuaSidangId = $pembimbingId;
+        } elseif ($persetujuanPembimbing === 'tolak' && $persetujuanPenguji1 === 'setuju') {
+            $ketuaSidangId = $penguji1Id;
+        } elseif ($persetujuanPembimbing === 'setuju' && $persetujuanPenguji1 === 'tolak') {
+            $ketuaSidangId = $pembimbingId;
+        } elseif ($persetujuanPembimbing === 'tolak' && $persetujuanPenguji1 === 'tolak') {
+            $pengajuan->update(['status' => 'perlu_penjadwalan_ulang']);
+            // Kosongkan semua dosen yang ditugaskan sebelumnya kecuali pembimbing dan penguji 1
+            $sidang->update([
+                'ketua_sidang_dosen_id' => null,
+                'sekretaris_sidang_dosen_id' => null,
+                'anggota1_sidang_dosen_id' => null,
+                'anggota2_sidang_dosen_id' => null,
+                'persetujuan_ketua_sidang' => 'pending',
+                'persetujuan_sekretaris_sidang' => 'pending',
+                'persetujuan_anggota1_sidang' => 'pending',
+                'persetujuan_anggota2_sidang' => 'pending',
+                'tanggal_waktu_sidang' => null,
+                'ruangan_sidang' => null,
+            ]);
+            return ['status' => 'error', 'message' => 'Dosen pembimbing dan penguji 1 menolak. Jadwal perlu diatur ulang.'];
+        }
+
+        if ($ketuaSidangId) {
+            $sidang->ketua_sidang_dosen_id = $ketuaSidangId;
+            $sidang->persetujuan_ketua_sidang = 'setuju'; // Otomatis setuju karena sudah dipilih berdasarkan persetujuan
+            $sidang->save();
+        }
+        
+        return ['status' => 'success'];
     }
 
     // Method untuk menampilkan form login Kaprodi

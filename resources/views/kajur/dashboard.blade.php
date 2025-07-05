@@ -1151,7 +1151,7 @@
         @endif
 
         @if (session('error'))
-            <div class="alert alert-danger" style="animation: fadeIn 0.6s 0.2s both;">
+            <div class="alert alert-success" style="animation: fadeIn 0.6s 0.2s both;">
                 {{ session('error') }}
             </div>
         @endif

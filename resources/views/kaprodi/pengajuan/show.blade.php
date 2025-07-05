@@ -279,7 +279,7 @@
                         return sprintf('%s (<span class="status-badge %s">%s</span>)', e($dosen->nama), $statusClass, e(ucfirst($persetujuan)));
                     };
                 @endphp
-                <p><strong>Dosen Pembimbing 1:</strong> {!! $getDosenInfo(optional($pengajuan->sidang)->dosenPembimbing, optional($pengajuan->sidang)->persetujuan_dosen_pembimbing) !!}</p>
+                
                 @if (!$isPkl)
                     <p><strong>Dosen Pembimbing 2:</strong> {!! $getDosenInfo(optional($pengajuan->sidang)->dosenPenguji1, optional($pengajuan->sidang)->persetujuan_dosen_penguji1) !!}</p>
                 @endif

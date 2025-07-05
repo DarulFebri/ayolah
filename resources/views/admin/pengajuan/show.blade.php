@@ -219,7 +219,7 @@
         </div>
         <div class="info-group">
             <label>Judul Pengajuan:</label>
-            <p>{{ $pengajuan->judul }}</p>
+            <p>{{ $pengajuan->judul_pengajuan }}</p>
         </div>
         <div class="info-group">
             <label>Tanggal Diajukan:</label>

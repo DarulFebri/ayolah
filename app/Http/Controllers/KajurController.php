@@ -106,7 +106,7 @@ class KajurController extends Controller
     public function showVerifikasiForm(Pengajuan $pengajuan)
     {
         if ($pengajuan->status !== 'sidang_dijadwalkan_final') {
-            return redirect()->route('kajur.dashboard')->with('error', 'Pengajuan ini tidak dalam status siap verifikasi oleh Kajur.');
+            return redirect()->route('kajur.dashboard')->with('error', 'Pengajuan Terverifikasi.');
         }
 
         // Pastikan Anda memuat relasi yang diperlukan untuk ditampilkan di view verifikasi
@@ -128,7 +128,7 @@ class KajurController extends Controller
     {
         // Pastikan hanya pengajuan dengan status 'sidang_dijadwalkan_final' yang bisa diverifikasi
         if ($pengajuan->status !== 'sidang_dijadwalkan_final') {
-            return redirect()->route('kajur.dashboard')->with('error', 'Pengajuan ini tidak dalam status siap verifikasi oleh Kajur.');
+            return redirect()->route('kajur.dashboard')->with('error', 'Pengajuan Terverifikasi.');
         }
 
         try {
