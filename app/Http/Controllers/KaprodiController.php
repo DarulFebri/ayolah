@@ -60,14 +60,32 @@ class KaprodiController extends Controller
         try {
             if ($isPkl) {
                 $sidang->ketua_sidang_dosen_id = $sidang->dosen_pembimbing_id;
-                $sidang->persetujuan_ketua_sidang = 'setuju';
+                $sidang->persetujuan_ketua_sidang = 'pending';
             } else {
                 $sidang->ketua_sidang_dosen_id = $validatedData['ketua_sidang_id'] ?? null;
                 if ($sidang->ketua_sidang_dosen_id) {
-                    $sidang->persetujuan_ketua_sidang = 'setuju';
+                    $sidang->persetujuan_ketua_sidang = 'pending';
                 }
             }
 
+            // Map form input names to database column names and set approval status
+            if (isset($validatedData['sekretaris_sidang_id'])) {
+                $sidang->sekretaris_sidang_dosen_id = $validatedData['sekretaris_sidang_id'];
+                $sidang->persetujuan_sekretaris_sidang = 'pending';
+                unset($validatedData['sekretaris_sidang_id']); // Remove to avoid conflict with fill()
+            }
+            if (isset($validatedData['anggota_1_sidang_id'])) {
+                $sidang->anggota1_sidang_dosen_id = $validatedData['anggota_1_sidang_id'];
+                $sidang->persetujuan_anggota1_sidang = 'pending';
+                unset($validatedData['anggota_1_sidang_id']);
+            }
+            if (isset($validatedData['anggota_2_sidang_id'])) {
+                $sidang->anggota2_sidang_dosen_id = $validatedData['anggota_2_sidang_id'];
+                $sidang->persetujuan_anggota2_sidang = 'pending';
+                unset($validatedData['anggota_2_sidang_id']);
+            }
+
+            // Fill remaining validated data (tanggal_waktu_sidang, ruangan_sidang, etc.)
             $sidang->fill($validatedData);
             $sidang->save();
 
