@@ -75,7 +75,7 @@ class DokumenController extends Controller
 
         $file = $request->file('file');
         $fileName = time() . '_' . Str::slug($request->jenis_dokumen) . '.' . $file->getClientOriginalExtension();
-        $path = $file->storeAs('public/dokumen_pengajuan', $fileName); // Store in public/dokumen_pengajuan
+        $path = 'storage/' . $file->storeAs('public/dokumen_pengajuan', $fileName); // Store in public/dokumen_pengajuan
 
         // Check if a document of this type already exists for this submission
         $existingDokumen = Dokumen::where('pengajuan_id', $pengajuan->id)
