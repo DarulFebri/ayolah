@@ -16,6 +16,7 @@ class Pengajuan extends Model
         'status',
         'alasan_penolakan_asdmin',
         'alasan_penolakan_kaprodi',
+        'perlu_penjadwalan_ulang',
     ];
 
     // Relasi ke Mahasiswa
