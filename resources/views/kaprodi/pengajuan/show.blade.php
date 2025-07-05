@@ -318,12 +318,12 @@
                             @endphp
                             @if ($pembimbing1Setuju)
                                 <option value="{{ $pembimbing1->id }}" {{ old('ketua_sidang_id', optional($pengajuan->sidang)->ketua_sidang_dosen_id) == $pembimbing1->id ? 'selected' : '' }}>
-                                    {{ $pembimbing1->nama }} (Pembimbing)
+                                    {{ $pembimbing1->nama }} (Pembimbing 1)
                                 </option>
                             @endif
                             @if ($penguji1Setuju)
                                 <option value="{{ $penguji1->id }}" {{ old('ketua_sidang_id', optional($pengajuan->sidang)->ketua_sidang_dosen_id) == $penguji1->id ? 'selected' : '' }}>
-                                    {{ $penguji1->nama }} (Penguji 1)
+                                    {{ $penguji1->nama }} (Pembimbing 2)
                                 </option>
                             @endif
                             @if (!$pembimbing1Setuju && !$penguji1Setuju)
