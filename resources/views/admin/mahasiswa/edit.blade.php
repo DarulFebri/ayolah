@@ -213,10 +213,7 @@
                 <input type="text" name="nama_lengkap" id="nama_lengkap" value="{{ old('nama_lengkap', $mahasiswa->nama_lengkap) }}" required>
             </div>
 
-            <div class="form-group">
-                <label for="jurusan">Jurusan:</label>
-                <input type="text" name="jurusan" id="jurusan" value="{{ old('jurusan', $mahasiswa->jurusan) }}" required>
-            </div>
+            
 
             <div class="form-group">
                 <label for="prodi_id">Program Studi:</label>
