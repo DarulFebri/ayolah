@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pengajuan;
 use App\Models\Dosen; // Assuming you might need this
 use App\Models\Sidang;
+use App\Models\PengajuanStatusHistory; // Import the new model
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator; // Not used in provided code but good to keep if needed
@@ -15,6 +16,17 @@ use Carbon\Carbon; // Make sure Carbon is imported
 
 class KajurController extends Controller
 {
+    protected function logPengajuanStatusChange(Pengajuan $pengajuan, $oldStatus, $newStatus, $notes = null)
+    {
+        PengajuanStatusHistory::create([
+            'pengajuan_id' => $pengajuan->id,
+            'old_status' => $oldStatus,
+            'new_status' => $newStatus,
+            'changed_by_user_id' => Auth::id(),
+            'notes' => $notes,
+        ]);
+    }
+
     public function loginForm()
     {
         return view('kajur.login');
@@ -134,9 +146,12 @@ class KajurController extends Controller
         try {
             DB::beginTransaction();
 
+            $oldStatus = $pengajuan->status;
             // Ubah status pengajuan menjadi 'diverifikasi_kajur'
             $pengajuan->status = 'diverifikasi_kajur';
             $pengajuan->save();
+
+            $this->logPengajuanStatusChange($pengajuan, $oldStatus, 'diverifikasi_kajur', 'Pengajuan diverifikasi oleh Kajur.');
 
             DB::commit();
 

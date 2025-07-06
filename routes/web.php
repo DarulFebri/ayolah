@@ -179,6 +179,10 @@ Route::prefix('mahasiswa')->group(function () {
         Route::get('/profile/edit', [MahasiswaController::class, 'editProfileForm'])->name('mahasiswa.profile.edit');
         Route::post('/profile/update', [MahasiswaController::class, 'updateProfile'])->name('mahasiswa.profile.update');
 
+        // Notification routes
+        Route::get('/notifications', [MahasiswaController::class, 'showNotifications'])->name('mahasiswa.notifications.index');
+        Route::post('/notifications/{id}/mark-as-read', [MahasiswaController::class, 'markNotificationAsRead'])->name('mahasiswa.notifications.markAsRead');
+
         // New route for changing password
         Route::get('/password/change', [MahasiswaController::class, 'changePasswordForm'])->name('mahasiswa.password.change.form');
         Route::post('/password/change', [MahasiswaController::class, 'changePassword'])->name('mahasiswa.password.change');

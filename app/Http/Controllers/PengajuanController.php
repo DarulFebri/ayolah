@@ -11,9 +11,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage; // Pastikan ini ada
 use Illuminate\Support\Str;
+use App\Models\PengajuanStatusHistory; // Import the new model
 
 class PengajuanController extends Controller
 {
+    protected function logPengajuanStatusChange(Pengajuan $pengajuan, $oldStatus, $newStatus, $notes = null)
+    {
+        PengajuanStatusHistory::create([
+            'pengajuan_id' => $pengajuan->id,
+            'old_status' => $oldStatus,
+            'new_status' => $newStatus,
+            'changed_by_user_id' => Auth::id(),
+            'notes' => $notes,
+        ]);
+    }
+
     // Daftar dokumen persyaratan untuk PKL
     private $dokumenPkl = [
         'laporan_pkl',
@@ -141,12 +153,14 @@ class PengajuanController extends Controller
         DB::beginTransaction();
         try {
             // Buat pengajuan baru
+            $newStatus = $statusAction == 'draft' ? 'draft' : 'diajukan_mahasiswa';
             $pengajuan = Pengajuan::create([
                 'mahasiswa_id' => $mahasiswaId,
                 'jenis_pengajuan' => $jenisPengajuan,
                 'judul_pengajuan' => $request->judul_pengajuan,
-                'status' => $statusAction == 'draft' ? 'draft' : 'diajukan_mahasiswa', // Set status berdasarkan aksi
+                'status' => $newStatus,
             ]);
+            $this->logPengajuanStatusChange($pengajuan, null, $newStatus, 'Pengajuan baru dibuat oleh Mahasiswa.');
 
             // Buat entri sidang terkait
             $sidangData = [
@@ -318,10 +332,17 @@ class PengajuanController extends Controller
         DB::beginTransaction();
         try {
             // Update data pengajuan
+            $oldStatus = $pengajuan->status;
+            $newStatus = $statusAction == 'draft' ? 'draft' : 'diajukan_mahasiswa';
             $pengajuan->update([
                 'judul_pengajuan' => $request->judul_pengajuan,
-                'status' => $statusAction == 'draft' ? 'draft' : 'diajukan_mahasiswa',
+                'status' => $newStatus,
             ]);
+
+            // Log status change if it moved from draft to diajukan_mahasiswa
+            if ($oldStatus === 'draft' && $newStatus === 'diajukan_mahasiswa') {
+                $this->logPengajuanStatusChange($pengajuan, $oldStatus, $newStatus, 'Pengajuan draft difinalisasi dan diajukan oleh Mahasiswa.');
+            }
 
             // Update data sidang
             $sidangData = [

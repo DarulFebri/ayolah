@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Prodi; // Import the Prodi model
 use App\Models\Activity; // Import the Activity model
 use App\Models\Kelas; // Import the Kelas model
+use App\Models\PengajuanStatusHistory; // Import the new model
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -38,6 +39,17 @@ class AdminController extends Controller
             'subject_id' => null, // Sesuaikan jika ada ID subjek spesifik
             'ip_address' => request()->ip(),
             'user_agent' => request()->header('User-Agent'),
+        ]);
+    }
+
+    protected function logPengajuanStatusChange(Pengajuan $pengajuan, $oldStatus, $newStatus, $notes = null)
+    {
+        PengajuanStatusHistory::create([
+            'pengajuan_id' => $pengajuan->id,
+            'old_status' => $oldStatus,
+            'new_status' => $newStatus,
+            'changed_by_user_id' => Auth::id(),
+            'notes' => $notes,
         ]);
     }
 
@@ -147,13 +159,19 @@ class AdminController extends Controller
 
     public function setujuiPengajuan(Pengajuan $pengajuan)
     {
-        $pengajuan->update(['status' => 'diverifikasi_admin']);
+        $oldStatus = $pengajuan->status;
+        $newStatus = 'diverifikasi_admin';
+        $pengajuan->update(['status' => $newStatus]);
+        $this->logPengajuanStatusChange($pengajuan, $oldStatus, $newStatus, 'Pengajuan disetujui oleh Admin.');
         return back()->with('success', 'Pengajuan berhasil disetujui.');
     }
 
     public function tolakPengajuan(Pengajuan $pengajuan)
     {
-        $pengajuan->update(['status' => 'ditolak_admin']);
+        $oldStatus = $pengajuan->status;
+        $newStatus = 'ditolak_admin';
+        $pengajuan->update(['status' => $newStatus]);
+        $this->logPengajuanStatusChange($pengajuan, $oldStatus, $newStatus, 'Pengajuan ditolak oleh Admin.');
         return back()->with('error', 'Pengajuan berhasil ditolak.');
     }
 

@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Log; // Add this line at the top
 use Illuminate\Validation\Rule; // Tambahkan ini untuk Rule::unique
 use App\Models\Prodi; // Import the Prodi model
 use App\Models\Kelas; // Import the Kelas model
+use App\Models\PengajuanStatusHistory; // Import the new model
 
 use Illuminate\Support\Facades\Storage;
 
@@ -445,6 +446,71 @@ class MahasiswaController extends Controller
     public function passwordResetSuccess()
     {
         return view('mahasiswa.password_reset_success');
+    }
+
+    /**
+     * Menampilkan halaman notifikasi untuk mahasiswa.
+     * Route: GET /mahasiswa/notifications
+     * Name: mahasiswa.notifications.index
+     * Middleware: auth, mahasiswa
+     */
+    public function showNotifications()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('mahasiswa.login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        $user = Auth::user();
+        $mahasiswa = $user->mahasiswa;
+
+        if (!$mahasiswa) {
+            Auth::logout();
+            return redirect()->route('mahasiswa.login')->with('error', 'Data mahasiswa tidak ditemukan.');
+        }
+
+        // Ambil notifikasi yang belum dibaca
+        $unreadNotifications = PengajuanStatusHistory::whereHas('pengajuan', function ($query) use ($mahasiswa) {
+            $query->where('mahasiswa_id', $mahasiswa->id);
+        })
+        ->whereNull('read_at')
+        ->with(['pengajuan', 'changedBy'])
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        // Ambil notifikasi yang sudah dibaca
+        $readNotifications = PengajuanStatusHistory::whereHas('pengajuan', function ($query) use ($mahasiswa) {
+            $query->where('mahasiswa_id', $mahasiswa->id);
+        })
+        ->whereNotNull('read_at')
+        ->with(['pengajuan', 'changedBy'])
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        return view('mahasiswa.notifications', compact('unreadNotifications', 'readNotifications'));
+    }
+
+    /**
+     * Menandai notifikasi sebagai sudah dibaca.
+     * Route: POST /mahasiswa/notifications/{id}/mark-as-read
+     * Name: mahasiswa.notifications.markAsRead
+     * Middleware: auth, mahasiswa
+     */
+    public function markNotificationAsRead($id)
+    {
+        $notification = PengajuanStatusHistory::find($id);
+
+        if (!$notification) {
+            return back()->with('error', 'Notifikasi tidak ditemukan.');
+        }
+
+        // Pastikan notifikasi ini milik mahasiswa yang sedang login
+        if ($notification->pengajuan->mahasiswa_id !== Auth::user()->mahasiswa->id) {
+            return back()->with('error', 'Anda tidak memiliki izin untuk mengakses notifikasi ini.');
+        }
+
+        $notification->update(['read_at' => now()]);
+
+        return back()->with('success', 'Notifikasi berhasil ditandai sudah dibaca.');
     }
 
     // --- Bagian Dashboard Mahasiswa ---

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pengajuan;
 use App\Models\Dosen;
 use App\Models\Sidang; // Pastikan model Sidang di-import
+use App\Models\PengajuanStatusHistory; // Import the new model
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -14,6 +15,16 @@ use Illuminate\Support\Facades\DB;
 
 class KaprodiController extends Controller
 {
+    protected function logPengajuanStatusChange(Pengajuan $pengajuan, $oldStatus, $newStatus, $notes = null)
+    {
+        PengajuanStatusHistory::create([
+            'pengajuan_id' => $pengajuan->id,
+            'old_status' => $oldStatus,
+            'new_status' => $newStatus,
+            'changed_by_user_id' => Auth::id(),
+            'notes' => $notes,
+        ]);
+    }
 
     public function storeUpdateJadwalSidang(Request $request, Pengajuan $pengajuan)
     {
@@ -111,10 +122,14 @@ class KaprodiController extends Controller
 
             // If any dosen changed, reset pengajuan status to 'menunggu_persetujuan_dosen'
             // Otherwise, keep the current pengajuan status (e.g., 'sidang_dijadwalkan_final' if already finalized)
+            $oldPengajuanStatus = $pengajuan->status;
             if ($dosenChanged) {
                 $pengajuan->status = 'menunggu_persetujuan_dosen';
             }
             $pengajuan->save();
+            if ($oldPengajuanStatus !== $pengajuan->status) {
+                $this->logPengajuanStatusChange($pengajuan, $oldPengajuanStatus, $pengajuan->status, 'Jadwal sidang diperbarui oleh Kaprodi.');
+            }
 
             // Notify newly assigned dosens
             // (Logic for notification remains the same)
@@ -187,7 +202,10 @@ class KaprodiController extends Controller
         }
 
         if ($allDosenAgreed) {
-            $pengajuan->update(['status' => 'sidang_dijadwalkan_final']);
+            $oldStatus = $pengajuan->status;
+            $newStatus = 'sidang_dijadwalkan_final';
+            $pengajuan->update(['status' => $newStatus]);
+            $this->logPengajuanStatusChange($pengajuan, $oldStatus, $newStatus, 'Jadwal sidang difinalisasi oleh Kaprodi.');
             return redirect()->route('kaprodi.pengajuan.show', $pengajuan->id)->with('success', 'Jadwal sidang berhasil difinalisasi.');
         } else {
             $errorMessage = 'Belum semua dosen menyetujui: ' . implode(', ', $missingApprovals) . '.';
@@ -216,7 +234,10 @@ class KaprodiController extends Controller
         } elseif ($persetujuanPembimbing === 'setuju' && $persetujuanPenguji1 === 'tolak') {
             $ketuaSidangId = $pembimbingId;
         } elseif ($persetujuanPembimbing === 'tolak' && $persetujuanPenguji1 === 'tolak') {
-            $pengajuan->update(['status' => 'perlu_penjadwalan_ulang']);
+            $oldStatus = $pengajuan->status;
+            $newStatus = 'perlu_penjadwalan_ulang';
+            $pengajuan->update(['status' => $newStatus]);
+            $this->logPengajuanStatusChange($pengajuan, $oldStatus, $newStatus, 'Dosen pembimbing dan penguji 1 menolak. Jadwal perlu diatur ulang.');
             // Kosongkan semua dosen yang ditugaskan sebelumnya kecuali pembimbing dan penguji 1
             $sidang->update([
                 'ketua_sidang_dosen_id' => null,

@@ -7,9 +7,22 @@ use Illuminate\Http\Request;
 use App\Models\Pengajuan;
 use App\Models\Dokumen; // Perlu untuk menampilkan dokumen
 use Illuminate\Support\Facades\Storage; // Jika perlu akses storage
+use App\Models\PengajuanStatusHistory; // Import the new model
+use Illuminate\Support\Facades\Auth; // Import Auth for user ID
 
 class PengajuanAdminController extends Controller
 {
+    protected function logPengajuanStatusChange(Pengajuan $pengajuan, $oldStatus, $newStatus, $notes = null)
+    {
+        PengajuanStatusHistory::create([
+            'pengajuan_id' => $pengajuan->id,
+            'old_status' => $oldStatus,
+            'new_status' => $newStatus,
+            'changed_by_user_id' => Auth::id(),
+            'notes' => $notes,
+        ]);
+    }
+
     // Menampilkan daftar pengajuan yang perlu diverifikasi admin
     // Method untuk menampilkan daftar pengajuan mahasiswa yang login
     public function index()
@@ -67,8 +80,10 @@ class PengajuanAdminController extends Controller
                              ->with('error', 'Pengajuan tidak dapat diverifikasi pada status saat ini.');
         }
 
-        // Ubah status pengajuan menjadi 'diverifikasi_admin'
-        $pengajuan->update(['status' => 'diverifikasi_admin']);
+        $oldStatus = $pengajuan->status;
+        $newStatus = 'diverifikasi_admin';
+        $pengajuan->update(['status' => $newStatus]);
+        $this->logPengajuanStatusChange($pengajuan, $oldStatus, $newStatus, 'Pengajuan diverifikasi oleh Admin.');
 
         // Redirect kembali ke halaman daftar pengajuan verifikasi admin
         return redirect()->route('admin.pengajuan.verifikasi.index') // <--- PASTIkan ini
@@ -88,10 +103,13 @@ class PengajuanAdminController extends Controller
             'alasan_penolakan_admin' => 'required|string|max:500', // Sesuaikan dengan nama input di form
         ]);
     
+        $oldStatus = $pengajuan->status;
+        $newStatus = 'ditolak_admin';
         $pengajuan->update([
-            'status' => 'ditolak_admin',
+            'status' => $newStatus,
             'alasan_penolakan_admin' => $request->alasan_penolakan_admin, // Gunakan nama kolom yang benar
         ]);
+        $this->logPengajuanStatusChange($pengajuan, $oldStatus, $newStatus, 'Pengajuan ditolak oleh Admin. Alasan: ' . $request->alasan_penolakan_admin);
     
         return redirect()->route('admin.pengajuan.verifikasi.index')
                          ->with('success', 'Pengajuan berhasil ditolak.');

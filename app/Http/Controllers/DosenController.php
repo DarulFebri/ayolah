@@ -13,10 +13,22 @@ use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\DosenImport;
 use Illuminate\Notifications\DatabaseNotification; // Import this!
+use App\Models\PengajuanStatusHistory; // Import the new model
 
 
 class DosenController extends Controller
 {
+    protected function logPengajuanStatusChange(Pengajuan $pengajuan, $oldStatus, $newStatus, $notes = null)
+    {
+        PengajuanStatusHistory::create([
+            'pengajuan_id' => $pengajuan->id,
+            'old_status' => $oldStatus,
+            'new_status' => $newStatus,
+            'changed_by_user_id' => Auth::id(),
+            'notes' => $notes,
+        ]);
+    }
+
     public function loginForm()
     {
         return view('dosen.login');
@@ -212,11 +224,20 @@ class DosenController extends Controller
         }
 
         if ($allDosenResponded) {
+            $oldStatus = $sidang->pengajuan->status;
+            $newStatus = '';
+            $notes = '';
+
             if ($allDosenAgreed) {
-                $sidang->pengajuan->update(['status' => 'dosen_menyetujui']);
+                $newStatus = 'dosen_menyetujui';
+                $notes = 'Semua dosen yang ditunjuk telah menyetujui jadwal sidang.';
             } else {
-                $sidang->pengajuan->update(['status' => 'dosen_menolak_jadwal']);
+                $newStatus = 'dosen_menolak_jadwal';
+                $notes = 'Beberapa dosen menolak jadwal sidang.';
             }
+            
+            $sidang->pengajuan->update(['status' => $newStatus]);
+            $this->logPengajuanStatusChange($sidang->pengajuan, $oldStatus, $newStatus, $notes);
         }
     }
 
@@ -257,13 +278,25 @@ class DosenController extends Controller
 
     public function setujuiDokumen(Dokumen $dokumen)
     {
-        $dokumen->update(['status' => 'disetujui']);
+        $oldStatus = $dokumen->status;
+        $newStatus = 'disetujui';
+        $dokumen->update(['status' => $newStatus]);
+        // Log the status change for the associated Pengajuan
+        if ($dokumen->pengajuan) {
+            $this->logPengajuanStatusChange($dokumen->pengajuan, $oldStatus, $newStatus, 'Dokumen ' . $dokumen->nama_file . ' disetujui oleh Dosen.');
+        }
         return redirect()->back()->with('success', 'Dokumen berhasil disetujui.');
     }
 
     public function tolakDokumen(Dokumen $dokumen)
     {
-        $dokumen->update(['status' => 'ditolak']);
+        $oldStatus = $dokumen->status;
+        $newStatus = 'ditolak';
+        $dokumen->update(['status' => $newStatus]);
+        // Log the status change for the associated Pengajuan
+        if ($dokumen->pengajuan) {
+            $this->logPengajuanStatusChange($dokumen->pengajuan, $oldStatus, $newStatus, 'Dokumen ' . $dokumen->nama_file . ' ditolak oleh Dosen.');
+        }
         return redirect()->back()->with('success', 'Dokumen berhasil ditolak.');
     }
 
@@ -423,6 +456,15 @@ class DosenController extends Controller
         }
 
         $sidang->save();
+
+        // Log individual dosen response
+        $oldPengajuanStatus = $sidang->pengajuan->status; // Get current pengajuan status
+        $newPengajuanStatus = $sidang->pengajuan->status; // Status of pengajuan doesn't change here, only individual dosen approval
+        $notes = "Dosen {$dosen->nama} sebagai {$peranDosen} telah " . ($respon === 'setuju' ? 'menyetujui' : 'menolak') . " undangan sidang.";
+        $this->logPengajuanStatusChange($sidang->pengajuan, $oldPengajuanStatus, $newPengajuanStatus, $notes);
+
+        // After saving the individual dosen's response, check if all dosen have responded
+        $this->checkAndSetPengajuanStatus($sidang);
 
         return redirect()->route('dosen.dashboard')->with('success', "Respon Anda sebagai {$peranDosen} ($respon) berhasil disimpan.");
     }

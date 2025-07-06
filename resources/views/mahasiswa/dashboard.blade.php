@@ -52,7 +52,7 @@
         </a>
 
         {{-- Card untuk Notifikasi (jika ada rute notifikasi) --}}
-        <a href="#" class="card-link"> {{-- Ganti '#' dengan route notifikasi yang sebenarnya jika ada --}}
+        <a href="{{ route('mahasiswa.notifications.index') }}" class="card-link">
             <div class="card clickable-card medium">
                 <div class="card-icon">
                     <i class="fas fa-bell"></i>
