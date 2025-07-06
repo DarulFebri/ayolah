@@ -16,7 +16,7 @@
 
     <div class="card-container">
         {{-- Mengubah href ke # karena rute 'mahasiswa.profile.edit' tidak ada dalam definisi rute yang diberikan --}}
-        <a href="#" class="card-link">
+        <a href="{{ route('mahasiswa.profile.edit') }}" class="card-link">
             <div class="card clickable-card medium">
                 <div class="card-icon">
                     <i class="fas fa-users"></i>
