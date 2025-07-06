@@ -19,6 +19,8 @@ use App\Models\User;     // Pastikan model User diimpor
 use Illuminate\Support\Facades\Log; // Add this line at the top
 use Illuminate\Validation\Rule; // Tambahkan ini untuk Rule::unique
 
+use Illuminate\Support\Facades\Storage;
+
 class MahasiswaController extends Controller
 {
 
@@ -523,42 +525,40 @@ class MahasiswaController extends Controller
         }
 
         $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama_lengkap' => 'required|string|max:255',
             'nim' => ['required', 'string', 'max:20', Rule::unique('mahasiswas')->ignore($mahasiswa->id)],
             'email' => ['required', 'email', 'max:255', Rule::unique('mahasiswas')->ignore($mahasiswa->id)],
             'prodi' => 'nullable|string|max:255',
             'angkatan' => 'nullable|integer|digits:4',
             'nomor_hp' => 'nullable|string|max:20',
-            // Tambahkan validasi untuk bidang lain yang relevan
+            'cropped_image' => 'nullable|string',
         ]);
 
-        // Update data mahasiswa
-        $mahasiswa->update([
-            'nama' => $request->nama,
-            'nim' => $request->nim,
-            'email' => $request->email,
-            'prodi' => $request->prodi,
-            'angkatan' => $request->angkatan,
-            'nomor_hp' => $request->nomor_hp,
-            // Update bidang lain di sini
-        ]);
+        $dataToUpdate = $request->only(['nama_lengkap', 'nim', 'email', 'prodi', 'angkatan', 'nomor_hp']);
 
-        // Pastikan juga email di tabel `users` diperbarui jika berubah
+        if ($request->filled('cropped_image')) {
+            // Hapus foto lama jika ada
+            if ($mahasiswa->foto_profil) {
+                Storage::delete('public/' . $mahasiswa->foto_profil);
+            }
+
+            $data = $request->cropped_image;
+            list($type, $data) = explode(';', $data);
+            list(, $data)      = explode(',', $data);
+            $data = base64_decode($data);
+            $imageName = 'photos/' . Str::random(20) . '.png';
+            Storage::disk('public')->put($imageName, $data);
+            $dataToUpdate['foto_profil'] = $imageName;
+        }
+
+        $mahasiswa->update($dataToUpdate);
+
         if ($user->email !== $request->email) {
             $user->email = $request->email;
             $user->save();
         }
 
-        // Jika ada perubahan password, tambahkan validasi dan update di sini
-        if ($request->filled('password')) {
-            $request->validate([
-                'password' => 'string|min:8|confirmed',
-            ]);
-            $user->password = Hash::make($request->password);
-            $user->save();
-        }
-
-        return redirect()->route('mahasiswa.dashboard')->with('success', 'Profil berhasil diperbarui!');
+        return redirect()->route('mahasiswa.profile.edit')->with('success', 'Profil berhasil diperbarui!');
     }
 
 

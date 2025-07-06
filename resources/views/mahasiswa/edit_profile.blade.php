@@ -3,8 +3,48 @@
 @section('title', 'Data Mahasiswa')
 @section('page_title', 'Data Mahasiswa')
 
+@push('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        #image-to-crop {
+            max-width: 100%;
+        }
+    </style>
+@endpush
+
 @section('content')
-    <div class="main-card custom-form-card"> {{-- Tambahkan class custom-form-card di sini --}}
+    <div class="main-card custom-form-card">
         @if (session('success'))
             <div class="alert alert-success success-animation">
                 {{ session('success') }}
@@ -21,11 +61,12 @@
             </div>
         @endif
 
-        <form action="{{ route('mahasiswa.profile.update') }}" method="POST" class="profile-edit-form">
+        <form action="{{ route('mahasiswa.profile.update') }}" method="POST" enctype="multipart/form-data" class="profile-edit-form" id="profile-form">
             @csrf
             @method('POST')
+            <input type="hidden" name="cropped_image" id="cropped_image">
 
-            <div class="form-grid"> {{-- Wrapper untuk input menjadi grid --}}
+            <div class="form-grid">
                 <div class="form-group">
                     <label for="nama"><i class="fas fa-user"></i> Nama Lengkap</label>
                     <input type="text" id="nama_lengkap" name="nama_lengkap" value="{{ old('nama_lengkap', $mahasiswa->nama_lengkap) }}" required class="form-input @error('nama') is-invalid @enderror">
@@ -73,7 +114,16 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-            </div> {{-- End of form-grid --}}
+
+                <div class="form-group">
+                    <label for="foto_profil"><i class="fas fa-image"></i> Foto Profil</label>
+                    <input type="file" id="foto_profil" name="foto_profil" class="form-input @error('foto_profil') is-invalid @enderror" accept="image/*">
+                    @error('foto_profil')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    <img id="image-preview" src="{{ $mahasiswa->foto_profil ? asset('storage/' . $mahasiswa->foto_profil) : '' }}" alt="Image Preview" class="mt-2" style="max-width: 150px; {{ $mahasiswa->foto_profil ? '' : 'display:none;' }}">
+                </div>
+            </div>
 
             <div class="form-actions">
                 <a href="{{ route('mahasiswa.dashboard') }}" class="btn btn-secondary action-btn-back">
@@ -85,10 +135,81 @@
             </div>
         </form>
     </div>
+
+    <!-- The Modal -->
+    <div id="cropModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Potong Gambar</h2>
+            <div>
+                <img id="image-to-crop" src="">
+            </div>
+            <button id="crop-button" class="btn btn-primary">Potong dan Simpan</button>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
     <script>
-        // Any specific scripts for edit_profile can go here.
+        const modal = document.getElementById('cropModal');
+        const image = document.getElementById('image-to-crop');
+        const cropButton = document.getElementById('crop-button');
+        const fileInput = document.getElementById('foto_profil');
+        const imagePreview = document.getElementById('image-preview');
+        const croppedImageInput = document.getElementById('cropped_image');
+        const form = document.getElementById('profile-form');
+        let cropper;
+
+        fileInput.addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    image.src = e.target.result;
+                    modal.style.display = 'block';
+                    cropper = new Cropper(image, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        preview: '.preview'
+                    });
+                };
+                reader.readAsDataURL(files[0]);
+            }
+        });
+
+        cropButton.addEventListener('click', function() {
+            const canvas = cropper.getCroppedCanvas({
+                width: 200,
+                height: 200,
+            });
+
+            canvas.toBlob(function(blob) {
+                const reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = function() {
+                    const base64data = reader.result;
+                    croppedImageInput.value = base64data;
+                    imagePreview.src = base64data;
+                    imagePreview.style.display = 'block';
+                    modal.style.display = 'none';
+                    cropper.destroy();
+                }
+            });
+        });
+
+        document.querySelector('.close').onclick = function() {
+            modal.style.display = 'none';
+            cropper.destroy();
+            fileInput.value = ''; // Reset file input
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+                cropper.destroy();
+                fileInput.value = ''; // Reset file input
+            }
+        }
     </script>
 @endpush
