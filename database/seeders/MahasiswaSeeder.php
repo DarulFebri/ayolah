@@ -21,7 +21,7 @@ class MahasiswaSeeder extends Seeder
                 'email' => 'gamehilmi001@gmail.com',
                 'nim' => '2311082037',
                 'nama_lengkap' => 'Hilmi Muhammad Faiz',
-                'jurusan' => 'Teknologi Informasi',
+                
                 'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Laki-laki',
                 'kelas' => 'TI-1',
@@ -31,7 +31,7 @@ class MahasiswaSeeder extends Seeder
                 'email' => 'arlan@example.com',
                 'nim' => '2311082011',
                 'nama_lengkap' => 'Arlan Diana',
-                'jurusan' => 'Teknologi Informasi',
+                
                 'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Perempuan',
                 'kelas' => 'TI-1',
@@ -41,7 +41,7 @@ class MahasiswaSeeder extends Seeder
                 'email' => 'darulfer097@gmail.com',
                 'nim' => '2311082096',
                 'nama_lengkap' => 'ayung',
-                'jurusan' => 'Teknologi Informasi',
+                
                 'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Laki-laki',
                 'kelas' => 'TI-1',
@@ -51,7 +51,7 @@ class MahasiswaSeeder extends Seeder
                 'email' => 'ayel@gmail.com',
                 'nim' => '2311082054',
                 'nama_lengkap' => 'ayel',
-                'jurusan' => 'Teknologi Informasi',
+                
                 'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Laki-laki',
                 'kelas' => 'TI-1',
@@ -62,7 +62,7 @@ class MahasiswaSeeder extends Seeder
                 'email' => 'dinacantikterkewerkewer@gmail.com',
                 'nim' => '2311082052',
                 'nama_lengkap' => 'NuranisaDina',
-                'jurusan' => 'Teknologi Informasi',
+                
                 'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Perempuan',
                 'kelas' => 'TI-1',
@@ -81,7 +81,7 @@ class MahasiswaSeeder extends Seeder
                     [
                         'user_id' => $user->id,
                         'nama_lengkap' => $data['nama_lengkap'],
-                        'jurusan' => $data['jurusan'],
+                        
                         'prodi_id' => $prodi ? $prodi->id : null, // Gunakan prodi_id
                         'jenis_kelamin' => $data['jenis_kelamin'],
                         'kelas' => $data['kelas'],

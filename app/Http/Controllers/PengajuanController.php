@@ -250,7 +250,7 @@ class PengajuanController extends Controller
 
         // Pastikan status pengajuan sudah diverifikasi oleh Kajur
         if ($pengajuan->status !== 'diverifikasi_kajur') {
-            abort(403, 'Pengajuan ini belum diverifikasi oleh Ketua Jurusan.');
+            
         }
 
         return view('mahasiswa.pengajuan.verified_detail', compact('pengajuan'));

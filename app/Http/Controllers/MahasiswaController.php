@@ -77,7 +77,7 @@ class MahasiswaController extends Controller
                   ->orWhereHas('prodi', function($q) use ($searchTerm) {
                       $q->where('nama_prodi', 'like', '%' . $searchTerm . '%');
                   });
-            // You can add more `orWhere` clauses if you want to search other fields like 'jurusan', 'kelas', etc.
+            
         }
 
         // Get the filtered (or unfiltered) students

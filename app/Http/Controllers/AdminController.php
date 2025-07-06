@@ -244,7 +244,6 @@ class AdminController extends Controller
         $validator = Validator::make($request->all(), [
             'nim' => 'required|unique:mahasiswas',
             'nama_lengkap' => 'required',
-            'jurusan' => 'required',
             'prodi_id' => 'required|exists:prodis,id',
             'jenis_kelamin' => 'required',
             'kelas' => 'required',
@@ -267,7 +266,6 @@ class AdminController extends Controller
             'user_id' => $user->id,
             'nim' => $request->nim,
             'nama_lengkap' => $request->nama_lengkap,
-            'jurusan' => $request->jurusan,
             'prodi_id' => $request->prodi_id,
             'email' => $request->email, // Email mahasiswa juga disimpan di tabel mahasiswa
             'jenis_kelamin' => $request->jenis_kelamin,
@@ -290,7 +288,6 @@ class AdminController extends Controller
         $request->validate([
             'nim' => 'required|unique:mahasiswas,nim,' . $mahasiswa->id,
             'nama_lengkap' => 'required',
-            'jurusan' => 'required',
             'prodi_id' => 'required|exists:prodis,id',
             'jenis_kelamin' => 'required',
             'kelas' => 'required',
@@ -342,7 +339,6 @@ class AdminController extends Controller
         $validator = Validator::make($request->all(), [
             'nidn' => 'required|unique:dosens',
             'nama' => 'required',
-            'jurusan' => 'required',
             'prodi_id' => 'required|exists:prodis,id',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8',
@@ -363,7 +359,6 @@ class AdminController extends Controller
             'user_id' => $user->id,
             'nidn' => $request->nidn,
             'nama' => $request->nama,
-            'jurusan' => $request->jurusan,
             'email' => $request->email, // Email dosen juga disimpan di tabel dosen
             'prodi_id' => $request->prodi_id,
             'jenis_kelamin' => $request->jenis_kelamin,

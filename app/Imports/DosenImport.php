@@ -88,7 +88,6 @@ class DosenImport implements ToCollection, WithHeadingRow
         return [
             'nidn'          => ['required', 'string', 'max:255', Rule::unique('dosens', 'nidn')],
             'nama_lengkap'  => 'required|string|max:255',
-            'jurusan'       => 'required|string|max:255',
             'prodi'         => 'required|string|max:255',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan,Bencong',
             'email'         => [ // <--- PENTING: Tambahkan aturan validasi untuk email

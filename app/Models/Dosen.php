@@ -14,7 +14,6 @@ class Dosen extends Model
         'user_id',
         'nidn',
         'nama', // Ini adalah kolom 'nama' di DB yang akan diisi dari 'nama_lengkap' Excel
-        'jurusan',
         'prodi_id',
         'jenis_kelamin',
         'email',

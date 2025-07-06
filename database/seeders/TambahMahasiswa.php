@@ -27,7 +27,7 @@ class TambahMahasiswa extends Seeder
             'user_id' => $mahasiswaUser->id,
             'nim' => '2311082011', // Contoh NIM
             'nama_lengkap' => 'Arlan Diana',
-            'jurusan' => 'Teknologi Informasi',
+            
             'prodi' => 'Rekayasa Perangkat Lunak',
             'jenis_kelamin' => 'P',
             'kelas' => 'TI-1',
@@ -45,7 +45,7 @@ class TambahMahasiswa extends Seeder
             'user_id' => $mahasiswaUser->id,
             'nim' => '2311082096', // Contoh NIM
             'nama_lengkap' => 'ayung',
-            'jurusan' => 'Teknologi Informasi',
+            
             'prodi' => 'Rekayasa Perangkat Lunak',
             'jenis_kelamin' => 'L',
             'kelas' => 'TI-1',
@@ -63,7 +63,7 @@ class TambahMahasiswa extends Seeder
             'user_id' => $mahasiswaUser->id,
             'nim' => '2311082037', // Contoh NIM
             'nama_lengkap' => 'Hilmi Muhammad Faiz',
-            'jurusan' => 'Teknologi Informasi',
+            
             'prodi' => 'Rekayasa Perangkat Lunak',
             'jenis_kelamin' => 'L',
             'kelas' => 'TI-1',
@@ -81,7 +81,7 @@ class TambahMahasiswa extends Seeder
             'user_id' => $mahasiswaUser->id,
             'nim' => '2311082054', // Contoh NIM
             'nama_lengkap' => 'Rafayel Ulayya',
-            'jurusan' => 'Teknologi Informasi',
+            
             'prodi' => 'Rekayasa Perangkat Lunak',
             'jenis_kelamin' => 'L',
             'kelas' => 'TI-1',

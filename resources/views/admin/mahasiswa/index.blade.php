@@ -517,7 +517,6 @@
                     <tr>
                         <th>NIM</th>
                         <th>Nama Lengkap</th>
-                        <th>Jurusan</th>
                         <th>Prodi</th>
                         <th>Jenis Kelamin</th>
                         <th>Kelas</th>
@@ -529,7 +528,6 @@
                         <tr>
                             <td>{{ $mahasiswa->nim }}</td>
                             <td>{{ $mahasiswa->nama_lengkap }}</td>
-                            <td>{{ $mahasiswa->jurusan }}</td>
                             <td>{{ $mahasiswa->prodi->nama_prodi ?? '-' }}</td>
                             <td>{{ $mahasiswa->jenis_kelamin }}</td>
                             <td>{{ $mahasiswa->kelas }}</td>

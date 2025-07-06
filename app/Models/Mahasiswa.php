@@ -13,7 +13,6 @@ class Mahasiswa extends Model
         'user_id',
         'nim',
         'nama_lengkap',
-        'jurusan',
         'prodi_id',
         'jenis_kelamin',
         'kelas',

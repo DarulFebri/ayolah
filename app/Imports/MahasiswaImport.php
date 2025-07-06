@@ -143,7 +143,6 @@ class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, W
         return [
             'nim'           => ['required', 'string', 'max:255', Rule::unique('mahasiswas', 'nim')],
             'nama_lengkap'  => 'required|string|max:255',
-            'jurusan'       => 'required|string|max:255',
             'prodi'         => 'required|string|max:255',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'kelas'         => 'required|string|max:255',

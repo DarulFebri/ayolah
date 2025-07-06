@@ -76,7 +76,7 @@ class DosenSeeder extends Seeder
                 'email' => 'dimas@example.com',
                 'password' => '12345678',
                 'nidn' => '1122334455',
-                'jurusan' => 'Teknik Komputer',
+                
                 'prodi_nama' => 'Jaringan Komputer',
                 'jenis_kelamin' => 'Laki-laki',
             ],
@@ -104,7 +104,7 @@ class DosenSeeder extends Seeder
                 [
                     'user_id' => $user->id,
                     'nama' => $data['name'],
-                    'jurusan' => $data['jurusan'],
+                    
                     'prodi_id' => $prodi ? $prodi->id : null, // Gunakan prodi_id
                     'jenis_kelamin' => $data['jenis_kelamin'],
                     'email' => $data['email'],

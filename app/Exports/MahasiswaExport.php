@@ -39,7 +39,6 @@ class MahasiswaExport implements FromCollection, WithHeadings, ShouldAutoSize //
         return [
             'NIM',
             'Nama Lengkap',
-            'Jurusan',
             'Prodi',
             'Jenis Kelamin',
             'Kelas',
