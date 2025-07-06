@@ -4,74 +4,327 @@
 
 @section('header_title', 'Manajemen Program Studi')
 
+@section('styles')
+    <style>
+        .main-card {
+            background: var(--white);
+            border-radius: var(--card-border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            animation: fadeIn 0.5s both;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: var(--primary-700);
+            font-weight: 600;
+        }
+
+        .section-title i {
+            margin-right: 12px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-500);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-600);
+            transform: translateY(-2px);
+        }
+
+        .search-bar {
+            display: flex;
+            margin-bottom: 20px;
+            max-width: 400px;
+            animation: fadeIn 0.5s 0.2s both;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px 0 0 8px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(26, 136, 255, 0.2);
+        }
+
+        .search-button {
+            background: var(--primary-500);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .search-button:hover {
+            background: var(--primary-600);
+        }
+
+        .table-container {
+            background: var(--white);
+            border-radius: var(--card-border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            overflow-x: auto; /* Ensure table is scrollable on small screens */
+            animation: fadeIn 0.5s 0.3s both;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background-color: var(--primary-100);
+            color: var(--primary-700);
+            font-weight: 600;
+            text-align: left;
+            padding: 16px 20px;
+            border-bottom: 2px solid var(--primary-200);
+        }
+
+        .data-table td {
+            padding: 14px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            white-space: nowrap; /* Prevent text wrapping in cells */
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover {
+            background-color: var(--primary-50);
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .action-cell {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none; /* Ensure links don't have underlines */
+        }
+
+        .edit-icon {
+            background-color: rgba(255, 193, 7, 0.15); /* Warning color with transparency */
+            color: #ffc107; /* Warning color */
+        }
+
+        .delete-icon {
+            background-color: rgba(220, 53, 69, 0.15); /* Danger color with transparency */
+            color: var(--danger); /* Danger color */
+        }
+
+        .action-icon:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: flex-end;
+            padding: 20px;
+            background-color: var(--white);
+            border-top: 1px solid #e2e8f0;
+            border-radius: 0 0 var(--card-border-radius) var(--card-border-radius);
+        }
+
+        .pagination-container nav {
+            display: flex;
+            gap: 5px;
+        }
+
+        /* Specific styles for pagination links generated by Laravel */
+        .pagination .page-item .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            margin: 0 4px;
+            text-decoration: none;
+            color: var(--primary-600);
+            background-color: var(--primary-100);
+            border: 1px solid var(--primary-200);
+            transition: var(--transition);
+        }
+
+        .pagination .page-item .page-link:hover {
+            background-color: var(--primary-200);
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-500);
+            color: white;
+            border-color: var(--primary-500);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            background-color: #f0f0f0;
+            color: #888;
+            border-color: #ddd;
+            cursor: not-allowed;
+        }
+
+        /* Alert messages */
+        .alert-success-custom {
+            background-color: #d4edda; /* Light green background */
+            color: #155724; /* Dark green text */
+            border: 1px solid #c3e6cb; /* Green border */
+            border-radius: 0.25rem; /* Slightly rounded corners */
+            padding: 1rem 1.25rem; /* Padding inside the alert */
+            margin-bottom: 1rem; /* Space below the alert */
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+
+        .alert-success-custom i {
+            margin-right: 0.75rem; /* Space between icon and text */
+            font-size: 1.2rem;
+        }
+
+        .alert-danger-custom {
+            background-color: #f8d7da; /* Light red background */
+            color: #721c24; /* Dark red text */
+            border: 1px solid #f5c6cb; /* Red border */
+            border-radius: 0.25rem; /* Slightly rounded corners */
+            padding: 1rem 1.25rem; /* Padding inside the alert */
+            margin-bottom: 1rem; /* Space below the alert */
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+
+        .alert-danger-custom i {
+            margin-right: 0.75rem; /* Space between icon and text */
+            font-size: 1.2rem;
+        }
+    </style>
+@endsection
+
 @section('content')
-<div class="container mt-4">
-    <div class="card shadow-sm"> {{-- Added shadow-sm for a subtle shadow --}}
-        <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white"> {{-- Added bg-primary and text-white for header --}}
-            <h3 class="card-title mb-0">Daftar Program Studi</h3> {{-- mb-0 to remove bottom margin --}}
-            <div class="d-flex flex-column flex-md-row align-items-md-center"> {{-- Responsive layout for buttons and search --}}
-                <a href="{{ route('admin.prodi.create') }}" class="btn btn-light me-md-2 mb-2 mb-md-0"> {{-- btn-light for contrasting button, me-md-2 for margin on medium screens, mb-2 for small screens --}}
-                    <i class="fas fa-plus me-1"></i> Tambah Program Studi
+    <div class="main-card">
+        @if (session('success'))
+            <div class="alert-success-custom">
+                <i class="fas fa-check-circle"></i>
+                {{ session('success') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="alert-danger-custom">
+                <i class="fas fa-times-circle"></i>
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-book"></i> Daftar Program Studi</h2>
+            <div class="action-buttons">
+                <a href="{{ route('admin.prodi.create') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Tambah Program Studi
                 </a>
-                <form action="{{ route('admin.prodi.index') }}" method="GET" class="d-flex w-100"> {{-- w-100 to make search form take full width on small screens --}}
-                    <input type="text" name="search" class="form-control me-2" placeholder="Cari Program Studi..." value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-outline-light">Cari</button> {{-- btn-outline-light for contrasting outline button --}}
-                </form>
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> Kembali Ke Dashboard
+                </a>
             </div>
         </div>
-        <div class="card-body">
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert"> {{-- Added alert-dismissible and fade show for dismissible alert --}}
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert"> {{-- Added alert-dismissible and fade show for dismissible alert --}}
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
 
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover caption-top"> {{-- caption-top can be used if you want a table caption --}}
-                    <thead>
-                        <tr class="table-primary"> {{-- Added table-primary for a themed header row --}}
-                            <th style="width: 50px;">No</th>
-                            <th>Nama Program Studi</th>
-                            <th style="width: 180px;">Aksi</th> {{-- Fixed width for action column --}}
+        <form action="{{ route('admin.prodi.index') }}" method="GET">
+            <div class="search-bar">
+                <input type="text" name="search" placeholder="Cari Program Studi..." value="{{ request('search') }}">
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">No</th>
+                        <th>Nama Program Studi</th>
+                        <th style="width: 180px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($prodis as $prodi)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $prodi->nama_prodi }}</td>
+                            <td class="action-cell">
+                                <a href="{{ route('admin.prodi.edit', $prodi->id) }}" class="action-icon edit-icon" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ route('admin.prodi.destroy', $prodi->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus program studi ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="action-icon delete-icon" title="Hapus">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($prodis as $prodi)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $prodi->nama_prodi }}</td>
-                                <td>
-                                    <a href="{{ route('admin.prodi.edit', $prodi->id) }}" class="btn btn-warning btn-sm me-1"> {{-- me-1 for right margin --}}
-                                        <i class="fas fa-edit"></i> Edit
-                                    </a>
-                                    <form action="{{ route('admin.prodi.destroy', $prodi->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus program studi ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i> Hapus
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="3" class="text-center py-4">Tidak ada data program studi.</td> {{-- py-4 for vertical padding --}}
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            <div class="d-flex justify-content-center mt-3"> {{-- mt-3 for top margin --}}
-                {{ $prodis->links('pagination::bootstrap-5') }}
-            </div>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="text-center">Tidak ada data program studi.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination-container">
+            {{ $prodis->links() }}
         </div>
     </div>
-</div>
 @endsection
