@@ -185,7 +185,9 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        return view('admin.dashboard');
+        $totalMahasiswa = Mahasiswa::count();
+        $totalDosen = Dosen::count();
+        return view('admin.dashboard', compact('totalMahasiswa', 'totalDosen'));
     }
 
     public function logout(Request $request)

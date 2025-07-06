@@ -19,7 +19,7 @@
                 <i class="fas fa-user-graduate"></i>
             </div>
             <div class="stats-content">
-                <h3>1,245</h3>
+                <h3>{{ $totalMahasiswa }}</h3>
                 <p>Total Mahasiswa</p>
             </div>
         </div>
@@ -29,28 +29,8 @@
                 <i class="fas fa-chalkboard-teacher"></i>
             </div>
             <div class="stats-content">
-                <h3>68</h3>
+                <h3>{{ $totalDosen }}</h3>
                 <p>Total Dosen</p>
-            </div>
-        </div>
-        
-        <div class="stats-card" style="animation-delay: 0.3s;">
-            <div class="stats-icon icon-orange">
-                <i class="fas fa-calendar-check"></i>
-            </div>
-            <div class="stats-content">
-                <h3>42</h3>
-                <p>Sidang Mendatang</p>
-            </div>
-        </div>
-        
-        <div class="stats-card" style="animation-delay: 0.4s;">
-            <div class="stats-icon icon-red">
-                <i class="fas fa-file-alt"></i>
-            </div>
-            <div class="stats-content">
-                <h3>27</h3>
-                <p>Pengajuan Baru</p>
             </div>
         </div>
     </div>
