@@ -93,18 +93,7 @@
 
                 <div class="form-group">
                     <label for="prodi"><i class="fas fa-graduation-cap"></i> Program Studi</label>
-                    <input type="text" id="prodi" name="prodi" value="{{ old('prodi', $mahasiswa->prodi) }}" class="form-input @error('prodi') is-invalid @enderror">
-                    @error('prodi')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="angkatan"><i class="fas fa-calendar-alt"></i> Angkatan</label>
-                    <input type="number" id="angkatan" name="angkatan" value="{{ old('angkatan', $mahasiswa->angkatan) }}" class="form-input @error('angkatan') is-invalid @enderror">
-                    @error('angkatan')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    <input type="text" id="prodi" name="prodi" value="{{ $mahasiswa->prodi->nama_prodi ?? 'N/A' }}" class="form-input" readonly>
                 </div>
 
                 <div class="form-group">
@@ -144,7 +133,9 @@
             <div>
                 <img id="image-to-crop" src="">
             </div>
-            <button id="crop-button" class="btn btn-primary">Potong dan Simpan</button>
+            <br>
+                                <br>
+                                <button id="crop-button" class="btn btn-primary">Potong dan Simpan</button>
         </div>
     </div>
 @endsection

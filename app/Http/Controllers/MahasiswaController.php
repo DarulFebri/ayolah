@@ -530,13 +530,11 @@ class MahasiswaController extends Controller
             'nama_lengkap' => 'required|string|max:255',
             'nim' => ['required', 'string', 'max:20', Rule::unique('mahasiswas')->ignore($mahasiswa->id)],
             'email' => ['required', 'email', 'max:255', Rule::unique('mahasiswas')->ignore($mahasiswa->id)],
-            'prodi_id' => 'nullable|exists:prodis,id', // Changed to prodi_id
-            'angkatan' => 'nullable|integer|digits:4',
             'nomor_hp' => 'nullable|string|max:20',
             'cropped_image' => 'nullable|string',
         ]);
 
-        $dataToUpdate = $request->only(['nama_lengkap', 'nim', 'email', 'prodi_id', 'angkatan', 'nomor_hp']);
+        $dataToUpdate = $request->only(['nama_lengkap', 'nim', 'email', 'nomor_hp']);
 
         if ($request->filled('cropped_image')) {
             // Hapus foto lama jika ada
