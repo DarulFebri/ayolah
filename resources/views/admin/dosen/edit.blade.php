@@ -213,10 +213,7 @@
                 <input type="text" name="nama" id="nama" value="{{ old('nama', $dosen->nama) }}" required>
             </div>
 
-            <div class="form-group">
-                <label for="jurusan">Jurusan:</label>
-                <input type="text" name="jurusan" id="jurusan" value="{{ old('jurusan', $dosen->jurusan) }}" required>
-            </div>
+            
 
             <div class="form-group">
                 <label for="prodi_id">Program Studi:</label>
@@ -238,9 +235,16 @@
                     <option value="Perempuan" {{ old('jenis_kelamin', $dosen->jenis_kelamin)=='Perempuan' ? 'selected' : '' }}>Perempuan</option>
                 </select>
             </div>
-            
-            {{-- Email dan Password tidak disertakan dalam edit karena biasanya dikelola di halaman terpisah atau dengan form reset password --}}
-            {{-- Namun, jika Anda ingin menambahkannya, pastikan untuk menghandle validasi dan pembaruan password dengan benar di backend --}}
+
+            <div class="form-group">
+                <label for="email">Email (untuk Login):</label>
+                <input type="email" name="email" id="email" value="{{ old('email', $dosen->user->email) }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password Baru (kosongkan jika tidak ingin mengubah):</label>
+                <input type="password" name="password" id="password">
+            </div>
 
             <button type="submit">Update Dosen</button>
         </form>

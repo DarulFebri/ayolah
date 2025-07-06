@@ -73,21 +73,66 @@
             min-height: 100vh;
         }
 
-        .alert-success-custom {
-            background-color: #d4edda; /* Light green background */
-            color: #155724; /* Dark green text */
-            border: 1px solid #c3e6cb; /* Green border */
-            border-radius: 0.25rem; /* Slightly rounded corners */
-            padding: 1rem 1.25rem; /* Padding inside the alert */
-            margin-bottom: 1rem; /* Space below the alert */
+        .alert {
+            position: relative;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
             display: flex;
             align-items: center;
             font-size: 0.95rem;
+            animation: fadeIn 0.5s both;
         }
 
-        .alert-success-custom i {
-            margin-right: 0.75rem; /* Space between icon and text */
-            font-size: 1.2rem;
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .alert-info {
+            background-color: #e0f7fa;
+            color: #00796b;
+            border: 1px solid #b2ebf2;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+
+        .alert-info i {
+            font-size: 1.5rem;
+            color: #00acc1;
+        }
+
+        .alert .close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 0.75rem 1.25rem;
+            color: inherit;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+            opacity: 0.5;
+            cursor: pointer;
+        }
+
+        .alert .close:hover {
+            opacity: 0.75;
         }
         
         /* Sidebar */

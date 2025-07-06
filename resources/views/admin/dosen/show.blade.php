@@ -168,10 +168,7 @@
                 <div class="detail-label">Nama Lengkap</div>
                 <div class="detail-value"><strong>{{ $dosen->nama }}</strong></div>
             </div>
-            <div class="detail-row">
-                <div class="detail-label">Jurusan</div>
-                <div class="detail-value"><strong>{{ $dosen->jurusan }}</strong></div>
-            </div>
+            
             <div class="detail-row">
                 <div class="detail-label">Program Studi</div>
                 <div class="detail-value"><strong>{{ $dosen->prodi->nama_prodi }}</strong></div>

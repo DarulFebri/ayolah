@@ -379,7 +379,7 @@ class AdminController extends Controller
         ]);
 
         $this->logActivity('Membuat dosen baru: ' . $request->nama, 'Dosen');
-        return redirect()->route('admin.dosen.index')->with('success', 'Dosen berhasil ditambahkan!');
+        return redirect()->route('admin.dosen.index')->with('success', 'Akun ' . $request->nama . ' berhasil dibuat!');
     }
 
     public function editDosen(Dosen $dosen)
@@ -392,7 +392,7 @@ class AdminController extends Controller
     {
         $request->validate([
             'nidn' => 'required|unique:dosens,nidn,' . $dosen->id,
-            'nama_lengkap' => 'required', // Perbaikan: Sesuaikan dengan nama kolom di form Anda
+            'nama' => 'required',
             'prodi_id' => 'required|exists:prodis,id',
             'jenis_kelamin' => 'required',
             'email' => 'required|email|unique:users,email,' . $dosen->user->id, // Validate email for existing user
@@ -405,15 +405,15 @@ class AdminController extends Controller
                 $user->email = $request->email;
                 $user->save();
             }
-            if ($user->name !== $request->nama_lengkap) { // Perbaikan: Sesuaikan dengan nama kolom di form Anda
-                $user->name = $request->nama_lengkap;
+            if ($user->name !== $request->nama) {
+                $user->name = $request->nama;
                 $user->save();
             }
         }
 
         $dosen->update([
             'nidn' => $request->nidn,
-            'nama' => $request->nama_lengkap, // Perbaikan: Sesuaikan dengan nama kolom di form Anda
+            'nama' => $request->nama,
             'prodi_id' => $request->prodi_id,
             'jenis_kelamin' => $request->jenis_kelamin,
             'email' => $request->email,

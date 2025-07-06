@@ -212,10 +212,7 @@
                 <input type="text" name="nama" id="nama" value="{{ old('nama') }}" required>
             </div>
 
-            <div class="form-group">
-                <label for="jurusan">Jurusan:</label>
-                <input type="text" name="jurusan" id="jurusan" value="{{ old('jurusan') }}" required>
-            </div>
+            
 
             <div class="form-group">
                 <label for="prodi_id">Program Studi:</label>
