@@ -12,9 +12,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            UserSeeder::class,      // Pertama, buat semua user dasar
-            DosenSeeder::class,     // Kedua, buat detail dosen
-            MahasiswaSeeder::class, // Ketiga, buat detail mahasiswa
+            ProdiSeeder::class,     // Pertama, isi data prodi
+            UserSeeder::class,      // Kedua, buat semua user dasar
+            DosenSeeder::class,     // Ketiga, buat detail dosen
+            MahasiswaSeeder::class, // Keempat, buat detail mahasiswa
             // Tambahkan seeder lain jika ada
         ]);
     }

@@ -174,7 +174,7 @@
             </div>
             <div class="detail-row">
                 <div class="detail-label">Program Studi</div>
-                <div class="detail-value"><strong>{{ $dosen->prodi }}</strong></div>
+                <div class="detail-value"><strong>{{ $dosen->prodi->nama_prodi }}</strong></div>
             </div>
             <div class="detail-row">
                 <div class="detail-label">Jenis Kelamin</div>

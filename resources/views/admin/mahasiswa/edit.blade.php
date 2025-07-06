@@ -219,8 +219,15 @@
             </div>
 
             <div class="form-group">
-                <label for="prodi">Program Studi:</label>
-                <input type="text" name="prodi" id="prodi" value="{{ old('prodi', $mahasiswa->prodi) }}" required>
+                <label for="prodi_id">Program Studi:</label>
+                <select name="prodi_id" id="prodi_id" required>
+                    <option value="">-- Pilih Program Studi --</option>
+                    @foreach ($prodis as $prodi)
+                        <option value="{{ $prodi->id }}" {{ old('prodi_id', $mahasiswa->prodi_id) == $prodi->id ? 'selected' : '' }}>
+                            {{ $prodi->nama_prodi }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="form-group">

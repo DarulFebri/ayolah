@@ -12,7 +12,7 @@
         <p class="detail-item"><strong>NIM:</strong> {{ $mahasiswa->nim }}</p>
         <p class="detail-item"><strong>Nama Lengkap:</strong> {{ $mahasiswa->nama_lengkap }}</p>
         <p class="detail-item"><strong>Jurusan:</strong> {{ $mahasiswa->jurusan }}</p>
-        <p class="detail-item"><strong>Prodi:</strong> {{ $mahasiswa->prodi }}</p>
+        <p class="detail-item"><strong>Prodi:</strong> {{ $mahasiswa->prodi->nama_prodi }}</p>
         <p class="detail-item"><strong>Jenis Kelamin:</strong> {{ $mahasiswa->jenis_kelamin }}</p>
         <p class="detail-item"><strong>Kelas:</strong> {{ $mahasiswa->kelas }}</p>
     </div>

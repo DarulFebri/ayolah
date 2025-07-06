@@ -530,7 +530,7 @@
                             <td>{{ $mahasiswa->nim }}</td>
                             <td>{{ $mahasiswa->nama_lengkap }}</td>
                             <td>{{ $mahasiswa->jurusan }}</td>
-                            <td>{{ $mahasiswa->prodi }}</td>
+                            <td>{{ $mahasiswa->prodi->nama_prodi ?? '-' }}</td>
                             <td>{{ $mahasiswa->jenis_kelamin }}</td>
                             <td>{{ $mahasiswa->kelas }}</td>
                             <td>

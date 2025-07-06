@@ -15,7 +15,7 @@ class Dosen extends Model
         'nidn',
         'nama', // Ini adalah kolom 'nama' di DB yang akan diisi dari 'nama_lengkap' Excel
         'jurusan',
-        'prodi',
+        'prodi_id',
         'jenis_kelamin',
         'email',
         'password', // Sertakan jika Anda mengisi kolom password di tabel dosens

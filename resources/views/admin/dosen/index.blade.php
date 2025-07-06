@@ -352,6 +352,8 @@
                     <th>Nama Lengkap</th>
                     <th>Email</th>
                     <th>No Telepon</th>
+                    <th>Prodi</th>
+                    <th>Prodi</th>
                     <th>Jenis Kelamin</th>
                     <th>Aksi</th>
                 </tr>
@@ -362,6 +364,7 @@
                         <td>{{ $dosen->nidn }}</td>
                         <td>{{ $dosen->nama }}</td>
                         <td>{{ $dosen->email }}</td>
+                        <td>{{ $dosen->prodi->nama_prodi }}</td>
                         <td>{{ $dosen->no_telepon }}</td>
                         <td>{{ $dosen->jenis_kelamin }}</td>
                         <td>

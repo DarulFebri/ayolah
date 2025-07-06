@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Mahasiswa;
 use App\Models\User;
+use App\Models\Prodi; // Tambahkan ini
 use Illuminate\Database\Seeder;
 use Carbon\Carbon; // Pastikan Carbon diimpor
 
@@ -21,7 +22,7 @@ class MahasiswaSeeder extends Seeder
                 'nim' => '2311082037',
                 'nama_lengkap' => 'Hilmi Muhammad Faiz',
                 'jurusan' => 'Teknologi Informasi',
-                'prodi' => 'Rekayasa Perangkat Lunak',
+                'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Laki-laki',
                 'kelas' => 'TI-1',
             ],
@@ -31,7 +32,7 @@ class MahasiswaSeeder extends Seeder
                 'nim' => '2311082011',
                 'nama_lengkap' => 'Arlan Diana',
                 'jurusan' => 'Teknologi Informasi',
-                'prodi' => 'Rekayasa Perangkat Lunak',
+                'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Perempuan',
                 'kelas' => 'TI-1',
             ],
@@ -41,7 +42,7 @@ class MahasiswaSeeder extends Seeder
                 'nim' => '2311082096',
                 'nama_lengkap' => 'ayung',
                 'jurusan' => 'Teknologi Informasi',
-                'prodi' => 'Rekayasa Perangkat Lunak',
+                'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Laki-laki',
                 'kelas' => 'TI-1',
             ],
@@ -51,7 +52,7 @@ class MahasiswaSeeder extends Seeder
                 'nim' => '2311082054',
                 'nama_lengkap' => 'ayel',
                 'jurusan' => 'Teknologi Informasi',
-                'prodi' => 'Rekayasa Perangkat Lunak',
+                'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Laki-laki',
                 'kelas' => 'TI-1',
             ],
@@ -62,7 +63,7 @@ class MahasiswaSeeder extends Seeder
                 'nim' => '2311082052',
                 'nama_lengkap' => 'NuranisaDina',
                 'jurusan' => 'Teknologi Informasi',
-                'prodi' => 'Rekayasa Perangkat Lunak',
+                'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Perempuan',
                 'kelas' => 'TI-1',
             ],
@@ -73,13 +74,15 @@ class MahasiswaSeeder extends Seeder
             $user = User::where('email', $data['email'])->first();
 
             if ($user) { // Pastikan user ditemukan sebelum membuat detail mahasiswa
+                $prodi = Prodi::where('nama_prodi', $data['prodi_nama'])->first();
+
                 Mahasiswa::firstOrCreate(
                     ['nim' => $data['nim']],
                     [
                         'user_id' => $user->id,
                         'nama_lengkap' => $data['nama_lengkap'],
                         'jurusan' => $data['jurusan'],
-                        'prodi' => $data['prodi'],
+                        'prodi_id' => $prodi ? $prodi->id : null, // Gunakan prodi_id
                         'jenis_kelamin' => $data['jenis_kelamin'],
                         'kelas' => $data['kelas'],
                         'email' => $data['email'],

@@ -18,6 +18,7 @@ use App\Mail\OtpMail;
 use App\Models\User;     // Pastikan model User diimpor
 use Illuminate\Support\Facades\Log; // Add this line at the top
 use Illuminate\Validation\Rule; // Tambahkan ini untuk Rule::unique
+use App\Models\Prodi; // Import the Prodi model
 
 use Illuminate\Support\Facades\Storage;
 
@@ -62,7 +63,7 @@ class MahasiswaController extends Controller
     public function index(Request $request)
     {
         // Start with a base query for Mahasiswa
-        $query = Mahasiswa::query();
+        $query = Mahasiswa::with('prodi');
 
         // Check if a search term is present in the request
         if ($request->has('search') && $request->search != '') {
@@ -73,7 +74,9 @@ class MahasiswaController extends Controller
             // to search across multiple columns.
             $query->where('nim', 'like', '%' . $searchTerm . '%')
                   ->orWhere('nama_lengkap', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('prodi', 'like', '%' . $searchTerm . '%');
+                  ->orWhereHas('prodi', function($q) use ($searchTerm) {
+                      $q->where('nama_prodi', 'like', '%' . $searchTerm . '%');
+                  });
             // You can add more `orWhere` clauses if you want to search other fields like 'jurusan', 'kelas', etc.
         }
 
@@ -91,9 +94,9 @@ class MahasiswaController extends Controller
         }
 
         $mahasiswa = $this->getLoggedInMahasiswa();
-        $programStudis = ProgramStudi::all(); // Fetch all program studies
+        $prodis = Prodi::all(); // Fetch all program studies
 
-        return view('mahasiswa.edit_profile', compact('mahasiswa', 'programStudis'));
+        return view('mahasiswa.edit_profile', compact('mahasiswa', 'prodis'));
     }
 
     
@@ -525,13 +528,13 @@ class MahasiswaController extends Controller
             'nama_lengkap' => 'required|string|max:255',
             'nim' => ['required', 'string', 'max:20', Rule::unique('mahasiswas')->ignore($mahasiswa->id)],
             'email' => ['required', 'email', 'max:255', Rule::unique('mahasiswas')->ignore($mahasiswa->id)],
-            'prodi' => 'nullable|string|max:255',
+            'prodi_id' => 'nullable|exists:prodis,id', // Changed to prodi_id
             'angkatan' => 'nullable|integer|digits:4',
             'nomor_hp' => 'nullable|string|max:20',
             'cropped_image' => 'nullable|string',
         ]);
 
-        $dataToUpdate = $request->only(['nama_lengkap', 'nim', 'email', 'prodi', 'angkatan', 'nomor_hp']);
+        $dataToUpdate = $request->only(['nama_lengkap', 'nim', 'email', 'prodi_id', 'angkatan', 'nomor_hp']);
 
         if ($request->filled('cropped_image')) {
             // Hapus foto lama jika ada

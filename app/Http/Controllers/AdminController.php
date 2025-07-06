@@ -5,61 +5,80 @@ namespace App\Http\Controllers;
 use App\Models\Mahasiswa;
 use App\Models\Dosen;
 use App\Models\Pengajuan;
-use App\Models\Sidang; // Tambahkan ini
+use App\Models\Sidang;
 use App\Models\Dokumen;
-use App\Models\User; //
+use App\Models\User;
+use App\Models\Prodi; // Import the Prodi model
+use App\Models\Activity; // Import the Activity model
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\DosenImport;
-use App\Imports\MahasiswaImport; // Tambahkan ini
-use App\Exports\MahasiswaExport; // Tambahkan ini
-use App\Exports\DosenExport; // Tambahkan ini
-use App\Exports\SidangExport; // Tambahkan ini
-use Carbon\Carbon; // Tambahkan ini
+use App\Imports\MahasiswaImport;
+use App\Exports\MahasiswaExport; // Perbaikan: singular
+use App\Exports\DosenExport;     // Perbaikan: singular
+use App\Exports\SidangExport;    // Perbaikan: singular
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash; 
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
+    // Fungsi logActivity (contoh implementasi sederhana jika belum ada)
+    // Anda mungkin ingin memindahkannya ke Service, Trait, atau Helper
+    protected function logActivity($description, $subjectType = null)
+    {
+        Activity::create([
+            'user_id' => Auth::id(), // ID user yang sedang login
+            'activity' => $description,
+            'subject_type' => $subjectType,
+            'subject_id' => null, // Sesuaikan jika ada ID subjek spesifik
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+        ]);
+    }
 
     public function daftarDosen(Request $request)
-{
-    $query = Dosen::query();
-    
-    // Search functionality
-    if ($request->has('search')) {
-        $search = $request->search;
-        $query->where(function($q) use ($search) {
-            $q->where('nama', 'like', "%{$search}%")
-              ->orWhere('nidn', 'like', "%{$search}%")
-              ->orWhere('email', 'like', "%{$search}%");
-        });
+    {
+        $query = Dosen::with('prodi'); // Eager load prodi
+
+        // Search functionality
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('nidn', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhereHas('prodi', function($q) use ($search) {
+                      $q->where('nama_prodi', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Sorting functionality
+        switch ($request->sort) {
+            case 'nama_asc':
+                $query->orderBy('nama', 'asc');
+                break;
+            case 'nama_desc':
+                $query->orderBy('nama', 'desc');
+                break;
+            case 'nidn_asc':
+                $query->orderBy('nidn', 'asc');
+                break;
+            case 'nidn_desc':
+                $query->orderBy('nidn', 'desc');
+                break;
+            default:
+                $query->orderBy('created_at', 'desc');
+        }
+
+        $dosens = $query->paginate(10);
+
+        return view('admin.dosen.index', compact('dosens'));
     }
-    
-    // Sorting functionality
-    switch ($request->sort) {
-        case 'nama_asc':
-            $query->orderBy('nama', 'asc');
-            break;
-        case 'nama_desc':
-            $query->orderBy('nama', 'desc');
-            break;
-        case 'nidn_asc':
-            $query->orderBy('nidn', 'asc');
-            break;
-        case 'nidn_desc':
-            $query->orderBy('nidn', 'desc');
-            break;
-        default:
-            $query->orderBy('created_at', 'desc');
-    }
-    
-    $dosens = $query->paginate(10);
-    
-    return view('admin.dosen.index', compact('dosens'));
-}
 
 
     public function importForm()
@@ -100,9 +119,9 @@ class AdminController extends Controller
     public function daftarPengajuanTa()
     {
         $pengajuans = Pengajuan::with('mahasiswa')
-                      ->where('jenis_pengajuan', 'ta')
-                      ->orderBy('created_at', 'desc')
-                      ->paginate(10);
+                            ->where('jenis_pengajuan', 'ta')
+                            ->orderBy('created_at', 'desc')
+                            ->paginate(10);
         return view('admin.pengajuan.sidang.ta', compact('pengajuans'));
     }
 
@@ -110,9 +129,9 @@ class AdminController extends Controller
     public function daftarPengajuanPkl()
     {
         $pengajuans = Pengajuan::with('mahasiswa')
-                      ->where('jenis_pengajuan', 'pkl')
-                      ->orderBy('created_at', 'desc')
-                      ->paginate(10);
+                            ->where('jenis_pengajuan', 'pkl')
+                            ->orderBy('created_at', 'desc')
+                            ->paginate(10);
         return view('admin.pengajuan.sidang.pkl', compact('pengajuans'));
     }
 
@@ -127,13 +146,13 @@ class AdminController extends Controller
 
     public function setujuiPengajuan(Pengajuan $pengajuan)
     {
-        $pengajuan->update(['status' => 'diverifikasi_admin']); // Changed status to 'diverifikasi_admin' as per your existing code 
+        $pengajuan->update(['status' => 'diverifikasi_admin']);
         return back()->with('success', 'Pengajuan berhasil disetujui.');
     }
 
     public function tolakPengajuan(Pengajuan $pengajuan)
     {
-        $pengajuan->update(['status' => 'ditolak_admin']); // Changed status to 'ditolak_admin' as per your existing code 
+        $pengajuan->update(['status' => 'ditolak_admin']);
         return back()->with('error', 'Pengajuan berhasil ditolak.');
     }
 
@@ -181,7 +200,7 @@ class AdminController extends Controller
 
     // Dibawah ini untuk CRUD mahasiswa
     public function daftarMahasiswa(Request $request){
-        $mahasiswas = Mahasiswa::query(); // Start with a query builder
+        $mahasiswas = Mahasiswa::with('prodi'); // Eager load the prodi relationship
 
         // Sorting
         if ($request->has('sort_by') && $request->has('sort_order')) {
@@ -193,7 +212,18 @@ class AdminController extends Controller
             }
         }
 
-        $mahasiswas = $mahasiswas->get(); // Get the results
+        // Search for mahasiswa
+        if ($request->has('search')) {
+            $search = $request->search;
+            $mahasiswas->where(function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%")
+                  ->orWhere('nim', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+
+        $mahasiswas = $mahasiswas->paginate(10); // Add pagination here
 
         return view('admin.mahasiswa.index', compact('mahasiswas'));
     }
@@ -205,73 +235,54 @@ class AdminController extends Controller
 
     public function createMahasiswa()
     {
-        return view('admin.mahasiswa.create');
+        $prodis = Prodi::all(); // Fetch all program studies
+        return view('admin.mahasiswa.create', compact('prodis'));
     }
-
-    /*public function storeMahasiswa(Request $request)
-    {
-        $request->validate([
-            'nim' => 'required|unique:mahasiswas',
-            'nama_lengkap' => 'required',
-            'jurusan' => 'required',
-            'prodi' => 'required',
-            'jenis_kelamin' => 'required',
-            'kelas' => 'required',
-        ]);
-
-        Mahasiswa::create($request->all());
-
-        logActivity('Membuat mahasiswa baru: ' . $request->nama_lengkap, 'Mahasiswa');
-
-        return redirect()->route('admin.mahasiswa.index')->with('success', 'Mahasiswa berhasil ditambahkan.');
-    }>*/
 
     public function storeMahasiswa(Request $request)
     {
-        // Pastikan Anda memiliki Validator facade di-import: use Illuminate\Support\Facades\Validator;
         $validator = Validator::make($request->all(), [
             'nim' => 'required|unique:mahasiswas',
             'nama_lengkap' => 'required',
             'jurusan' => 'required',
-            'prodi' => 'required',
+            'prodi_id' => 'required|exists:prodis,id',
             'jenis_kelamin' => 'required',
             'kelas' => 'required',
-            'email' => 'required|email|unique:users', // Validasi email untuk user
-            'password' => 'required|min:8', // Validasi password untuk user
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:8',
         ]);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
 
-        // Buat user baru terlebih dahulu
         $user = User::create([
-            'name' => $request->nama_lengkap, // Gunakan nama lengkap mahasiswa sebagai nama user
+            'name' => $request->nama_lengkap,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'mahasiswa', // Tetapkan role 'mahasiswa'
+            'role' => 'mahasiswa',
         ]);
 
-        // Buat data mahasiswa dan kaitkan dengan user_id yang baru dibuat
         Mahasiswa::create([
-            'user_id' => $user->id, // Penting: kaitkan dengan ID user yang baru dibuat
+            'user_id' => $user->id,
             'nim' => $request->nim,
             'nama_lengkap' => $request->nama_lengkap,
             'jurusan' => $request->jurusan,
-            'prodi' => $request->prodi,
-            'email' =>$request->email,
+            'prodi_id' => $request->prodi_id,
+            'email' => $request->email, // Email mahasiswa juga disimpan di tabel mahasiswa
             'jenis_kelamin' => $request->jenis_kelamin,
             'kelas' => $request->kelas,
         ]);
 
-        logActivity('Membuat mahasiswa baru: ' . $request->nama_lengkap, 'Mahasiswa');
+        $this->logActivity('Membuat mahasiswa baru: ' . $request->nama_lengkap, 'Mahasiswa'); // Menggunakan $this->logActivity
 
         return redirect()->route('admin.mahasiswa.index')->with('success', 'Mahasiswa berhasil ditambahkan!');
     }
 
     public function editMahasiswa(Mahasiswa $mahasiswa)
     {
-        return view('admin.mahasiswa.edit', compact('mahasiswa'));
+        $prodis = Prodi::all(); // Fetch all program studies for the dropdown
+        return view('admin.mahasiswa.edit', compact('mahasiswa', 'prodis'));
     }
 
     public function updateMahasiswa(Request $request, Mahasiswa $mahasiswa)
@@ -280,23 +291,37 @@ class AdminController extends Controller
             'nim' => 'required|unique:mahasiswas,nim,' . $mahasiswa->id,
             'nama_lengkap' => 'required',
             'jurusan' => 'required',
-            'prodi' => 'required',
+            'prodi_id' => 'required|exists:prodis,id',
             'jenis_kelamin' => 'required',
             'kelas' => 'required',
+            'email' => 'required|email|unique:users,email,' . $mahasiswa->user->id, // Validate email for existing user
         ]);
+
+        // Update User data if email is changed
+        $user = $mahasiswa->user;
+        if ($user && $user->email !== $request->email) {
+            $user->email = $request->email;
+            $user->save();
+        }
+        // Update name for user as well
+        if ($user && $user->name !== $request->nama_lengkap) {
+            $user->name = $request->nama_lengkap;
+            $user->save();
+        }
 
         $mahasiswa->update($request->all());
 
-        logActivity('Mengupdate mahasiswa: ' . $mahasiswa->nama_lengkap, 'Mahasiswa');
+        $this->logActivity('Mengupdate mahasiswa: ' . $mahasiswa->nama_lengkap, 'Mahasiswa');
 
         return redirect()->route('admin.mahasiswa.index')->with('success', 'Mahasiswa berhasil diupdate.');
     }
 
     public function destroyMahasiswa(Mahasiswa $mahasiswa)
     {
+        $mahasiswa->user()->delete(); // Delete associated user first
         $mahasiswa->delete();
 
-        logActivity('Menghapus mahasiswa: ' . $mahasiswa->nama_lengkap, 'Mahasiswa');
+        $this->logActivity('Menghapus mahasiswa: ' . $mahasiswa->nama_lengkap, 'Mahasiswa');
 
         return redirect()->route('admin.mahasiswa.index')->with('success', 'Mahasiswa berhasil dihapus.');
     }
@@ -306,9 +331,10 @@ class AdminController extends Controller
         return view('admin.dosen.show', compact('dosen'));
     }
 
-    public function createDosen() 
+    public function createDosen()
     {
-        return view('admin.dosen.create');
+        $prodis = Prodi::all(); // Fetch all program studies
+        return view('admin.dosen.create', compact('prodis'));
     }
 
     public function storeDosen(Request $request)
@@ -317,7 +343,7 @@ class AdminController extends Controller
             'nidn' => 'required|unique:dosens',
             'nama' => 'required',
             'jurusan' => 'required',
-            'prodi' => 'required',
+            'prodi_id' => 'required|exists:prodis,id',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8',
         ]);
@@ -338,38 +364,65 @@ class AdminController extends Controller
             'nidn' => $request->nidn,
             'nama' => $request->nama,
             'jurusan' => $request->jurusan,
-            'email' => $request->email,
-            'prodi' => $request->prodi,
+            'email' => $request->email, // Email dosen juga disimpan di tabel dosen
+            'prodi_id' => $request->prodi_id,
             'jenis_kelamin' => $request->jenis_kelamin,
-            'password' => $request->password,
-
+            // 'password' => $request->password, // Ini dihapus karena password ada di tabel users
         ]);
 
-        // logActivity('Membuat dosen baru: ' . $request->nama, 'Dosen'); // Jika Anda menggunakan logActivity
+        $this->logActivity('Membuat dosen baru: ' . $request->nama, 'Dosen');
         return redirect()->route('admin.dosen.index')->with('success', 'Dosen berhasil ditambahkan!');
     }
 
     public function editDosen(Dosen $dosen)
     {
-        return view('admin.dosen.edit', compact('dosen'));
+        $prodis = Prodi::all(); // Fetch all program studies
+        return view('admin.dosen.edit', compact('dosen', 'prodis'));
     }
 
     public function updateDosen(Request $request, Dosen $dosen)
     {
         $request->validate([
             'nidn' => 'required|unique:dosens,nidn,' . $dosen->id,
-            'nama_lengkap' => 'required',
+            'nama_lengkap' => 'required', // Perbaikan: Sesuaikan dengan nama kolom di form Anda
+            'prodi_id' => 'required|exists:prodis,id',
             'jenis_kelamin' => 'required',
+            'email' => 'required|email|unique:users,email,' . $dosen->user->id, // Validate email for existing user
         ]);
 
-        $dosen->update($request->all());
+        // Update User data if email or name is changed
+        $user = $dosen->user;
+        if ($user) {
+            if ($user->email !== $request->email) {
+                $user->email = $request->email;
+                $user->save();
+            }
+            if ($user->name !== $request->nama_lengkap) { // Perbaikan: Sesuaikan dengan nama kolom di form Anda
+                $user->name = $request->nama_lengkap;
+                $user->save();
+            }
+        }
+
+        $dosen->update([
+            'nidn' => $request->nidn,
+            'nama' => $request->nama_lengkap, // Perbaikan: Sesuaikan dengan nama kolom di form Anda
+            'prodi_id' => $request->prodi_id,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'email' => $request->email,
+            // Jika ada kolom lain yang diupdate di model Dosen, tambahkan di sini
+        ]);
+
+        $this->logActivity('Mengupdate dosen: ' . $dosen->nama, 'Dosen'); // Menggunakan nama dari model Dosen
 
         return redirect()->route('admin.dosen.index')->with('success', 'Dosen berhasil diupdate.');
     }
 
     public function destroyDosen(Dosen $dosen)
     {
+        $dosen->user()->delete(); // Delete associated user first
         $dosen->delete();
+
+        $this->logActivity('Menghapus dosen: ' . $dosen->nama, 'Dosen');
 
         return redirect()->route('admin.dosen.index')->with('success', 'Dosen berhasil dihapus.');
     }
@@ -385,18 +438,27 @@ class AdminController extends Controller
             'file' => 'required|mimes:xlsx,xls',
         ]);
 
-        Excel::import(new DosenImport, $request->file('file'));
-
-        return redirect()->route('admin.dosen.index')->with('success', 'Data dosen berhasil diimport.');
+        try {
+            Excel::import(new DosenImport, $request->file('file'));
+            return redirect()->route('admin.dosen.index')->with('success', 'Data dosen berhasil diimport.');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $errors = [];
+            foreach ($failures as $failure) {
+                $errors[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+            }
+            return redirect()->back()->with('error', 'Gagal mengimpor data dosen. Ada kesalahan validasi: ' . implode('; ', $errors));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengimpor data dosen: ' . $e->getMessage());
+        }
     }
 
     // Dibawah ini Pengajuan Sidang Methods
     public function daftarPengajuan()
     {
-        //$pengajuans = Pengajuan::with('mahasiswa')->get(); // Eager load data mahasiswa
-        $pengajuans = Pengajuan::with('mahasiswa') // Eager load relasi mahasiswa jika digunakan di view
-            ->orderBy('created_at', 'desc') // Urutkan berdasarkan tanggal terbaru
-            ->paginate(10); // Ambil 10 pengajuan per halaman. Sesuaikan jumlah ini.
+        $pengajuans = Pengajuan::with('mahasiswa')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         return view('admin.pengajuan.index', compact('pengajuans'));
     }
@@ -404,7 +466,7 @@ class AdminController extends Controller
     // Dibawah ini Persidangan Methods
     public function daftarSidang()
     {
-        $sidangs = Sidang::with('pengajuan.mahasiswa')->get(); // Eager load data
+        $sidangs = Sidang::with('pengajuan.mahasiswa')->get();
         return view('admin.sidang.index', compact('sidangs'));
     }
 
@@ -431,10 +493,6 @@ class AdminController extends Controller
         return view('admin.sidang.show', compact('sidang'));
     }
 
-    // Method untuk menampilkan nilai dan hasil (jika diperlukan terpisah)
-    // public function nilaiSidang(Sidang $sidang) { ... }
-    // public function hasilSidang(Sidang $sidang) { ... }
-
     // Dibawah ini import mahasiswa method
     public function importMahasiswaForm()
     {
@@ -447,31 +505,41 @@ class AdminController extends Controller
             'file' => 'required|mimes:xlsx,xls',
         ]);
 
-        Excel::import(new MahasiswaImport, $request->file('file'));
-
-        return redirect()->route('admin.mahasiswa.index')->with('success', 'Data mahasiswa berhasil diimport.');
+        try {
+            Excel::import(new MahasiswaImport, $request->file('file'));
+            return redirect()->route('admin.mahasiswa.index')->with('success', 'Data mahasiswa berhasil diimport.');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $errors = [];
+            foreach ($failures as $failure) {
+                $errors[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+            }
+            return redirect()->back()->with('error', 'Gagal mengimpor data mahasiswa. Ada kesalahan validasi: ' . implode('; ', $errors));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengimpor data mahasiswa: ' . $e->getMessage());
+        }
     }
 
     // Dibawah ini export (mahasiswa, Dosen, Sidang) method
     public function exportMahasiswa()
     {
-        return Excel::download(new MahasiswasExport, 'data_mahasiswa.xlsx');
+        return Excel::download(new MahasiswaExport, 'data_mahasiswa.xlsx'); // Perbaikan: singular
     }
 
     public function exportDosen()
     {
-        return Excel::download(new DosensExport, 'data_dosen.xlsx');
+        return Excel::download(new DosenExport, 'data_dosen.xlsx'); // Perbaikan: singular
     }
 
     public function exportSidang()
     {
-        return Excel::download(new SidangsExport, 'data_persidangan.xlsx');
+        return Excel::download(new SidangExport, 'data_persidangan.xlsx'); // Perbaikan: singular
     }
 
     // Dibawah ini Untuk Log aktivitas
     public function showActivities()
     {
-        $activities = Activity::with('user')->latest()->paginate(10); // Ambil log, urutkan terbaru, paginasi
+        $activities = Activity::with('user')->latest()->paginate(10);
         return view('admin.activities.index', compact('activities'));
     }
 }

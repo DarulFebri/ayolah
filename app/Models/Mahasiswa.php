@@ -14,7 +14,7 @@ class Mahasiswa extends Model
         'nim',
         'nama_lengkap',
         'jurusan',
-        'prodi',
+        'prodi_id',
         'jenis_kelamin',
         'kelas',
         'email',
@@ -47,5 +47,11 @@ class Mahasiswa extends Model
     public function pengajuans()
     {
         return $this->hasMany(Pengajuan::class);
+    }
+
+    // Relasi ke Prodi
+    public function prodi()
+    {
+        return $this->belongsTo(Prodi::class);
     }
 }

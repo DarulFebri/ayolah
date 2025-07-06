@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Dosen;
 use App\Models\User;
+use App\Models\Prodi; // Tambahkan ini
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon; // Pastikan Carbon diimpor
@@ -22,7 +23,7 @@ class DosenSeeder extends Seeder
                 'password' => 'password123', // Password untuk tabel User
                 'nidn' => '197001012000011001',
                 'jurusan' => 'Teknik Informatika',
-                'prodi' => 'Sistem Informasi',
+                'prodi_nama' => 'Sistem Informasi',
                 'jenis_kelamin' => 'Laki-laki',
             ],
             [
@@ -31,7 +32,7 @@ class DosenSeeder extends Seeder
                 'password' => 'password123',
                 'nidn' => '198005102005021002',
                 'jurusan' => 'Teknik Informatika',
-                'prodi' => 'Teknik Komputer',
+                'prodi_nama' => 'Teknik Komputer',
                 'jenis_kelamin' => 'Laki-laki',
             ],
             [
@@ -40,7 +41,7 @@ class DosenSeeder extends Seeder
                 'password' => 'password123',
                 'nidn' => '197511202002032003',
                 'jurusan' => 'Teknik Informatika',
-                'prodi' => 'Sistem Informasi',
+                'prodi_nama' => 'Sistem Informasi',
                 'jenis_kelamin' => 'Perempuan',
             ],
             [
@@ -49,7 +50,7 @@ class DosenSeeder extends Seeder
                 'password' => 'password123',
                 'nidn' => '197511202002032004',
                 'jurusan' => 'Teknologi Informasi',
-                'prodi' => 'Sistem Komputer',
+                'prodi_nama' => 'Sistem Komputer',
                 'jenis_kelamin' => 'Laki-Laki',
             ],
             [
@@ -58,7 +59,7 @@ class DosenSeeder extends Seeder
                 'password' => '12345678', // Password untuk tabel User
                 'nidn' => '1234567890',
                 'jurusan' => 'Teknik Informatika',
-                'prodi' => 'Ilmu Komputer',
+                'prodi_nama' => 'Ilmu Komputer',
                 'jenis_kelamin' => 'Laki-laki',
             ],
             [
@@ -67,7 +68,7 @@ class DosenSeeder extends Seeder
                 'password' => '12345678',
                 'nidn' => '0987654321',
                 'jurusan' => 'Sistem Informasi',
-                'prodi' => 'Sistem Informasi',
+                'prodi_nama' => 'Sistem Informasi',
                 'jenis_kelamin' => 'Laki-laki',
             ],
             [
@@ -76,7 +77,7 @@ class DosenSeeder extends Seeder
                 'password' => '12345678',
                 'nidn' => '1122334455',
                 'jurusan' => 'Teknik Komputer',
-                'prodi' => 'Jaringan Komputer',
+                'prodi_nama' => 'Jaringan Komputer',
                 'jenis_kelamin' => 'Laki-laki',
             ],
         ];
@@ -96,13 +97,15 @@ class DosenSeeder extends Seeder
             );
 
             // Kemudian buat/update detail dosen di tabel dosens
+            $prodi = Prodi::where('nama_prodi', $data['prodi_nama'])->first();
+
             Dosen::firstOrCreate(
                 ['nidn' => $data['nidn']],
                 [
                     'user_id' => $user->id,
                     'nama' => $data['name'],
                     'jurusan' => $data['jurusan'],
-                    'prodi' => $data['prodi'],
+                    'prodi_id' => $prodi ? $prodi->id : null, // Gunakan prodi_id
                     'jenis_kelamin' => $data['jenis_kelamin'],
                     'email' => $data['email'],
                     'password' => Hash::make($data['password']), // <-- PENTING: BARIS INI HARUS ADA
