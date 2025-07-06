@@ -1183,8 +1183,8 @@
                         <span class="tooltiptext">Daftar Pengajuan</span>
                     </div>
                 </a>
-                <a href="{{ route('mahasiswa.pengajuan.pilih') }}" style="text-decoration: none; color: inherit;">
-                    <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.pengajuan.pilih') || Request::routeIs('mahasiswa.pengajuan.detail') ? 'active' : '' }}">
+                <a href="{{ route('mahasiswa.pengajuan.index') }}" style="text-decoration: none; color: inherit;">
+                    <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.pengajuan.create') || Request::routeIs('mahasiswa.pengajuan.detail') ? 'active' : '' }}">
                         <i class="fas fa-chevron-right"></i>
                         <span>Buat Pengajuan</span>
                         <span class="tooltiptext">Buat Pengajuan</span>
