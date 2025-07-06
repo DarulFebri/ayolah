@@ -69,7 +69,7 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label for="nama"><i class="fas fa-user"></i> Nama Lengkap</label>
-                    <input type="text" id="nama_lengkap" name="nama_lengkap" value="{{ old('nama_lengkap', $mahasiswa->nama_lengkap) }}" required class="form-input @error('nama') is-invalid @enderror">
+                    <input type="text" id="nama_lengkap" name="nama_lengkap" value="{{ old('nama_lengkap', $mahasiswa->nama_lengkap) }}" required class="form-input @error('nama') is-invalid @enderror" readonly>
                     @error('nama')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -77,7 +77,7 @@
 
                 <div class="form-group">
                     <label for="nim"><i class="fas fa-id-card"></i> NIM</label>
-                    <input type="text" id="nim" name="nim" value="{{ old('nim', $mahasiswa->nim) }}" required class="form-input @error('nim') is-invalid @enderror">
+                    <input type="text" id="nim" name="nim" value="{{ old('nim', $mahasiswa->nim) }}" required class="form-input @error('nim') is-invalid @enderror" readonly>
                     @error('nim')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
