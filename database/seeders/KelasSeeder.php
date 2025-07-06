@@ -13,14 +13,14 @@ class KelasSeeder extends Seeder
     public function run(): void
     {
         $kelas = [
-            ['nama' => 'TI-1'],
-            ['nama' => 'TI-2'],
-            ['nama' => 'TI-3'],
-            ['nama' => 'TI-4'],
-            ['nama' => 'TI-5'],
-            ['nama' => 'TI-6'],
-            ['nama' => 'TI-7'],
-            ['nama' => 'TI-8'],
+            ['nama_kelas' => 'TI-1'],
+            ['nama_kelas' => 'TI-2'],
+            ['nama_kelas' => 'TI-3'],
+            ['nama_kelas' => 'TI-4'],
+            ['nama_kelas' => 'TI-5'],
+            ['nama_kelas' => 'TI-6'],
+            ['nama_kelas' => 'TI-7'],
+            ['nama_kelas' => 'TI-8'],
         ];
 
         foreach ($kelas as $k) {

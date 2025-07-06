@@ -109,7 +109,7 @@ class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, W
                 $prodiModel = Prodi::firstOrCreate(['nama_prodi' => $prodi]);
 
                 // Cari atau buat Kelas
-                $kelasModel = Kelas::firstOrCreate(['nama' => $kelas]);
+                $kelasModel = Kelas::firstOrCreate(['nama_kelas' => $kelas]);
 
                 // Buat Data Mahasiswa Baru
                 Mahasiswa::create([
@@ -143,7 +143,7 @@ class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, W
             'nama_lengkap'  => 'required|string|max:255',
             'prodi'         => 'required|string|max:255|exists:prodis,nama_prodi',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'kelas'         => 'required|string|max:255|exists:kelas,nama',
+            'kelas'         => 'required|string|max:255|exists:kelas,nama_kelas',
             'email'         => [
                 'required',
                 'string',

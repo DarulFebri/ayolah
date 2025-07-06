@@ -30,7 +30,7 @@ class MahasiswaExport implements FromCollection, WithHeadings, ShouldAutoSize //
                 $mahasiswa->nama_lengkap,
                 $mahasiswa->prodi->nama_prodi ?? 'N/A',
                 $mahasiswa->jenis_kelamin,
-                $mahasiswa->kelas->nama ?? 'N/A',
+                $mahasiswa->kelas->nama_kelas ?? 'N/A',
                 $mahasiswa->email,
             ];
         });

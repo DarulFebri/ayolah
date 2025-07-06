@@ -16,12 +16,12 @@ return new class extends Migration
         $unique_kelas = DB::table('mahasiswas')->whereNotNull('kelas')->distinct()->pluck('kelas');
 
         // Masukkan nilai unik ke dalam tabel 'kelas'
-        foreach ($unique_kelas as $nama_kelas) {
-            DB::table('kelas')->insert(['nama' => $nama_kelas]);
+        foreach ($unique_kelas as $nama_kelas_value) {
+            DB::table('kelas')->insert(['nama_kelas' => $nama_kelas_value]);
         }
 
         // Dapatkan pemetaan dari nama kelas ke id kelas yang baru dibuat
-        $kelas_map = DB::table('kelas')->pluck('id', 'nama');
+        $kelas_map = DB::table('kelas')->pluck('id', 'nama_kelas');
 
         // Perbarui setiap baris di tabel 'mahasiswas' dengan 'kelas_id' yang sesuai
         $mahasiswas = DB::table('mahasiswas')->whereNotNull('kelas')->select('id', 'kelas')->get();

@@ -64,7 +64,7 @@ class MahasiswaController extends Controller
     public function index(Request $request)
     {
         // Start with a base query for Mahasiswa
-        $query = Mahasiswa::with('prodi');
+        $query = Mahasiswa::with(['prodi', 'kelas']);
 
         // Check if a search term is present in the request
         if ($request->has('search') && $request->search != '') {

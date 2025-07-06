@@ -769,6 +769,14 @@
                     <span class="tooltiptext">Program Studi</span>
                 </div>
             </a>
+
+            <a href="{{ route('admin.kelas.index') }}" style="text-decoration: none; color: inherit;">
+                <div class="menu-item tooltip {{ request()->routeIs('admin.kelas.*') ? 'active' : '' }}">
+                    <i class="fas fa-chalkboard"></i>
+                    <span>Kelas</span>
+                    <span class="tooltiptext">Kelas</span>
+                </div>
+            </a>
             
             <div class="menu-item tooltip" onclick="toggleSubmenu('jadwal', event)">
                 <i class="fas fa-calendar-alt"></i>

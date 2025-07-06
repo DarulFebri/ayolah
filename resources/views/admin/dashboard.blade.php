@@ -68,6 +68,17 @@
                 </h3>
             </div>
         </a>
+
+        <a href="{{ route('admin.kelas.index') }}" class="card-link">
+            <div class="card clickable-card medium">
+                <div class="card-icon">
+                    <i class="fas fa-chalkboard"></i>
+                </div>
+                <h3 class="card-title">
+                    Manajemen Kelas
+                </h3>
+            </div>
+        </a>
         
         <a href="{{ route('admin.sidang.kalender') }}" class="card-link">
             <div class="card clickable-card medium">

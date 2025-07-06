@@ -8,6 +8,7 @@ use App\Http\Controllers\DokumenController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KajurController;
 use App\Http\Controllers\PengajuanController;
+use App\Http\Controllers\KelasController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -102,6 +103,19 @@ Route::prefix('admin')->group(function () {
         Route::get('/prodi/{prodi}/edit', [AdminController::class, 'editProdi'])->name('admin.prodi.edit');
         Route::put('/prodi/{prodi}', [AdminController::class, 'updateProdi'])->name('admin.prodi.update');
         Route::delete('/prodi/{prodi}', [AdminController::class, 'destroyProdi'])->name('admin.prodi.destroy');
+
+        
+
+        // Kelas Management
+        Route::resource('kelas', KelasController::class)->names([
+            'index' => 'admin.kelas.index',
+            'create' => 'admin.kelas.create',
+            'store' => 'admin.kelas.store',
+            'show' => 'admin.kelas.show',
+            'edit' => 'admin.kelas.edit',
+            'update' => 'admin.kelas.update',
+            'destroy' => 'admin.kelas.destroy',
+        ]);
 
         // Rute untuk admin melihat dokumen
         Route::get('/dokumen/{dokumen}/lihat', [DokumenController::class, 'lihatDokumenAdmin'])->name('admin.dokumen.lihat');

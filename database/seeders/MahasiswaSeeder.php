@@ -75,7 +75,7 @@ class MahasiswaSeeder extends Seeder
 
             if ($user) { // Pastikan user ditemukan sebelum membuat detail mahasiswa
                 $prodi = Prodi::where('nama_prodi', $data['prodi_nama'])->first();
-                $kelas = Kelas::where('nama', $data['kelas'])->first();
+                $kelas = Kelas::where('nama_kelas', $data['kelas'])->first();
 
                 Mahasiswa::firstOrCreate(
                     ['nim' => $data['nim']],

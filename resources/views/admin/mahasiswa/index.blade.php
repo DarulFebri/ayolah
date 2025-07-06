@@ -476,7 +476,7 @@
                             <td>{{ $mahasiswa->nama_lengkap }}</td>
                             <td>{{ $mahasiswa->prodi->nama_prodi ?? '-' }}</td>
                             <td>{{ $mahasiswa->jenis_kelamin }}</td>
-                            <td>{{ $mahasiswa->kelas->nama ?? '-' }}</td>
+                            <td>{{ $mahasiswa->kelas->nama_kelas ?? '-' }}</td>
                             <td>
                                 <a href="{{ route('admin.mahasiswa.show', $mahasiswa->id) }}" class="action-icon view-icon" title="Detail">
                                     <div class="action-icon view-icon">
