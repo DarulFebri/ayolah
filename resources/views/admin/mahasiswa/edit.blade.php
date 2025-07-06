@@ -213,7 +213,10 @@
                 <input type="text" name="nama_lengkap" id="nama_lengkap" value="{{ old('nama_lengkap', $mahasiswa->nama_lengkap) }}" required>
             </div>
 
-            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" value="{{ old('email', $mahasiswa->user->email ?? '') }}" required>
+            </div>
 
             <div class="form-group">
                 <label for="prodi_id">Program Studi:</label>
@@ -237,18 +240,18 @@
             </div>
 
             <div class="form-group">
-                <label for="kelas">Kelas:</label>
-                <input type="text" name="kelas" id="kelas" value="{{ old('kelas', $mahasiswa->kelas) }}" required>
+                <label for="kelas_id">Kelas:</label>
+                <select name="kelas_id" id="kelas_id" required>
+                    <option value="">-- Pilih Kelas --</option>
+                    @foreach ($kelas as $k)
+                        <option value="{{ $k->id }}" {{ old('kelas_id', $mahasiswa->kelas_id) == $k->id ? 'selected' : '' }}>
+                            {{ $k->nama }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
-            {{-- Email dan Password tidak disertakan dalam edit secara default untuk alasan keamanan.
-                 Biasanya dikelola di halaman terpisah atau dengan form reset password. --}}
-            {{--
-            <div class="form-group">
-                <label for="email">Email (untuk Login):</label>
-                <input type="email" name="email" id="email" value="{{ old('email', $mahasiswa->user->email ?? '') }}" required>
-            </div>
-
+            {{-- Password Baru (isi jika ingin mengubah):
             <div class="form-group">
                 <label for="password">Password Baru (isi jika ingin mengubah):</label>
                 <input type="password" name="password" id="password">

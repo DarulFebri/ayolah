@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             ProdiSeeder::class,     // Pertama, isi data prodi
             UserSeeder::class,      // Kedua, buat semua user dasar
             DosenSeeder::class,     // Ketiga, buat detail dosen
+            KelasSeeder::class,     // Tambahkan ini untuk mengisi data kelas
             MahasiswaSeeder::class, // Keempat, buat detail mahasiswa
             // Tambahkan seeder lain jika ada
         ]);

@@ -11,10 +11,10 @@
     <div class="card-body">
         <p class="detail-item"><strong>NIM:</strong> {{ $mahasiswa->nim }}</p>
         <p class="detail-item"><strong>Nama Lengkap:</strong> {{ $mahasiswa->nama_lengkap }}</p>
-        
+        <p class="detail-item"><strong>Email:</strong> {{ $mahasiswa->user->email ?? '-' }}</p>
         <p class="detail-item"><strong>Prodi:</strong> {{ $mahasiswa->prodi->nama_prodi }}</p>
         <p class="detail-item"><strong>Jenis Kelamin:</strong> {{ $mahasiswa->jenis_kelamin }}</p>
-        <p class="detail-item"><strong>Kelas:</strong> {{ $mahasiswa->kelas }}</p>
+        <p class="detail-item"><strong>Kelas:</strong> {{ $mahasiswa->kelas->nama ?? '-' }}</p>
     </div>
 
     <div style="text-align: center; margin-top: 30px; display: flex; justify-content: center; gap: 15px;">

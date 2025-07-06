@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Kelas;
 use App\Models\Mahasiswa;
 use App\Models\User;
 use App\Models\Prodi; // Tambahkan ini
 use Illuminate\Database\Seeder;
-use Carbon\Carbon; // Pastikan Carbon diimpor
 
 class MahasiswaSeeder extends Seeder
 {
@@ -75,6 +75,7 @@ class MahasiswaSeeder extends Seeder
 
             if ($user) { // Pastikan user ditemukan sebelum membuat detail mahasiswa
                 $prodi = Prodi::where('nama_prodi', $data['prodi_nama'])->first();
+                $kelas = Kelas::where('nama', $data['kelas'])->first();
 
                 Mahasiswa::firstOrCreate(
                     ['nim' => $data['nim']],
@@ -84,7 +85,7 @@ class MahasiswaSeeder extends Seeder
                         
                         'prodi_id' => $prodi ? $prodi->id : null, // Gunakan prodi_id
                         'jenis_kelamin' => $data['jenis_kelamin'],
-                        'kelas' => $data['kelas'],
+                        'kelas_id' => $kelas ? $kelas->id : null,
                         'email' => $data['email'],
                     ]
                 );

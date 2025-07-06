@@ -236,8 +236,15 @@
             </div>
 
             <div class="form-group">
-                <label for="kelas">Kelas:</label>
-                <input type="text" name="kelas" id="kelas" value="{{ old('kelas') }}" required>
+                <label for="kelas_id">Kelas:</label>
+                <select name="kelas_id" id="kelas_id" required>
+                    <option value="">-- Pilih Kelas --</option>
+                    @foreach ($kelas as $k)
+                        <option value="{{ $k->id }}" {{ old('kelas_id') == $k->id ? 'selected' : '' }}>
+                            {{ $k->nama }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="form-group">

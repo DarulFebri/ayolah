@@ -10,6 +10,7 @@ use App\Models\Dokumen;
 use App\Models\User;
 use App\Models\Prodi; // Import the Prodi model
 use App\Models\Activity; // Import the Activity model
+use App\Models\Kelas; // Import the Kelas model
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -200,7 +201,7 @@ class AdminController extends Controller
 
     // Dibawah ini untuk CRUD mahasiswa
     public function daftarMahasiswa(Request $request){
-        $mahasiswas = Mahasiswa::with('prodi'); // Eager load the prodi relationship
+        $mahasiswas = Mahasiswa::with(['prodi', 'kelas']); // Eager load the prodi relationship
 
         // Sorting
         if ($request->has('sort_by') && $request->has('sort_order')) {
@@ -230,13 +231,15 @@ class AdminController extends Controller
 
     public function detailMahasiswa(Mahasiswa $mahasiswa)
     {
+        $mahasiswa->load(['prodi', 'kelas']); // Eager load prodi and kelas relationships
         return view('admin.mahasiswa.show', compact('mahasiswa'));
     }
 
     public function createMahasiswa()
     {
         $prodis = Prodi::all(); // Fetch all program studies
-        return view('admin.mahasiswa.create', compact('prodis'));
+        $kelas = Kelas::all(); // Fetch all classes
+        return view('admin.mahasiswa.create', compact('prodis', 'kelas'));
     }
 
     public function storeMahasiswa(Request $request)
@@ -246,7 +249,7 @@ class AdminController extends Controller
             'nama_lengkap' => 'required',
             'prodi_id' => 'required|exists:prodis,id',
             'jenis_kelamin' => 'required',
-            'kelas' => 'required',
+            'kelas_id' => 'required|exists:kelas,id',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8',
         ]);
@@ -269,7 +272,7 @@ class AdminController extends Controller
             'prodi_id' => $request->prodi_id,
             'email' => $request->email, // Email mahasiswa juga disimpan di tabel mahasiswa
             'jenis_kelamin' => $request->jenis_kelamin,
-            'kelas' => $request->kelas,
+            'kelas_id' => $request->kelas_id,
         ]);
 
         $this->logActivity('Membuat mahasiswa baru: ' . $request->nama_lengkap, 'Mahasiswa'); // Menggunakan $this->logActivity
@@ -280,7 +283,8 @@ class AdminController extends Controller
     public function editMahasiswa(Mahasiswa $mahasiswa)
     {
         $prodis = Prodi::all(); // Fetch all program studies for the dropdown
-        return view('admin.mahasiswa.edit', compact('mahasiswa', 'prodis'));
+        $kelas = Kelas::all(); // Fetch all classes
+        return view('admin.mahasiswa.edit', compact('mahasiswa', 'prodis', 'kelas'));
     }
 
     public function updateMahasiswa(Request $request, Mahasiswa $mahasiswa)
@@ -290,7 +294,7 @@ class AdminController extends Controller
             'nama_lengkap' => 'required',
             'prodi_id' => 'required|exists:prodis,id',
             'jenis_kelamin' => 'required',
-            'kelas' => 'required',
+            'kelas_id' => 'required|exists:kelas,id',
             'email' => 'required|email|unique:users,email,' . $mahasiswa->user->id, // Validate email for existing user
         ]);
 
@@ -306,7 +310,14 @@ class AdminController extends Controller
             $user->save();
         }
 
-        $mahasiswa->update($request->all());
+        $mahasiswa->update([
+            'nim' => $request->nim,
+            'nama_lengkap' => $request->nama_lengkap,
+            'prodi_id' => $request->prodi_id,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'kelas_id' => $request->kelas_id,
+            'email' => $request->email,
+        ]);
 
         $this->logActivity('Mengupdate mahasiswa: ' . $mahasiswa->nama_lengkap, 'Mahasiswa');
 
