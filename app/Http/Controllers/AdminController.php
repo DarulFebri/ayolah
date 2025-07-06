@@ -543,9 +543,22 @@ class AdminController extends Controller
     }
 
     // Dibawah ini Untuk Log aktivitas
-    public function showActivities()
+    public function showActivities(Request $request)
     {
-        $activities = Activity::with('user')->latest()->paginate(10);
+        $query = Activity::with('user')->latest();
+
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('activity', 'like', "%{$search}%")
+                  ->orWhere('ip_address', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $activities = $query->paginate(10);
         return view('admin.activities.index', compact('activities'));
     }
 
