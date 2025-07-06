@@ -319,7 +319,7 @@
                 <tr>
                     <th>NIDN</th>
                     <th>Nama Lengkap</th>
-                    <th>Jurusan</th>
+                    
                     <th>Prodi</th>
                     <th>Jenis Kelamin</th>
                     <th>Email</th>
@@ -329,7 +329,7 @@
                 <tr>
                     <td data-label="NIDN">197001012000011001</td>
                     <td data-label="Nama Lengkap">Prof. Dr. Andi Wijaya</td>
-                    <td data-label="Jurusan">Teknik Informatika</td>
+
                     <td data-label="Prodi">Sistem Informasi</td>
                     <td data-label="Jenis Kelamin">Laki-laki</td>
                     <td data-label="Email">andi.wijaya@example.com</td>
@@ -337,7 +337,7 @@
                 <tr>
                     <td data-label="NIDN">198005102005021002</td>
                     <td data-label="Nama Lengkap">Dr. Budi Santoso</td>
-                    <td data-label="Jurusan">Teknik Informatika</td>
+
                     <td data-label="Prodi">Teknik Komputer</td>
                     <td data-label="Jenis Kelamin">Laki-laki</td>
                     <td data-label="Email">budi.santoso@example.com</td>

@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\Dosen;
 use App\Models\User; // Penting: Import model User
+use App\Models\Prodi; // Import model Prodi
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow; // Untuk membaca header baris pertama
@@ -30,11 +31,16 @@ class DosenImport implements ToCollection, WithHeadingRow
             $jenisKelamin = trim($row['jenis_kelamin']);
             $email = trim($row['email']); // <--- PENTING: Ambil email langsung dari baris Excel
 
-            // Validasi data yang sudah diproses dari Excel
+            $prodiNama = trim($row['prodi']);
+            $prodi = Prodi::where('nama_prodi', $prodiNama)->first();
+
+            if (!$prodi) {
+                Log::error('Prodi tidak ditemukan untuk baris: ' . json_encode($row->toArray()) . ' Prodi: ' . $prodiNama);
+                continue; // Lewati baris ini jika prodi tidak ditemukan
+            }
             $validator = Validator::make([
                 'nidn'          => $nidn,
                 'nama_lengkap'  => $row['nama_lengkap'],
-                'jurusan'       => $row['jurusan'],
                 'prodi'         => $row['prodi'],
                 'jenis_kelamin' => $jenisKelamin,
                 'email'         => $email, // <--- PENTING: Tambahkan validasi untuk email
@@ -63,11 +69,9 @@ class DosenImport implements ToCollection, WithHeadingRow
                     'user_id'       => $user->id,
                     'nidn'          => $nidn,
                     'nama'          => $row['nama_lengkap'],
-                    'jurusan'       => $row['jurusan'],
-                    'prodi'         => $row['prodi'],
+                    'prodi_id'      => $prodi->id,
                     'jenis_kelamin' => $jenisKelamin,
                     'email'         => $email, // <--- Simpan email dari Excel di tabel dosen juga
-                    'password'      => Hash::make('password123'),
                 ]);
                 Log::info('Dosen baru dibuat untuk user ID: ' . $user->id);
 
