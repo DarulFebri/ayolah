@@ -6,6 +6,124 @@
 
 @section('styles')
     <style>
+        /*
+         * Variabel CSS Global (ini sudah didefinisikan di layout utama Anda,
+         * jadi tidak perlu didefinisikan ulang di sini jika ini adalah style
+         * khusus untuk halaman ini dan layout sudah punya).
+         * Saya sertakan sebagai referensi, tapi jika sudah di layout, Anda bisa menghapusnya dari sini.
+         */
+        :root {
+            --primary-100: #e6f2ff;
+            --primary-200: #b3d7ff;
+            --primary-300: #80bdff;
+            --primary-400: #4da3ff;
+            --primary-500: #1a88ff; /* Ini warna biru yang akan digunakan */
+            --primary-600: #0066cc;
+            --primary-700: #004d99;
+            --sidebar-color: #1e3a8a;
+            --text-color: #2d3748;
+            --light-gray: #f8fafc;
+            --white: #ffffff;
+            --success: #198754;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #0dcaf0;
+            --transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+            --card-width: 300px;
+            --card-height: 200px;
+            --card-icon-size: 48px;
+            --card-title-size: 20px;
+            --card-padding: 25px;
+            --card-border-radius: 12px;
+            --card-gap: 25px;
+        }
+
+        /* Styling umum (dari layout Anda, disertakan untuk konteks) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ALERT Styles (dari layout Anda) */
+        .alert {
+            position: relative;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            animation: fadeIn 0.5s both;
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .alert-info {
+            background-color: #e0f7fa;
+            color: #00796b;
+            border: 1px solid #b2ebf2;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+
+        .alert-info i {
+            font-size: 1.5rem;
+            color: #00acc1;
+        }
+
+        .alert .close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 0.75rem 1.25rem;
+            color: inherit;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+            opacity: 0.5;
+            cursor: pointer;
+        }
+
+        .alert .close:hover {
+            opacity: 0.75;
+        }
+
+        /* Main Card & Table specific styles for Log Aktivitas page */
         .main-card {
             background: var(--white);
             border-radius: var(--card-border-radius);
@@ -45,7 +163,7 @@
 
         .btn-primary {
             background: var(--primary-500);
-            color: white;
+            color: var(--white); /* Gunakan variabel white */
             border: none;
         }
 
@@ -78,7 +196,7 @@
 
         .search-button {
             background: var(--primary-500);
-            color: white;
+            color: var(--white); /* Gunakan variabel white */
             border: none;
             padding: 0 20px;
             border-radius: 0 8px 8px 0;
@@ -123,91 +241,155 @@
         }
 
         .data-table tr:hover {
-            background-color: var(--primary-50);
+            background-color: var(--primary-50); /* Asumsi primary-50 itu warna sangat terang untuk hover */
         }
 
         .text-center {
             text-align: center;
         }
 
+        ---
+        /* --- Custom Pagination Styles --- */
         .pagination-container {
             display: flex;
-            justify-content: flex-end;
+            justify-content: center;
             padding: 20px;
             background-color: var(--white);
             border-top: 1px solid #e2e8f0;
             border-radius: 0 0 var(--card-border-radius) var(--card-border-radius);
+            margin-top: 20px;
         }
 
-        .pagination-container nav {
+        .pagination-container nav ul {
+            display: flex; /* Use flexbox for horizontal alignment */
+            list-style: none; /* Remove bullet points */
+            padding: 0; /* Remove default padding */
+            margin: 0; /* Remove default margin */
+            gap: 5px; /* Memberi jarak antar setiap <li> item */
+            align-items: center; /* Align items vertically in the middle */
+        }
+
+        .pagination-container nav ul li {
+            /* No specific styling needed on li itself if gap is used on ul */
+        }
+
+        /* Gaya untuk semua link pagination (angka, previous, next) */
+        .pagination-link {
             display: flex;
-            gap: 5px;
-        }
-
-        .pagination-container .relative.inline-flex.items-center.px-4.py-2.-ml-px.text-sm.font-medium.text-gray-700.bg-white.border.border-gray-300.leading-5.rounded-md {
-            background-color: var(--primary-100);
-            color: var(--primary-600);
-            border: 1px solid var(--primary-200);
-            border-radius: 8px;
-            padding: 8px 12px;
+            align-items: center; /* Align text and SVG icon vertically */
+            justify-content: center; /* Center content horizontally */
+            min-width: 36px; /* Lebar minimum untuk tombol */
+            height: 36px; /* Tinggi tombol */
+            border-radius: 8px; /* Sudut membulat */
+            padding: 0 12px; /* Padding horizontal */
             text-decoration: none;
+            font-weight: 500;
             transition: var(--transition);
+            border: 1px solid var(--primary-200); /* Border menggunakan primary-200 */
+            background-color: var(--primary-100); /* Background menggunakan primary-100 */
+            color: var(--primary-600); /* Warna teks menggunakan primary-600 */
+            line-height: 1; /* Helps vertical alignment of text */
         }
 
-        .pagination-container .relative.inline-flex.items-center.px-4.py-2.-ml-px.text-sm.font-medium.text-gray-700.bg-white.border.border-gray-300.leading-5.rounded-md:hover {
-            background-color: var(--primary-200);
+        .pagination-link svg {
+            /* Styling for the SVG icons within the link */
+            width: 20px; /* Consistent width */
+            height: 20px; /* Consistent height */
+            vertical-align: middle; /* Helps align with text */
+            color: inherit; /* Inherit color from parent link */
         }
 
-        .pagination-container .relative.inline-flex.items-center.px-4.py-2.-ml-px.text-sm.font-medium.text-gray-500.bg-white.border.border-gray-300.leading-5.rounded-md {
-            background-color: #f0f0f0;
-            color: #888;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 8px 12px;
-            text-decoration: none;
+        /* Adjust margin and order for previous/next buttons */
+        .pagination-link[aria-label*="Previous"] {
+            padding-right: 8px; /* Reduce padding on the right for icon space */
+        }
+        .pagination-link[aria-label*="Previous"] svg { /* Targets Previous button's SVG */
+            order: -1; /* Puts SVG before text */
+            margin-right: 5px; /* Margin to the right of SVG */
+            margin-left: 0; /* No margin on left */
+        }
+
+        .pagination-link[aria-label*="Next"] {
+            padding-left: 8px; /* Reduce padding on the left for icon space */
+        }
+        .pagination-link[aria-label*="Next"] svg { /* Targets Next button's SVG */
+            order: 1; /* Puts SVG after text */
+            margin-left: 5px; /* Margin to the left of SVG */
+            margin-right: 0; /* No margin on right */
+        }
+
+
+        .pagination-link:hover {
+            background-color: var(--primary-200); /* Hover background menggunakan primary-200 */
+            transform: translateY(-1px); /* Efek hover kecil */
+        }
+
+        /* Gaya untuk link halaman aktif */
+        .pagination-link.pagination-active {
+            background-color: var(--primary-500); /* Background aktif menggunakan primary-500 */
+            color: var(--white); /* Warna teks aktif putih */
+            border-color: var(--primary-500); /* Border aktif menggunakan primary-500 */
+            cursor: default;
+            font-weight: 600;
+        }
+
+        /* Gaya untuk link yang dinonaktifkan */
+        .pagination-link.pagination-disabled {
+            background-color: var(--light-gray); /* Background dinonaktifkan light-gray */
+            color: var(--text-color); /* Warna teks dinonaktifkan text-color */
+            border-color: var(--light-gray); /* Border dinonaktifkan light-gray */
             cursor: not-allowed;
+            opacity: 0.7;
         }
 
-        .pagination-container .relative.inline-flex.items-center.px-4.py-2.-ml-px.text-sm.font-medium.text-white.bg-blue-500.border.border-blue-500.leading-5.rounded-md {
-            background-color: var(--primary-500);
-            color: white;
-            border: 1px solid var(--primary-500);
-            border-radius: 8px;
-            padding: 8px 12px;
-            text-decoration: none;
-        }
+        /* Responsive adjustments (dari layout Anda, disertakan untuk konteks) */
+        @media (max-width: 768px) {
+            :root {
+                --card-width: 100%;
+                --card-gap: 15px;
+            }
 
-        /* Specific styles for pagination links generated by Laravel */
-        .pagination .page-item .page-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            margin: 0 4px;
-            text-decoration: none;
-            color: var(--primary-600);
-            background-color: var(--primary-100);
-            border: 1px solid var(--primary-200);
-            transition: var(--transition);
-        }
+            .card.wide {
+                grid-column: span 1;
+            }
 
-        .pagination .page-item .page-link:hover {
-            background-color: var(--primary-200);
-        }
+            .sidebar {
+                width: 80px;
+            }
 
-        .pagination .page-item.active .page-link {
-            background-color: var(--primary-500);
-            color: white;
-            border-color: var(--primary-500);
-        }
+            .sidebar .menu-title,
+            .sidebar .menu-item span,
+            .sidebar .submenu {
+                display: none;
+            }
 
-        .pagination .page-item.disabled .page-link {
-            background-color: #f0f0f0;
-            color: #888;
-            border-color: #ddd;
-            cursor: not-allowed;
+            .main-content {
+                margin-left: 80px;
+                padding: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-profile {
+                margin-top: 15px;
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .profile-dropdown {
+                right: auto;
+                left: 0;
+                width: 100%;
+            }
         }
     </style>
 @endsection
@@ -250,7 +432,7 @@
                             <td>{{ $activity->created_at->format('d M Y H:i:s') }}</td>
                             <td>{{ $activity->user ? $activity->user->name : 'Sistem' }}</td>
                             <td>{{ $activity->activity }}</td>
-                            <td>{{ $activity->subject_type ?? '-' }}</td> {{-- Menggunakan subject_type sebagai modul --}}
+                            <td>{{ $activity->subject_type ?? '-' }}</td>
                             <td>{{ $activity->ip_address }}</td>
                             <td>{{ $activity->user_agent }}</td>
                         </tr>
@@ -262,6 +444,7 @@
                 </tbody>
             </table>
         </div>
+        <br>
         <div class="pagination-container">
             {{ $activities->links() }}
         </div>
