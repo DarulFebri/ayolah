@@ -19,6 +19,7 @@ use App\Models\User;     // Pastikan model User diimpor
 use Illuminate\Support\Facades\Log; // Add this line at the top
 use Illuminate\Validation\Rule; // Tambahkan ini untuk Rule::unique
 use App\Models\Prodi; // Import the Prodi model
+use App\Models\Kelas; // Import the Kelas model
 
 use Illuminate\Support\Facades\Storage;
 
@@ -583,7 +584,11 @@ class MahasiswaController extends Controller
 
     public function importForm()
     {
-        // View untuk form import
-        return view('admin.mahasiswa.import');
+        // Ambil semua data prodi dan kelas
+        $prodis = Prodi::all();
+        $kelas = Kelas::all();
+
+        // View untuk form import, kirim data prodi dan kelas
+        return view('admin.mahasiswa.import', compact('prodis', 'kelas'));
     }
 }

@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log; 
+use App\Models\Prodi;
+use App\Models\Kelas; 
 
 class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, WithBatchInserts, WithChunkReading
 {
@@ -54,19 +56,11 @@ class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, W
             $row['kelas'] = null;
         }
 
-        // --- TAMBAHKAN INI UNTUK jurus dan prodi ---
-        if (isset($row['jurusan'])) {
-            $row['jurusan'] = trim($row['jurusan']);
-        } else {
-            $row['jurusan'] = null;
-        }
-
         if (isset($row['prodi'])) {
             $row['prodi'] = trim($row['prodi']);
         } else {
             $row['prodi'] = null;
         }
-        // --- AKHIR TAMBAHAN ---
 
         Log::info('Data setelah prepareForValidation: ' . json_encode($row));
 
@@ -88,7 +82,6 @@ class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, W
             $kelas = $row['kelas'];
             $prodi = $row['prodi']; // <--- Tambahan
             $namaLengkap = $row['nama_lengkap']; // <--- Tambahan
-            $jurusan = $row['jurusan']; // <--- Tambahan
 
             // Data untuk validasi (ini akan otomatis diproses oleh WithValidation)
             // Tidak perlu membuat $dataToValidate secara eksplisit jika Anda hanya mengandalkan rules()
@@ -112,15 +105,20 @@ class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, W
 
                 Log::info('User mahasiswa ditemukan/dibuat dengan ID: ' . $user->id . ' dan email: ' . $user->email);
 
+                // Cari atau buat Prodi
+                $prodiModel = Prodi::firstOrCreate(['nama_prodi' => $prodi]);
+
+                // Cari atau buat Kelas
+                $kelasModel = Kelas::firstOrCreate(['nama' => $kelas]);
+
                 // Buat Data Mahasiswa Baru
                 Mahasiswa::create([
                     'user_id'       => $user->id,
                     'nim'           => $nim,
-                    'nama_lengkap'  => $namaLengkap, // <--- UBAH DARI 'nama' MENJADI 'nama_lengkap'
-                    'jurusan'       => $jurusan,
-                    'prodi'         => $prodi,
+                    'nama_lengkap'  => $namaLengkap,
+                    'prodi_id'      => $prodiModel->id,
+                    'kelas_id'      => $kelasModel->id,
                     'jenis_kelamin' => $jenisKelamin,
-                    'kelas'         => $kelas,
                     'email'         => $email,
                 ]);
                 Log::info('Mahasiswa baru dibuat untuk user ID: ' . $user->id);
@@ -143,9 +141,9 @@ class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, W
         return [
             'nim'           => ['required', 'string', 'max:255', Rule::unique('mahasiswas', 'nim')],
             'nama_lengkap'  => 'required|string|max:255',
-            'prodi'         => 'required|string|max:255',
+            'prodi'         => 'required|string|max:255|exists:prodis,nama_prodi',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'kelas'         => 'required|string|max:255',
+            'kelas'         => 'required|string|max:255|exists:kelas,nama',
             'email'         => [
                 'required',
                 'string',

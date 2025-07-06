@@ -21,7 +21,7 @@
             --error-color: #dc3545;
             --shadow-medium: 0 4px 15px rgba(0,0,0,0.1);
             --shadow-light: 0 2px 8px rgba(0,0,0,0.05);
-            --border-radius: 10px;
+            --border-radius: 8px;
         }
 
         * {
@@ -34,38 +34,41 @@
             font-family: 'Poppins', sans-serif;
             background-color: var(--light-grey);
             color: var(--text-color);
+            line-height: 1.6;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            padding: 30px;
+            padding: 20px;
         }
 
         .container {
             background-color: var(--white);
-            padding: 40px;
+            padding: 30px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-medium);
             width: 100%;
             max-width: 1200px;
             border: 1px solid var(--border-color);
+            margin: 20px 0;
         }
 
         h2 {
             color: var(--primary-blue);
-            margin-bottom: 30px;
-            font-size: 28px;
-            font-weight: 700;
+            margin-bottom: 25px;
+            font-size: 26px;
+            font-weight: 600;
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
         }
 
+        /* Alert Styles */
         .alert {
-            padding: 15px;
-            margin-bottom: 25px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
             border-radius: var(--border-radius);
             font-weight: 500;
             display: flex;
@@ -85,6 +88,7 @@
             border: 1px solid var(--error-color);
         }
 
+        /* Form Styles */
         .form-group {
             margin-bottom: 20px;
         }
@@ -99,13 +103,13 @@
 
         .form-group input[type="file"] {
             width: 100%;
-            padding: 12px;
+            padding: 10px 12px;
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
-            font-size: 16px;
+            font-size: 15px;
             color: var(--text-color);
-            background-color: var(--light-blue-bg);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: var(--white);
+            transition: all 0.3s ease;
         }
 
         .form-group input[type="file"]:focus {
@@ -114,9 +118,12 @@
             outline: none;
         }
 
+        .form-group input[type="file"]:hover {
+            background-color: var(--light-blue-bg);
+        }
+
         button[type="submit"] {
-            width: auto; /* Adjusted to fit content */
-            padding: 12px 25px;
+            padding: 12px 24px;
             background-color: var(--primary-blue);
             color: var(--white);
             border: none;
@@ -124,9 +131,8 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            margin-top: 15px;
-            box-shadow: var(--shadow-medium);
+            transition: all 0.3s ease;
+            margin-top: 10px;
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -135,22 +141,33 @@
         button[type="submit"]:hover {
             background-color: var(--dark-blue);
             transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
         }
 
+        /* Info Text */
         .info-text {
             color: var(--dark-grey);
             font-size: 15px;
-            margin-top: 25px;
-            margin-bottom: 15px;
-            line-height: 1.5;
+            margin: 20px 0;
+            line-height: 1.6;
         }
 
+        .info-text i {
+            color: var(--primary-blue);
+        }
+
+        .info-text code {
+            background-color: var(--light-blue-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        /* Table Styles */
         .example-table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-top: 20px;
-            margin-bottom: 25px;
+            border-collapse: collapse;
+            margin: 20px 0;
             background-color: var(--white);
             border-radius: var(--border-radius);
             overflow: hidden;
@@ -160,7 +177,7 @@
         .example-table th, .example-table td {
             padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid var(--medium-grey);
+            border: 1px solid var(--medium-grey);
             font-size: 14px;
         }
 
@@ -168,20 +185,72 @@
             background-color: var(--primary-blue);
             color: var(--white);
             font-weight: 600;
-            text-transform: uppercase;
         }
-        
-        .example-table th:first-child { border-top-left-radius: var(--border-radius); }
-        .example-table th:last-child { border-top-right-radius: var(--border-radius); }
 
-        .example-table tbody tr:last-child td {
-            border-bottom: none;
+        .example-table tbody tr:nth-child(even) {
+            background-color: var(--light-grey);
         }
 
         .example-table tbody tr:hover {
             background-color: var(--light-blue-bg);
         }
 
+        /* Info Sections */
+        .info-section {
+            background-color: var(--light-blue-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--primary-blue);
+            margin: 30px 0 20px;
+            box-shadow: var(--shadow-light);
+        }
+
+        .info-section h3 {
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: 600;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .info-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-section li {
+            background-color: var(--white);
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--medium-grey);
+            font-size: 15px;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .info-section li:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-light);
+            border-color: var(--primary-blue);
+        }
+
+        .info-section p {
+            font-style: italic;
+            color: var(--dark-grey);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Back Links */
         .back-links-group {
             margin-top: 30px;
             padding-top: 20px;
@@ -195,9 +264,9 @@
         .back-links-group a {
             color: var(--primary-blue);
             text-decoration: none;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
-            transition: color 0.3s ease, transform 0.2s ease;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -206,85 +275,66 @@
         .back-links-group a:hover {
             color: var(--dark-blue);
             text-decoration: underline;
-            transform: translateY(-1px);
         }
 
+        /* Responsive Styles */
         @media (max-width: 768px) {
             body {
                 padding: 15px;
             }
+            
             .container {
-                padding: 30px 20px;
+                padding: 20px;
             }
+            
             h2 {
-                font-size: 24px;
+                font-size: 22px;
                 flex-direction: column;
-                gap: 8px;
             }
-            h2 .fas {
-                font-size: 28px;
+            
+            .info-section ul {
+                grid-template-columns: 1fr;
             }
-            .form-group input {
-                padding: 10px;
-                font-size: 15px;
-            }
-            button[type="submit"] {
-                width: 100%;
-                justify-content: center;
-            }
-            .info-text {
-                font-size: 14px;
-            }
-            .example-table {
-                display: block;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            .example-table thead, .example-table tbody, .example-table th, .example-table td, .example-table tr {
-                display: block;
-            }
-            .example-table thead tr {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
-            }
-            .example-table tr {
-                border: 1px solid var(--medium-grey);
-                margin-bottom: 10px;
-                border-radius: var(--border-radius);
-                overflow: hidden;
-            }
-            .example-table td {
-                border: none;
-                position: relative;
-                padding-left: 50%;
-                text-align: right;
-                word-wrap: break-word;
-            }
-            .example-table td::before {
-                content: attr(data-label);
-                position: absolute;
-                left: 10px;
-                width: 45%;
-                padding-right: 10px;
-                white-space: nowrap;
-                text-align: left;
-                font-weight: 600;
-                color: var(--dark-blue);
-            }
+            
             .back-links-group {
                 flex-direction: column;
                 gap: 10px;
             }
+            
             .back-links-group a {
-                width: 100%;
                 justify-content: center;
             }
-        </style>
+            
+            .example-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h2 {
+                font-size: 20px;
+            }
+            
+            .info-section {
+                padding: 15px;
+            }
+            
+            .example-table th, 
+            .example-table td {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h2><i class="fas fa-file-excel"></i> Impor Data Mahasiswa dari Excel</h2>
+        <h2><i class="fas fa-file-import"></i> Impor Data Mahasiswa</h2>
 
         @if (session('success'))
             <div class="alert alert-success">
@@ -311,48 +361,75 @@
         </form>
 
         <p class="info-text">
-            Pastikan file Excel Anda memiliki kolom dengan header persis seperti di bawah ini (tidak sensitif huruf besar/kecil):
+            <i class="fas fa-info-circle"></i> Pastikan file Excel Anda memiliki format kolom seperti tabel berikut (header tidak case sensitive):
         </p>
-        <table class="example-table">
-            <thead>
-                <tr>
-                    <th>NIM</th>
-                    <th>Nama Lengkap</th>
-                    <th>Jurusan</th>
-                    <th>Prodi</th>
-                    <th>Jenis Kelamin</th>
-                    <th>Kelas</th>
-                    <th>Email</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td data-label="NIM">2021001001</td>
-                    <td data-label="Nama Lengkap">Budi Cahyono</td>
-                    <td data-label="Jurusan">Teknologi Informasi</td>
-                    <td data-label="Prodi">Teknik Komputer</td>
-                    <td data-label="Jenis Kelamin">Laki-laki</td>
-                    <td data-label="Kelas">TI-2</td>
-                    <td data-label="Email">budi.cahyono@example.com</td>
-                </tr>
-                <tr>
-                    <td data-label="NIM">2022002002</td>
-                    <td data-label="Nama Lengkap">Siti Aminah</td>
-                    <td data-label="Jurusan">Teknologi Informasi</td>
-                    <td data-label="Prodi">Sistem Informasi</td>
-                    <td data-label="Jenis Kelamin">Perempuan</td>
-                    <td data-label="Kelas">TI-2</td>
-                    <td data-label="Email">siti.aminah@example.com</td>
-                </tr>
-            </tbody>
-        </table>
+        
+        <div style="overflow-x: auto;">
+            <table class="example-table">
+                <thead>
+                    <tr>
+                        <th>NIM</th>
+                        <th>Nama Lengkap</th>
+                        <th>Prodi</th>
+                        <th>Jenis Kelamin</th>
+                        <th>Kelas</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2021001001</td>
+                        <td>Budi Cahyono</td>
+                        <td>Teknik Komputer</td>
+                        <td>Laki-laki</td>
+                        <td>TI-2</td>
+                        <td>budi.cahyono@example.com</td>
+                    </tr>
+                    <tr>
+                        <td>2022002002</td>
+                        <td>Siti Aminah</td>
+                        <td>Animasi</td>
+                        <td>Perempuan</td>
+                        <td>TI-2</td>
+                        <td>siti.aminah@example.com</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <p class="info-text">
-            <i class="fas fa-info-circle"></i> Password akun mahasiswa akan disetel default <code>password123</code>. Harap informasikan kepada mahasiswa untuk mengubahnya setelah login pertama kali.
+            <i class="fas fa-key"></i> Password default untuk akun mahasiswa: <code>password123</code>. Harap informasikan mahasiswa untuk mengubah password setelah login pertama.
         </p>
 
+        <div class="info-section">
+            <h3><i class="fas fa-graduation-cap"></i> Program Studi Tersedia</h3>
+            @if($prodis->isEmpty())
+                <p>Belum ada program studi yang terdaftar</p>
+            @else
+                <ul>
+                    @foreach($prodis as $prodi)
+                        <li>{{ $prodi->nama_prodi }}</li>
+                    @endforeach
+                </ul>
+            @endif
+        </div>
+
+        <div class="info-section">
+            <h3><i class="fas fa-users"></i> Kelas Tersedia</h3>
+            @if($kelas->isEmpty())
+                <p>Belum ada kelas yang terdaftar</p>
+            @else
+                <ul>
+                    @foreach($kelas as $kls)
+                        <li>{{ $kls->nama }}</li>
+                    @endforeach
+                </ul>
+            @endif
+        </div>
+
         <div class="back-links-group">
-            <a href="{{ route('admin.dashboard') }}"><i class="fas fa-arrow-left"></i> Kembali ke Dashboard Admin</a>
-            <a href="{{ route('admin.mahasiswa.index') }}"><i class="fas fa-list"></i> Lihat Daftar Mahasiswa</a>
+            <a href="{{ route('admin.dashboard') }}"><i class="fas fa-arrow-left"></i> Kembali ke Dashboard</a>
+            <a href="{{ route('admin.mahasiswa.index') }}"><i class="fas fa-list"></i> Daftar Mahasiswa</a>
         </div>
     </div>
 </body>
