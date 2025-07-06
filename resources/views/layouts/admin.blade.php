@@ -762,8 +762,8 @@
                 </div>
             </a>
 
-            <a href="#" style="text-decoration: none; color: inherit;">
-                <div class="menu-item tooltip">
+            <a href="{{ route('admin.prodi.index') }}" style="text-decoration: none; color: inherit;">
+                <div class="menu-item tooltip {{ request()->routeIs('admin.prodi.*') ? 'active' : '' }}">
                     <i class="fas fa-book"></i>
                     <span>Program Studi</span>
                     <span class="tooltiptext">Program Studi</span>
