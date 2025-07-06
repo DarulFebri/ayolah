@@ -503,7 +503,8 @@ class MahasiswaController extends Controller
             return redirect()->route('mahasiswa.login')->with('error', 'Data mahasiswa tidak ditemukan.');
         }
 
-        return view('mahasiswa.edit_profile', compact('mahasiswa'));
+        $prodis = Prodi::all(); // Fetch all program studies
+        return view('mahasiswa.edit_profile', compact('mahasiswa', 'prodis'));
     }
 
     /**
