@@ -548,4 +548,60 @@ class AdminController extends Controller
         $activities = Activity::with('user')->latest()->paginate(10);
         return view('admin.activities.index', compact('activities'));
     }
+
+    // Program Studi Management
+    public function indexProdi(Request $request)
+    {
+        $query = Prodi::query();
+
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where('nama_prodi', 'like', "%{$search}%");
+        }
+
+        $prodis = $query->paginate(10);
+        return view('admin.prodi.index', compact('prodis'));
+    }
+
+    public function createProdi()
+    {
+        return view('admin.prodi.create');
+    }
+
+    public function storeProdi(Request $request)
+    {
+        $request->validate([
+            'nama_prodi' => 'required|unique:prodis,nama_prodi',
+        ]);
+
+        Prodi::create(['nama_prodi' => $request->nama_prodi]);
+
+        $this->logActivity('Menambah program studi baru: ' . $request->nama_prodi, 'Prodi');
+        return redirect()->route('admin.prodi.index')->with('success', 'Program studi berhasil ditambahkan!');
+    }
+
+    public function editProdi(Prodi $prodi)
+    {
+        return view('admin.prodi.edit', compact('prodi'));
+    }
+
+    public function updateProdi(Request $request, Prodi $prodi)
+    {
+        $request->validate([
+            'nama_prodi' => 'required|unique:prodis,nama_prodi,' . $prodi->id,
+        ]);
+
+        $prodi->update(['nama_prodi' => $request->nama_prodi]);
+
+        $this->logActivity('Mengupdate program studi: ' . $prodi->nama_prodi, 'Prodi');
+        return redirect()->route('admin.prodi.index')->with('success', 'Program studi berhasil diupdate.');
+    }
+
+    public function destroyProdi(Prodi $prodi)
+    {
+        $prodi->delete();
+
+        $this->logActivity('Menghapus program studi: ' . $prodi->nama_prodi, 'Prodi');
+        return redirect()->route('admin.prodi.index')->with('success', 'Program studi berhasil dihapus.');
+    }
 }

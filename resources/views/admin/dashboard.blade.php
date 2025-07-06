@@ -78,7 +78,7 @@
             </div>
         </a>
         
-        <a href="#" class="card-link">
+        <a href="{{ route('admin.prodi.index') }}" class="card-link">
             <div class="card clickable-card medium">
                 <div class="card-icon">
                     <i class="fas fa-book"></i>

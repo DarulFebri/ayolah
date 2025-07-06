@@ -95,6 +95,14 @@ Route::prefix('admin')->group(function () {
         // Activities Log
         Route::get('/activities', [AdminController::class, 'showActivities'])->name('admin.activities.index');
 
+        // Program Studi Management
+        Route::get('/prodi', [AdminController::class, 'indexProdi'])->name('admin.prodi.index');
+        Route::get('/prodi/create', [AdminController::class, 'createProdi'])->name('admin.prodi.create');
+        Route::post('/prodi', [AdminController::class, 'storeProdi'])->name('admin.prodi.store');
+        Route::get('/prodi/{prodi}/edit', [AdminController::class, 'editProdi'])->name('admin.prodi.edit');
+        Route::put('/prodi/{prodi}', [AdminController::class, 'updateProdi'])->name('admin.prodi.update');
+        Route::delete('/prodi/{prodi}', [AdminController::class, 'destroyProdi'])->name('admin.prodi.destroy');
+
         // Rute untuk admin melihat dokumen
         Route::get('/dokumen/{dokumen}/lihat', [DokumenController::class, 'lihatDokumenAdmin'])->name('admin.dokumen.lihat');
     });
