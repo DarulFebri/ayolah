@@ -1215,8 +1215,8 @@
                     </h1>
                 </div>
                 <div class="user-profile" id="userProfile">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name ?? 'Pengguna') }}&background=1a88ff&color=fff"
-                         style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                    <img src="{{ $mahasiswa_for_layout && $mahasiswa_for_layout->foto_profil ? asset('storage/' . $mahasiswa_for_layout->foto_profil) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name ?? 'Pengguna') . '&background=1a88ff&color=fff' }}"
+                         style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover;">
                     <span style="font-weight: 500;">{{ Auth::user()->name ?? 'Pengguna' }}</span>
                     <i class="fas fa-chevron-down" style="margin-left: 8px; font-size: 12px;"></i>
 

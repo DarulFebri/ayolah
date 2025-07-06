@@ -475,11 +475,8 @@ class MahasiswaController extends Controller
         // Memuat relasi yang diperlukan untuk pengajuan terbaru (misal: sidang)
         $pengajuanTerbaru->load('sidang'); // Sesuaikan dengan relasi yang ada di model Pengajuan
 
-        // Menghitung total pengajuan (contoh) - Jika Anda ingin menampilkan ini di dashboard, uncomment di blade
-        // $jumlahPengajuan = Pengajuan::where('mahasiswa_id', $mahasiswa->id)->count();
-
         // Kirim data ke view dashboard
-        return view('mahasiswa.dashboard', compact('pengajuanTerbaru', 'mahasiswa')); // Hapus jumlahPengajuan jika tidak dipakai
+        return view('mahasiswa.dashboard', compact('pengajuanTerbaru', 'mahasiswa'));
     }
 
     /**
@@ -549,9 +546,11 @@ class MahasiswaController extends Controller
             $imageName = 'photos/' . Str::random(20) . '.png';
             Storage::disk('public')->put($imageName, $data);
             $dataToUpdate['foto_profil'] = $imageName;
+            Log::info('Foto profil disimpan: ' . $imageName);
         }
 
         $mahasiswa->update($dataToUpdate);
+        Log::info('Profil mahasiswa diperbarui: ', $dataToUpdate);
 
         if ($user->email !== $request->email) {
             $user->email = $request->email;

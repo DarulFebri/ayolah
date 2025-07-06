@@ -53,7 +53,8 @@ class PengajuanController extends Controller
     public function index()
     {
         // Mendapatkan ID mahasiswa yang sedang login
-        $mahasiswaId = Auth::user()->mahasiswa->id;
+        $mahasiswa = Auth::user()->mahasiswa;
+        $mahasiswaId = $mahasiswa->id;
         
         // Mengambil semua pengajuan yang dimiliki oleh mahasiswa yang sedang login
         $pengajuans = Pengajuan::where('mahasiswa_id', $mahasiswaId)
@@ -65,7 +66,7 @@ class PengajuanController extends Controller
         $hasPklPengajuan = $pengajuans->where('jenis_pengajuan', 'pkl')->isNotEmpty();
         $hasTaPengajuan = $pengajuans->where('jenis_pengajuan', 'ta')->isNotEmpty();
 
-        return view('mahasiswa.pengajuan.index', compact('pengajuans', 'hasPklPengajuan', 'hasTaPengajuan'));
+        return view('mahasiswa.pengajuan.index', compact('pengajuans', 'hasPklPengajuan', 'hasTaPengajuan', 'mahasiswa'));
     }
 
     /**
@@ -80,8 +81,9 @@ class PengajuanController extends Controller
             return redirect()->route('mahasiswa.pengajuan.index')->with('error', 'Jenis pengajuan tidak valid.');
         }
 
+        $mahasiswa = Auth::user()->mahasiswa;
         // Mendapatkan ID mahasiswa yang sedang login
-        $mahasiswaId = Auth::user()->mahasiswa->id;
+        $mahasiswaId = $mahasiswa->id;
 
         // Memeriksa apakah mahasiswa sudah memiliki pengajuan jenis ini
         $existingPengajuan = Pengajuan::where('mahasiswa_id', $mahasiswaId)
@@ -100,9 +102,9 @@ class PengajuanController extends Controller
 
         // Mengarahkan ke view yang spesifik berdasarkan jenis pengajuan
         if ($jenis_pengajuan == 'pkl') {
-            return view('mahasiswa.pengajuan.form_pengajuan_pkl', compact('jenis_pengajuan', 'dosens', 'requiredDocuments'));
+            return view('mahasiswa.pengajuan.form_pengajuan_pkl', compact('jenis_pengajuan', 'dosens', 'requiredDocuments', 'mahasiswa'));
         } else { // jenis_pengajuan == 'ta'
-            return view('mahasiswa.pengajuan.form_pengajuan_ta', compact('jenis_pengajuan', 'dosens', 'requiredDocuments'));
+            return view('mahasiswa.pengajuan.form_pengajuan_ta', compact('jenis_pengajuan', 'dosens', 'requiredDocuments', 'mahasiswa'));
         }
     }
 
@@ -223,8 +225,9 @@ class PengajuanController extends Controller
         // Menentukan daftar dokumen yang diharapkan untuk ditampilkan
         $expectedDocuments = ($pengajuan->jenis_pengajuan == 'pkl') ? $this->dokumenPkl : $this->dokumenTa;
         $uploadedDocuments = $pengajuan->dokumens->pluck('path_file', 'nama_file')->toArray();
+        $mahasiswa = Auth::user()->mahasiswa;
 
-        return view('mahasiswa.pengajuan.detail_pengajuan', compact('pengajuan', 'expectedDocuments', 'uploadedDocuments'));
+        return view('mahasiswa.pengajuan.detail_pengajuan', compact('pengajuan', 'expectedDocuments', 'uploadedDocuments', 'mahasiswa'));
     }
 
     public function showVerified($id)
@@ -276,12 +279,13 @@ class PengajuanController extends Controller
         $dosens = Dosen::orderBy('nama')->get();
         $requiredDocuments = ($pengajuan->jenis_pengajuan == 'pkl') ? $this->dokumenPkl : $this->dokumenTa;
         $uploadedDocuments = $pengajuan->dokumens->pluck('path_file', 'nama_file')->toArray();
+        $mahasiswa = Auth::user()->mahasiswa;
 
         // Mengarahkan ke view yang spesifik berdasarkan jenis pengajuan
         if ($pengajuan->jenis_pengajuan == 'pkl') {
-            return view('mahasiswa.pengajuan.edit_pengajuan_pkl', compact('pengajuan', 'dosens', 'requiredDocuments', 'uploadedDocuments'));
+            return view('mahasiswa.pengajuan.edit_pengajuan_pkl', compact('pengajuan', 'dosens', 'requiredDocuments', 'uploadedDocuments', 'mahasiswa'));
         } else { // jenis_pengajuan == 'ta'
-            return view('mahasiswa.pengajuan.edit_pengajuan_ta', compact('pengajuan', 'dosens', 'requiredDocuments', 'uploadedDocuments'));
+            return view('mahasiswa.pengajuan.edit_pengajuan_ta', compact('pengajuan', 'dosens', 'requiredDocuments', 'uploadedDocuments', 'mahasiswa'));
         }
     }
 
