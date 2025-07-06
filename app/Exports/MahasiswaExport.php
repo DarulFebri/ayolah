@@ -17,16 +17,23 @@ class MahasiswaExport implements FromCollection, WithHeadings, ShouldAutoSize //
         // Ambil semua data mahasiswa
         // Gunakan select() untuk memilih kolom yang ingin Anda ekspor
         // Pastikan nama kolom sesuai dengan nama kolom di tabel mahasiswas
-        return Mahasiswa::select(
+        return Mahasiswa::with(['prodi', 'kelas'])->select(
             'nim',
-            'nama_lengkap', // Perhatikan, ini adalah nama kolom di DB Anda
-            'jurusan',
-            'prodi',
+            'nama_lengkap',
             'jenis_kelamin',
-            'kelas',
             'email',
-            // Anda bisa menambahkan kolom lain jika diperlukan, seperti 'created_at', 'updated_at'
-        )->get();
+            'prodi_id',
+            'kelas_id'
+        )->get()->map(function ($mahasiswa) {
+            return [
+                $mahasiswa->nim,
+                $mahasiswa->nama_lengkap,
+                $mahasiswa->prodi->nama_prodi ?? 'N/A',
+                $mahasiswa->jenis_kelamin,
+                $mahasiswa->kelas->nama ?? 'N/A',
+                $mahasiswa->email,
+            ];
+        });
     }
 
     /**

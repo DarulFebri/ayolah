@@ -57,6 +57,6 @@ class Mahasiswa extends Model
     // Relasi ke Kelas
     public function kelas()
     {
-        return $this->belongsTo(Kelas::class);
+        return $this->belongsTo(Kelas::class, 'kelas_id');
     }
 }

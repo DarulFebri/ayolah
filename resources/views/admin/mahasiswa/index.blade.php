@@ -2,7 +2,7 @@
 
 @section('title', 'Menajemen Mahasiswa') {{-- Mengatur judul halaman --}}
 
-@section('page_title', 'Menajemen Mahasiswa') {{-- Mengatur judul di header halaman --}}
+@section('header_title', 'Menajemen Mahasiswa') {{-- Mengatur judul di header halaman --}}
 
 @section('styles')
     {{-- Tambahkan gaya CSS khusus jika diperlukan --}}
@@ -420,60 +420,6 @@
 @endsection
 
 @section('content')
-
-    <div class="section-header">
-        <div>
-            <h2 class="section-title">
-                <i class="fas fa-user-graduate"></i>
-                Data Mahasiswa
-            </h2>
-            <p style="color: var(--text-color); opacity: 0.8; margin-top: 5px;">
-                Kelola data mahasiswa Politeknik Negeri Padang
-            </p>
-        </div>
-    </div>
-
-    <div class="stats-grid">
-        <div class="stats-card" style="animation-delay: 0.1s;">
-            <div class="stats-icon icon-blue">
-                <i class="fas fa-user-graduate"></i>
-            </div>
-            <div class="stats-content">
-                <h3>1,245</h3>
-                <p>Total Mahasiswa</p>
-            </div>
-        </div>
-
-        <div class="stats-card" style="animation-delay: 0.2s;">
-            <div class="stats-icon icon-green">
-                <i class="fas fa-user-check"></i>
-            </div>
-            <div class="stats-content">
-                <h3>1,128</h3>
-                <p>Mahasiswa Aktif</p>
-            </div>
-        </div>
-
-        <div class="stats-card" style="animation-delay: 0.3s;">
-            <div class="stats-icon icon-orange">
-                <i class="fas fa-user-clock"></i>
-            </div>
-            <div class="stats-content">
-                <h3>117</h3>
-                <p>Sedang PKL</p>
-            </div>
-        </div>
-
-        <div class="stats-card" style="animation-delay: 0.4s;">
-            <div class="stats-icon icon-red">
-                <i class="fas fa-user-graduate"></i>
-            </div>
-            <div class="stats-content">
-                <h3>86</h3>
-                <p>Sedang TA</p>
-            </div>
-        </div>
-    </div>
 
     <div class="main-card">
         {{-- Pesan sukses --}}
