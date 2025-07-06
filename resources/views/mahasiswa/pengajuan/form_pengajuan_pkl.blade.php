@@ -70,6 +70,8 @@
                 <input type="text" name="judul_pengajuan" id="judul_pengajuan" class="form-control form-input" value="{{ old('judul_pengajuan') }}" required placeholder="Masukkan judul proposal PKL Anda">
             </div>
 
+            <br>
+
             <div class="form-group mb-4">
                 <label for="dosen_pembimbing_display" class="form-label form-label-emphasized"><i class="fas fa-user-tie me-2"></i>Dosen Pembimbing</label>
                 <div class="form-dosen-select">
@@ -80,6 +82,9 @@
                     </button>
                 </div>
             </div>
+
+            <br>
+            <br>
 
             {{-- Dokumen Persyaratan --}}
             <h3 class="form-title mt-8"><i class="fas fa-folder-open me-2"></i>Dokumen Persyaratan PKL</h3>

@@ -70,6 +70,8 @@
                 <input type="text" name="judul_pengajuan" id="judul_pengajuan" class="form-control form-input" value="{{ old('judul_pengajuan') }}" required placeholder="Masukkan judul proposal Tugas Akhir Anda">
             </div>
 
+            <br>
+
             <div class="form-group mb-4">
                 <label for="dosen_pembimbing_display" class="form-label form-label-emphasized"><i class="fas fa-user-tie me-2"></i>Dosen Pembimbing 1</label>
                 <div class="form-dosen-select">
@@ -81,8 +83,10 @@
                 </div>
             </div>
 
+            <br>
+
             <div class="form-group mb-4">
-                <label for="dosen_penguji1_display" class="form-label form-label-emphasized"><i class="fas fa-user-tie me-2"></i>Dosen Pembimbing 2 (Opsional)</label>
+                <label for="dosen_penguji1_display" class="form-label form-label-emphasized"><i class="fas fa-user-tie me-2"></i>Dosen Pembimbing 2</label>
                 <div class="form-dosen-select">
                     <input type="hidden" name="dosen_penguji1_id" value="{{ old('dosen_penguji1_id') }}">
                     <input type="text" id="dosen_penguji1_display" class="form-control form-input" value="{{ old('dosen_penguji1_display') }}" readonly placeholder="Klik tombol 'Pilih' untuk mencari dosen">
@@ -91,6 +95,10 @@
                     </button>
                 </div>
             </div>
+
+
+            <br><br>
+
 
             {{-- Dokumen Persyaratan --}}
             <h3 class="form-title mt-8"><i class="fas fa-folder-open me-2"></i>Dokumen Persyaratan TA</h3>
