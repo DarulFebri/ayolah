@@ -22,8 +22,7 @@ class DosenSeeder extends Seeder
                 'email' => 'andi.wijaya@example.com',
                 'password' => 'password123', // Password untuk tabel User
                 'nidn' => '197001012000011001',
-                'jurusan' => 'Teknik Informatika',
-                'prodi_nama' => 'Sistem Informasi',
+                'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Laki-laki',
             ],
             [
@@ -31,7 +30,6 @@ class DosenSeeder extends Seeder
                 'email' => 'budi.santoso@example.com',
                 'password' => 'password123',
                 'nidn' => '198005102005021002',
-                'jurusan' => 'Teknik Informatika',
                 'prodi_nama' => 'Teknik Komputer',
                 'jenis_kelamin' => 'Laki-laki',
             ],
@@ -40,8 +38,7 @@ class DosenSeeder extends Seeder
                 'email' => 'citra.dewi@example.com',
                 'password' => 'password123',
                 'nidn' => '197511202002032003',
-                'jurusan' => 'Teknik Informatika',
-                'prodi_nama' => 'Sistem Informasi',
+                'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Perempuan',
             ],
             [
@@ -49,8 +46,7 @@ class DosenSeeder extends Seeder
                 'email' => 'Rayhan.dwiwata@example.com',
                 'password' => 'password123',
                 'nidn' => '197511202002032004',
-                'jurusan' => 'Teknologi Informasi',
-                'prodi_nama' => 'Sistem Komputer',
+                'prodi_nama' => 'Teknik Komputer',
                 'jenis_kelamin' => 'Laki-Laki',
             ],
             [
@@ -58,8 +54,7 @@ class DosenSeeder extends Seeder
                 'email' => 'ilham@example.com',
                 'password' => '12345678', // Password untuk tabel User
                 'nidn' => '1234567890',
-                'jurusan' => 'Teknik Informatika',
-                'prodi_nama' => 'Ilmu Komputer',
+                'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Laki-laki',
             ],
             [
@@ -67,8 +62,7 @@ class DosenSeeder extends Seeder
                 'email' => 'andrew@example.com',
                 'password' => '12345678',
                 'nidn' => '0987654321',
-                'jurusan' => 'Sistem Informasi',
-                'prodi_nama' => 'Sistem Informasi',
+                'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Laki-laki',
             ],
             [
@@ -76,8 +70,7 @@ class DosenSeeder extends Seeder
                 'email' => 'dimas@example.com',
                 'password' => '12345678',
                 'nidn' => '1122334455',
-                
-                'prodi_nama' => 'Jaringan Komputer',
+                'prodi_nama' => 'Teknik Komputer',
                 'jenis_kelamin' => 'Laki-laki',
             ],
         ];
@@ -104,11 +97,9 @@ class DosenSeeder extends Seeder
                 [
                     'user_id' => $user->id,
                     'nama' => $data['name'],
-                    
                     'prodi_id' => $prodi ? $prodi->id : null, // Gunakan prodi_id
                     'jenis_kelamin' => $data['jenis_kelamin'],
                     'email' => $data['email'],
-                    'password' => Hash::make($data['password']), // <-- PENTING: BARIS INI HARUS ADA
                 ]
             );
         }

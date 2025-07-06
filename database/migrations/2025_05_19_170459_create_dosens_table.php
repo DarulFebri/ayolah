@@ -20,8 +20,6 @@ return new class extends Migration
 
             // Kolom yang kita tambahkan
             $table->string('email')->unique()->nullable();
-            $table->string('password');
-            $table->rememberToken();
 
             $table->timestamps();
         });
