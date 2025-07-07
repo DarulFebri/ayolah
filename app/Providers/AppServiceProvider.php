@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Pengajuan;
+use App\Observers\PengajuanObserver;
 use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
@@ -36,5 +38,7 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('mahasiswa_for_layout', $user ? $user->mahasiswa : null);
             }
         });
+
+        Pengajuan::observe(PengajuanObserver::class);
     }
 }
