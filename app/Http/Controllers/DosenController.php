@@ -71,8 +71,20 @@ class DosenController extends Controller
 
         // Ambil sidang di mana dosen ini terlibat dan statusnya masih 'pending'
         $sidangInvitations = Sidang::where(function($query) use ($dosenLoginId) {
-                                $query->where('ketua_sidang_dosen_id', $dosenLoginId)
-                                      ->where('persetujuan_ketua_sidang', 'pending');
+                                // For PKL, if dosen_pembimbing_id is the same as ketua_sidang_dosen_id,
+                                // we only consider the 'dosen_pembimbing' role for pending invitations.
+                                // So, exclude 'ketua_sidang' if it's a PKL and the roles are the same.
+                                $query->where(function($q) use ($dosenLoginId) {
+                                    $q->where('ketua_sidang_dosen_id', $dosenLoginId)
+                                      ->where('persetujuan_ketua_sidang', 'pending')
+                                      ->whereDoesntHave('pengajuan', function ($subQuery) use ($dosenLoginId) {
+                                          $subQuery->where('jenis_pengajuan', 'pkl')
+                                                   ->whereHas('sidang', function ($innerSubQuery) use ($dosenLoginId) {
+                                                       $innerSubQuery->where('dosen_pembimbing_id', $dosenLoginId)
+                                                                     ->whereColumn('dosen_pembimbing_id', 'ketua_sidang_dosen_id');
+                                                   });
+                                      });
+                                });
                             })->orWhere(function($query) use ($dosenLoginId) {
                                 $query->where('sekretaris_sidang_dosen_id', $dosenLoginId)
                                       ->where('persetujuan_sekretaris_sidang', 'pending');
@@ -433,7 +445,14 @@ class DosenController extends Controller
         $catatan = $request->catatan;
         $peranDosen = null;
 
-        if ($sidang->ketua_sidang_dosen_id === $dosen->id && $sidang->persetujuan_ketua_sidang === 'pending') {
+        // Load the pengajuan relationship to check jenis_pengajuan
+        $sidang->load('pengajuan');
+
+        if ($sidang->pengajuan->jenis_pengajuan === 'pkl' && $sidang->dosen_pembimbing_id === $dosen->id && $sidang->persetujuan_dosen_pembimbing === 'pending') {
+            // For PKL, Dosen Pembimbing 1 is also Ketua Sidang, but we only need one approval for 'dosen_pembimbing'
+            $sidang->persetujuan_dosen_pembimbing = $respon;
+            $peranDosen = 'Dosen Pembimbing 1 (Ketua Sidang)';
+        } elseif ($sidang->ketua_sidang_dosen_id === $dosen->id && $sidang->persetujuan_ketua_sidang === 'pending') {
             $sidang->persetujuan_ketua_sidang = $respon;
             $peranDosen = 'Ketua Sidang';
         } elseif ($sidang->sekretaris_sidang_dosen_id === $dosen->id && $sidang->persetujuan_sekretaris_sidang === 'pending') {

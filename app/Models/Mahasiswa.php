@@ -16,7 +16,6 @@ class Mahasiswa extends Model
         'prodi_id',
         'kelas_id',
         'jenis_kelamin',
-        'email',
         'otp',
         'otp_expires_at',
         'foto_profil',

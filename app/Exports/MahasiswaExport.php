@@ -49,7 +49,7 @@ class MahasiswaExport implements FromCollection, WithHeadings, ShouldAutoSize //
             'Prodi',
             'Jenis Kelamin',
             'Kelas',
-            'Email',
+            'Email User',
         ];
     }
 }

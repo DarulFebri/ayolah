@@ -198,20 +198,21 @@ class MahasiswaController extends Controller
     {
         $request->validate([
             // Validasi bahwa email harus ada di tabel 'mahasiswas'
-            'email' => 'required|email|exists:mahasiswas,email',
+            'email' => 'required|email|exists:users,email',
         ], [
             'email.exists' => 'Email ini tidak terdaftar sebagai email mahasiswa.',
         ]);
 
         // Cari data mahasiswa berdasarkan email yang diinput
-        $mahasiswa = Mahasiswa::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-        // Cek apakah mahasiswa ditemukan dan memiliki user_id yang valid
-        if (!$mahasiswa || !$mahasiswa->user_id) {
+        if (!$user || !$user->mahasiswa) {
             return back()->withErrors([
-                'email' => 'Email mahasiswa tidak ditemukan atau tidak terhubung ke akun pengguna.',
+                'email' => 'Email ini tidak terdaftar sebagai email mahasiswa atau tidak terhubung ke akun pengguna.',
             ])->withInput($request->only('email'));
         }
+
+        $mahasiswa = $user->mahasiswa;
 
         // Generate OTP baru (6 digit random string)
         $otp = Str::random(6);
@@ -226,17 +227,17 @@ class MahasiswaController extends Controller
 
         // Kirim OTP via email menggunakan Mailable
         try {
-            Mail::to($mahasiswa->email)->send(new OtpMail($otp));
+            Mail::to($user->email)->send(new OtpMail($otp));
         } catch (\Exception $e) {
             // Log error untuk debugging lebih lanjut
-            \Log::error('Gagal mengirim OTP reset password ke ' . $mahasiswa->email . ': ' . $e->getMessage());
+            \Log::error('Gagal mengirim OTP reset password ke ' . $user->email . ': ' . $e->getMessage());
             return back()->withErrors([
                 'email' => 'Gagal mengirim kode OTP. Silakan coba lagi nanti ya.',
             ])->withInput($request->only('email'));
         }
 
         // In your sendResetOtp method, you have this:
-        return redirect()->route('mahasiswa.otp.verify.form', ['email' => $mahasiswa->email])
+        return redirect()->route('mahasiswa.otp.verify.form', ['email' => $user->email])
         ->with('success', 'Kode OTP untuk reset password telah dikirim ke email Anda. Silakan cek kotak masuk Anda (termasuk folder spam).');
     }
 
@@ -269,11 +270,13 @@ class MahasiswaController extends Controller
             'otp' => 'required|string|size:6',
         ]);
 
-        $mahasiswa = Mahasiswa::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-        if (!$mahasiswa) {
-            return back()->withErrors(['otp' => 'Email tidak ditemukan.'])->withInput($request->only('email', 'otp'));
+        if (!$user || !$user->mahasiswa) {
+            return back()->withErrors(['otp' => 'Email tidak ditemukan atau tidak terhubung ke akun pengguna.'])->withInput($request->only('email', 'otp'));
         }
+
+        $mahasiswa = $user->mahasiswa;
 
         if ($mahasiswa->otp === $request->otp && Carbon::now()->lessThan($mahasiswa->otp_expires_at)) {
             $mahasiswa->update([
@@ -317,11 +320,13 @@ class MahasiswaController extends Controller
         ]);
 
         // Cari mahasiswa berdasarkan email
-        $mahasiswa = Mahasiswa::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-        if (!$mahasiswa || !$mahasiswa->user_id) {
+        if (!$user || !$user->mahasiswa) {
             return back()->withErrors(['email' => 'Email mahasiswa tidak ditemukan atau tidak terhubung ke akun pengguna.'])->withInput($request->only('email'));
         }
+
+        $mahasiswa = $user->mahasiswa;
 
         // Generate OTP baru dan waktu kadaluarsa
         $otp = Str::random(6);
@@ -335,9 +340,9 @@ class MahasiswaController extends Controller
 
         // Kirim OTP via email
         try {
-            Mail::to($mahasiswa->email)->send(new OtpMail($otp));
+            Mail::to($user->email)->send(new OtpMail($otp));
         } catch (\Exception $e) {
-            \Log::error('Gagal mengirim ulang OTP ke ' . $mahasiswa->email . ': ' . $e->getMessage());
+            \Log::error('Gagal mengirim ulang OTP ke ' . $user->email . ': ' . $e->getMessage());
             return back()->withErrors([
                 'email' => 'Gagal mengirim ulang kode OTP. Silakan coba lagi nanti.',
             ])->withInput($request->only('email'));
@@ -624,12 +629,12 @@ class MahasiswaController extends Controller
         $request->validate([
             'nama_lengkap' => 'required|string|max:255',
             'nim' => ['required', 'string', 'max:20', Rule::unique('mahasiswas')->ignore($mahasiswa->id)],
-            'email' => ['required', 'email', 'max:255', Rule::unique('mahasiswas')->ignore($mahasiswa->id)],
+            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($mahasiswa->user->id)],
             'nomor_hp' => 'nullable|string|max:20',
             'cropped_image' => 'nullable|string',
         ]);
 
-        $dataToUpdate = $request->only(['nama_lengkap', 'nim', 'email', 'nomor_hp']);
+        $dataToUpdate = $request->only(['nama_lengkap', 'nim', 'nomor_hp']);
 
         if ($request->filled('cropped_image')) {
             // Hapus foto lama jika ada

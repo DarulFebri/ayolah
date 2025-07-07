@@ -115,7 +115,7 @@
             }
           @endphp
 
-          {!! tampilkanDosen('Ketua Sidang',$pengajuan->sidang->ketuaSidang,$pengajuan->sidang->persetujuan_ketua_sidang) !!}
+          {!! tampilkanDosen('Ketua Sidang',$pengajuan->sidang->dosenPembimbing,$pengajuan->sidang->persetujuan_dosen_pembimbing) !!}
           {!! tampilkanDosen('Sekretaris Sidang',$pengajuan->sidang->sekretarisSidang,$pengajuan->sidang->persetujuan_sekretaris_sidang) !!}
           {!! tampilkanDosen('Anggota Sidang 1',$pengajuan->sidang->anggota1Sidang,$pengajuan->sidang->persetujuan_anggota1_sidang) !!}
           {!! tampilkanDosen('Anggota Sidang 2',$pengajuan->sidang->anggota2Sidang,$pengajuan->sidang->persetujuan_anggota2_sidang) !!}

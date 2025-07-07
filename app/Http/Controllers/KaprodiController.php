@@ -187,12 +187,16 @@ class KaprodiController extends Controller
             'sekretaris_sidang' => 'Sekretaris',
             'anggota1_sidang' => 'Anggota 1',
         ];
+        // For TA, Penguji 1 is also required
         if (!$isPkl) {
             $approvalChecks['dosen_penguji1'] = 'Penguji 1';
         }
+        // Anggota 2 is optional
         if ($sidang->anggota2_sidang_dosen_id) {
             $approvalChecks['anggota2_sidang'] = 'Anggota 2';
         }
+        // Ketua Sidang approval is not explicitly checked here as it's derived from pembimbing/penguji1 approval for TA,
+        // and for PKL, dosen_pembimbing is the de facto ketua sidang and its approval is already checked.
 
         foreach ($approvalChecks as $relation => $roleName) {
             if ($sidang->{$relation . '_dosen_id'} && $sidang->{'persetujuan_' . $relation} !== 'setuju') {

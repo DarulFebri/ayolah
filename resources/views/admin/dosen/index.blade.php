@@ -379,7 +379,7 @@
                     <tr>
                         <td>{{ $dosen->nidn }}</td>
                         <td>{{ $dosen->nama }}</td>
-                        <td>{{ $dosen->email }}</td>
+                        <td>{{ $dosen->user->email }}</td>
                         <td>{{ $dosen->prodi->nama_prodi ?? '-' }}</td>
                         <td>{{ $dosen->jenis_kelamin }}</td>
                         <td>

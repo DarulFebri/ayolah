@@ -71,7 +71,6 @@ class DosenImport implements ToCollection, WithHeadingRow
                     'nama'          => $row['nama_lengkap'],
                     'prodi_id'      => $prodi->id,
                     'jenis_kelamin' => $jenisKelamin,
-                    'email'         => $email, // <--- Simpan email dari Excel di tabel dosen juga
                 ]);
                 Log::info('Dosen baru dibuat untuk user ID: ' . $user->id);
 
@@ -100,7 +99,6 @@ class DosenImport implements ToCollection, WithHeadingRow
                 'email',
                 'max:255',
                 Rule::unique('users', 'email'), // Email harus unik di tabel users
-                Rule::unique('dosens', 'email'), // Email juga harus unik di tabel dosens
             ],
         ];
     }

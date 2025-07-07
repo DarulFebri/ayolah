@@ -85,7 +85,7 @@
 
                 <div class="form-group">
                     <label for="email"><i class="fas fa-envelope"></i> Email</label>
-                    <input type="email" id="email" name="email" value="{{ old('email', $mahasiswa->email) }}" required class="form-input @error('email') is-invalid @enderror">
+                    <input type="email" id="email" name="email" value="{{ old('email', $mahasiswa->user->email) }}" required class="form-input @error('email') is-invalid @enderror">
                     @error('email')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror

@@ -99,7 +99,6 @@ class DosenSeeder extends Seeder
                     'nama' => $data['name'],
                     'prodi_id' => $prodi ? $prodi->id : null, // Gunakan prodi_id
                     'jenis_kelamin' => $data['jenis_kelamin'],
-                    'email' => $data['email'],
                 ]
             );
         }

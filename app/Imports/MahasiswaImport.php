@@ -117,9 +117,7 @@ class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, W
                     'nim'           => $nim,
                     'nama_lengkap'  => $namaLengkap,
                     'prodi_id'      => $prodiModel->id,
-                    'kelas_id'      => $kelasModel->id,
-                    'jenis_kelamin' => $jenisKelamin,
-                    'email'         => $email,
+                    'kelas_id'      => $row['kelas_id'],
                 ]);
                 Log::info('Mahasiswa baru dibuat untuk user ID: ' . $user->id);
 
@@ -150,7 +148,6 @@ class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, W
                 'email',
                 'max:255',
                 Rule::unique('users', 'email'),
-                Rule::unique('mahasiswas', 'email'),
             ],
         ];
     }

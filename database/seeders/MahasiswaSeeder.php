@@ -86,7 +86,6 @@ class MahasiswaSeeder extends Seeder
                         'prodi_id' => $prodi ? $prodi->id : null, // Gunakan prodi_id
                         'jenis_kelamin' => $data['jenis_kelamin'],
                         'kelas_id' => $kelas ? $kelas->id : null,
-                        'email' => $data['email'],
                     ]
                 );
             } else {

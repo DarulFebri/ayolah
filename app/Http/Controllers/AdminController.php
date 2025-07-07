@@ -290,8 +290,6 @@ class AdminController extends Controller
             'nim' => $request->nim,
             'nama_lengkap' => $request->nama_lengkap,
             'prodi_id' => $request->prodi_id,
-            'email' => $request->email, // Email mahasiswa juga disimpan di tabel mahasiswa
-            'jenis_kelamin' => $request->jenis_kelamin,
             'kelas_id' => $request->kelas_id,
         ]);
 
@@ -336,7 +334,6 @@ class AdminController extends Controller
             'prodi_id' => $request->prodi_id,
             'jenis_kelamin' => $request->jenis_kelamin,
             'kelas_id' => $request->kelas_id,
-            'email' => $request->email,
         ]);
 
         $this->logActivity('Mengupdate mahasiswa: ' . $mahasiswa->nama_lengkap, 'Mahasiswa');
@@ -390,7 +387,6 @@ class AdminController extends Controller
             'user_id' => $user->id,
             'nidn' => $request->nidn,
             'nama' => $request->nama,
-            'email' => $request->email, // Email dosen juga disimpan di tabel dosen
             'prodi_id' => $request->prodi_id,
             'jenis_kelamin' => $request->jenis_kelamin,
             // 'password' => $request->password, // Ini dihapus karena password ada di tabel users
@@ -434,7 +430,6 @@ class AdminController extends Controller
             'nama' => $request->nama,
             'prodi_id' => $request->prodi_id,
             'jenis_kelamin' => $request->jenis_kelamin,
-            'email' => $request->email,
             // Jika ada kolom lain yang diupdate di model Dosen, tambahkan di sini
         ]);
 
