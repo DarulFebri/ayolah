@@ -107,7 +107,9 @@ Route::prefix('admin')->group(function () {
         
 
         // Kelas Management
-        Route::resource('kelas', KelasController::class)->names([
+        Route::resource('kelas', KelasController::class)->parameters([
+            'kelas' => 'kelas'
+        ])->names([
             'index' => 'admin.kelas.index',
             'create' => 'admin.kelas.create',
             'store' => 'admin.kelas.store',
