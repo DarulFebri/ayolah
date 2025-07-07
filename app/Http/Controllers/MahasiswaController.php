@@ -513,6 +513,35 @@ class MahasiswaController extends Controller
         return back()->with('success', 'Notifikasi berhasil ditandai sudah dibaca.');
     }
 
+    /**
+     * Menandai semua notifikasi yang belum dibaca sebagai sudah dibaca.
+     * Route: POST /mahasiswa/notifications/mark-all-as-read
+     * Name: mahasiswa.notifications.markAllAsRead
+     * Middleware: auth, mahasiswa
+     */
+    public function markAllNotificationsAsRead()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('mahasiswa.login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        $user = Auth::user();
+        $mahasiswa = $user->mahasiswa;
+
+        if (!$mahasiswa) {
+            Auth::logout();
+            return redirect()->route('mahasiswa.login')->with('error', 'Data mahasiswa tidak ditemukan.');
+        }
+
+        PengajuanStatusHistory::whereHas('pengajuan', function ($query) use ($mahasiswa) {
+            $query->where('mahasiswa_id', $mahasiswa->id);
+        })
+        ->whereNull('read_at')
+        ->update(['read_at' => now()]);
+
+        return back()->with('success', 'Semua notifikasi berhasil ditandai sudah dibaca.');
+    }
+
     // --- Bagian Dashboard Mahasiswa ---
 
     /**

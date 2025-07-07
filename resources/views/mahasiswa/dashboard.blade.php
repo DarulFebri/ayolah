@@ -1,4 +1,4 @@
-@extends('mahasiswa.layout') {{-- Menggunakan layout mahasiswa yang sudah disesuaikan --}}
+@extends('layouts.mahasiswa') {{-- Menggunakan layout mahasiswa yang sudah disesuaikan --}}
 
 @section('title', 'Dashboard')
 @section('page_title', 'Dashboard') {{-- Judul halaman untuk header layout --}}

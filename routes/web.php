@@ -182,6 +182,7 @@ Route::prefix('mahasiswa')->group(function () {
         // Notification routes
         Route::get('/notifications', [MahasiswaController::class, 'showNotifications'])->name('mahasiswa.notifications.index');
         Route::post('/notifications/{id}/mark-as-read', [MahasiswaController::class, 'markNotificationAsRead'])->name('mahasiswa.notifications.markAsRead');
+        Route::post('/notifications/mark-all-as-read', [MahasiswaController::class, 'markAllNotificationsAsRead'])->name('mahasiswa.notifications.markAllAsRead');
 
         // New route for changing password
         Route::get('/password/change', [MahasiswaController::class, 'changePasswordForm'])->name('mahasiswa.password.change.form');

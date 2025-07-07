@@ -1193,7 +1193,7 @@
             </div>
             {{-- Akhir Menu Pengajuan --}}
 
-            <a href="#" style="text-decoration: none; color: inherit;">
+            <a href="{{ route('mahasiswa.notifications.index') }}" style="text-decoration: none; color: inherit;">
                 <div class="menu-item {{ Request::routeIs('mahasiswa.notifications') ? 'active' : '' }} tooltip">
                     <i class="fas fa-bell"></i>
                     <span>Notifikasi</span>
