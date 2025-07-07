@@ -158,6 +158,12 @@ class KaprodiController extends Controller
             if ($penentuanKetua['status'] === 'error') {
                 return back()->with('error', $penentuanKetua['message']);
             }
+            // Setelah penentuan ketua sidang, pastikan sidang di-reload untuk mendapatkan data terbaru
+            $pengajuan->load('sidang');
+            $sidang = $pengajuan->sidang; // Perbarui objek sidang
+            if (!$sidang->ketua_sidang_dosen_id) {
+                return back()->with('error', 'Ketua sidang belum dapat ditentukan. Pastikan dosen pembimbing atau penguji 1 menyetujui.');
+            }
         }
         
         if ($pengajuan->status === 'perlu_penjadwalan_ulang') {
@@ -229,6 +235,13 @@ class KaprodiController extends Controller
         $pembimbingId = $sidang->dosen_pembimbing_id;
         $penguji1Id = $sidang->dosen_penguji1_id;
 
+        //dd([
+        //    'persetujuanPembimbing' => $persetujuanPembimbing,
+        //    'persetujuanPenguji1' => $persetujuanPenguji1,
+        //    'pembimbingId' => $pembimbingId,
+        //    'penguji1Id' => $penguji1Id,
+        //]);
+
         $ketuaSidangId = null;
 
         if ($persetujuanPembimbing === 'setuju' && $persetujuanPenguji1 === 'setuju') {
@@ -261,6 +274,10 @@ class KaprodiController extends Controller
         if ($ketuaSidangId) {
             $sidang->ketua_sidang_dosen_id = $ketuaSidangId;
             $sidang->persetujuan_ketua_sidang = 'setuju'; // Otomatis setuju karena sudah dipilih berdasarkan persetujuan
+            $sidang->save();
+        } else {
+            // Jika ketua sidang tidak dapat ditentukan, pastikan status persetujuan ketua sidang direset
+            $sidang->persetujuan_ketua_sidang = 'pending';
             $sidang->save();
         }
         
@@ -382,43 +399,71 @@ class KaprodiController extends Controller
 
         $calonKetuaSidang = null;
         // Tentukan calon ketua sidang untuk TA secara dinamis untuk ditampilkan di view
-        if ($pengajuan->jenis_pengajuan === 'ta' && $pengajuan->sidang && !$pengajuan->sidang->ketua_sidang_dosen_id) {
-            $sidang = $pengajuan->sidang;
-            $persetujuanPembimbing = $sidang->persetujuan_dosen_pembimbing;
-            $persetujuanPenguji1 = $sidang->persetujuan_dosen_penguji1;
+            if ($pengajuan->jenis_pengajuan === 'ta' && $pengajuan->sidang) {
+                // Panggil tentukanKetuaSidang di sini untuk memastikan ketua sidang ditentukan
+                // sebelum ditampilkan di view, jika belum ada.
+                if (empty($pengajuan->sidang->ketua_sidang_dosen_id)) {
+                    $this->tentukanKetuaSidang($pengajuan);
+                    // Reload sidang relationship to get the updated ketua_sidang_dosen_id
+                    $pengajuan->load('sidang.ketuaSidang');
+                }
 
-            if ($persetujuanPembimbing === 'setuju') {
-                $calonKetuaSidang = $sidang->dosenPembimbing;
-            } elseif ($persetujuanPembimbing === 'tolak' && $persetujuanPenguji1 === 'setuju') {
-                $calonKetuaSidang = $sidang->dosenPenguji1;
+                $sidang = $pengajuan->sidang;
+                $persetujuanPembimbing = $sidang->persetujuan_dosen_pembimbing;
+                $persetujuanPenguji1 = $sidang->persetujuan_dosen_penguji1;
+
+                if ($persetujuanPembimbing === 'setuju') {
+                    $calonKetuaSidang = $sidang->dosenPembimbing;
+                } elseif ($persetujuanPembimbing === 'tolak' && $persetujuanPenguji1 === 'setuju') {
+                    $calonKetuaSidang = $sidang->dosenPenguji1;
+                }
             }
-        }
 
         // Logika untuk menentukan apakah tombol finalisasi bisa ditampilkan
         $bisaDifinalisasi = false;
-        if ($pengajuan->sidang && $pengajuan->status === 'menunggu_persetujuan_dosen') {
+        if ($pengajuan->sidang && ($pengajuan->status === 'menunggu_persetujuan_dosen' || $pengajuan->status === 'dosen_menyetujui')) {
             $sidang = $pengajuan->sidang;
             
-            // Periksa persetujuan semua anggota selain pembimbing dan penguji 1
-            $anggotaSetuju = $sidang->persetujuan_sekretaris_sidang === 'setuju' &&
-                             $sidang->persetujuan_anggota1_sidang === 'setuju';
-            if ($sidang->anggota2_sidang_dosen_id) {
-                $anggotaSetuju = $anggotaSetuju && $sidang->persetujuan_anggota2_sidang === 'setuju';
+            // Periksa persetujuan semua dosen yang terlibat
+            $allRequiredDosenAgreed = true;
+
+            // Dosen Pembimbing selalu wajib
+            if ($sidang->dosen_pembimbing_id && $sidang->persetujuan_dosen_pembimbing !== 'setuju') {
+                $allRequiredDosenAgreed = false;
             }
 
-            // Untuk TA, periksa apakah ada calon ketua yang valid
-            if ($pengajuan->jenis_pengajuan === 'ta') {
-                $adaCalonKetua = $sidang->persetujuan_dosen_pembimbing === 'setuju' || $sidang->persetujuan_dosen_penguji1 === 'setuju';
-                $bisaDifinalisasi = $anggotaSetuju && $adaCalonKetua;
-            } else { // Untuk PKL, semua harus setuju
-                $bisaDifinalisasi = $anggotaSetuju && $sidang->persetujuan_dosen_pembimbing === 'setuju';
+            // Untuk TA, Dosen Penguji 1 juga wajib
+            if ($pengajuan->jenis_pengajuan === 'ta' && $sidang->dosen_penguji1_id && $sidang->persetujuan_dosen_penguji1 !== 'setuju') {
+                $allRequiredDosenAgreed = false;
             }
+
+            // Sekretaris Sidang dan Anggota 1 Sidang selalu wajib
+            if ($sidang->sekretaris_sidang_dosen_id && $sidang->persetujuan_sekretaris_sidang !== 'setuju') {
+                $allRequiredDosenAgreed = false;
+            }
+            if ($sidang->anggota1_sidang_dosen_id && $sidang->persetujuan_anggota1_sidang !== 'setuju') {
+                $allRequiredDosenAgreed = false;
+            }
+
+            // Anggota 2 Sidang (jika ada)
+            if ($sidang->anggota2_sidang_dosen_id && $sidang->persetujuan_anggota2_sidang !== 'setuju') {
+                $allRequiredDosenAgreed = false;
+            }
+
+            // Untuk TA, pastikan ketua sidang sudah ditentukan
+            $ketuaSidangDitentukan = true;
+            if ($pengajuan->jenis_pengajuan === 'ta' && empty($sidang->ketua_sidang_dosen_id)) {
+                $ketuaSidangDitentukan = false;
+            }
+
+            $bisaDifinalisasi = $allRequiredDosenAgreed && $ketuaSidangDitentukan;
         }
     
         // Ambil daftar dosen untuk dropdown di form penjadwalan
         $dosens = Dosen::orderBy('nama')->get(); 
+        $kelas = \App\Models\Kelas::orderBy('nama_kelas')->get();
     
-        return view('kaprodi.pengajuan.show', compact('pengajuan', 'dosens', 'calonKetuaSidang', 'bisaDifinalisasi'));
+        return view('kaprodi.pengajuan.show', compact('pengajuan', 'dosens', 'calonKetuaSidang', 'bisaDifinalisasi', 'kelas'));
     }
 
     public function showAksiKaprodi(Pengajuan $pengajuan)

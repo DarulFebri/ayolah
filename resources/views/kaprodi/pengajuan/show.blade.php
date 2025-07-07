@@ -327,14 +327,14 @@
         <div class="card-section">
             <h3><i class="fas fa-cogs"></i> Aksi Kaprodi</h3>
             
-            @if ($bisaDifinalisasi)
+            @if ($bisaDifinalisasi && ($pengajuan->status === 'menunggu_persetujuan_dosen' || $pengajuan->status === 'dosen_menyetujui'))
                 <form action="{{ route('kaprodi.pengajuan.finalkan.jadwal', $pengajuan->id) }}" method="POST">
                     @csrf
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-check-circle"></i> Finalkan Jadwal Sidang
                     </button>
                 </form>
-            @elseif ($pengajuan->status === 'diverifikasi_admin' || $pengajuan->status === 'perlu_penjadwalan_ulang')
+            @elseif ($pengajuan->status === 'diverifikasi_admin' || $pengajuan->status === 'perlu_penjadwalan_ulang' || $pengajuan->status === 'menunggu_persetujuan_dosen')
                 <h4>Form Penjadwalan Sidang</h4>
                 <form action="{{ route('kaprodi.pengajuan.jadwalkan.storeUpdate', $pengajuan->id) }}" method="POST">
                     @csrf
@@ -384,8 +384,14 @@
 
                     <div class="form-group">
                         <label for="ruangan_sidang">Ruangan Sidang:</label>
-                        <input type="text" name="ruangan_sidang" id="ruangan_sidang" class="form-control" placeholder="Contoh: Ruang Sidang A"
-                               value="{{ optional($pengajuan->sidang)->ruangan_sidang }}" required>
+                        <select name="ruangan_sidang" id="ruangan_sidang" class="form-control" required>
+                            <option value="">Pilih Ruangan</option>
+                            @foreach ($kelas as $ruangan)
+                                <option value="{{ $ruangan->nama_kelas }}" {{ optional($pengajuan->sidang)->ruangan_sidang == $ruangan->nama_kelas ? 'selected' : '' }}>
+                                    {{ $ruangan->nama_kelas }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <div class="buttons">

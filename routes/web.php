@@ -18,12 +18,7 @@ use App\Mail\OtpMail;
 use App\Http\Controllers\Kaprodi\PengajuanKaprodiController;
 use App\Http\Controllers\Admin\PengajuanAdminController;
 
-// Middleware aliases (you can define these in your RouteServiceProvider or directly here)
-Route::aliasMiddleware('admin', \App\Http\Middleware\AdminMiddleware::class);
-Route::aliasMiddleware('mahasiswa', \App\Http\Middleware\MahasiswaMiddleware::class);
-Route::aliasMiddleware('dosen', \App\Http\Middleware\DosenMiddleware::class);
-Route::aliasMiddleware('kaprodi', \App\Http\Middleware\KaprodiMiddleware::class);
-Route::aliasMiddleware('kajur', \App\Http\Middleware\KajurMiddleware::class);
+
 
 // Rute Default
 Route::get('/', function () {
