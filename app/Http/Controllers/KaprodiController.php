@@ -29,6 +29,7 @@ class KaprodiController extends Controller
 
     public function storeUpdateJadwalSidang(Request $request, Pengajuan $pengajuan)
     {
+        
         $isPkl = $pengajuan->jenis_pengajuan === 'pkl';
 
         // Initialize Sidang if not exists or ensure correct initial values
@@ -37,27 +38,38 @@ class KaprodiController extends Controller
                 'pengajuan_id' => $pengajuan->id,
                 'dosen_pembimbing_id' => $pengajuan->mahasiswa->pembimbing1_id,
                 'persetujuan_dosen_pembimbing' => 'pending',
-                'dosen_penguji1_id' => $request->input('dosen_penguji_id'), // Set during initialization
-                'persetujuan_dosen_penguji1' => $isPkl ? 'setuju' : 'pending', // Auto-approve for PKL
+                'dosen_penguji1_id' => null, // Will be set from validatedData later
+                'persetujuan_dosen_penguji1' => 'pending', // Auto-approve for PKL
                 'tanggal_waktu_sidang' => $request->input('tanggal_waktu_sidang'), // Set during initialization
                 'ruangan_sidang' => $request->input('ruangan_sidang'), // Set during initialization
+                'ketua_sidang_dosen_id' => $isPkl ? $pengajuan->mahasiswa->pembimbing1_id : null, // Set for PKL, null for TA initially
+                'sekretaris_sidang_dosen_id' => null,
+                'anggota1_sidang_dosen_id' => null,
+                'anggota2_sidang_dosen_id' => null,
             ]);
             // For PKL, Dosen Pembimbing 1 is always Ketua Sidang and auto-approved on initialization
-        if ($isPkl) {
-            $sidang->ketua_sidang_dosen_id = $pengajuan->mahasiswa->pembimbing1_id;
-            $sidang->persetujuan_ketua_sidang = 'setuju';
-        }
-        $sidang->save();
+            if ($isPkl) {
+                $sidang->persetujuan_ketua_sidang = 'setuju';
+            }
+            $sidang->save();
         $pengajuan->load('sidang');
         }
         $sidang = $pengajuan->sidang;
 
         // Validation Rules
         $rules = [
-            'dosen_penguji_id' => 'required|exists:dosens,id',
             'tanggal_waktu_sidang' => 'required|date|after_or_equal:now',
             'ruangan_sidang' => 'required|string|max:255',
         ];
+
+        if ($isPkl) {
+            $rules['dosen_penguji_id'] = 'required|exists:dosens,id';
+        } else { // TA
+            $rules['sekretaris_sidang_id'] = 'required|exists:dosens,id';
+            $rules['anggota_sidang_1_id'] = 'required|exists:dosens,id';
+            $rules['anggota_sidang_2_id'] = 'nullable|exists:dosens,id';
+            $rules['ketua_sidang_dosen_id'] = 'nullable|exists:dosens,id';
+        }
 
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -65,26 +77,39 @@ class KaprodiController extends Controller
         }
         $validatedData = $validator->validated();
 
+        // Debugging: Dump validated data
+        //dd($validatedData);
+
         DB::beginTransaction();
         try {
             $oldDosenPenguji1Id = $sidang->dosen_penguji1_id; // Capture old Penguji 1 ID
             $oldPersetujuanDosenPenguji1 = $sidang->persetujuan_dosen_penguji1; // Capture old Penguji 1 approval
 
-            // Update Dosen Penguji 1
-            if (isset($validatedData['dosen_penguji_id'])) {
+            // Update Dosen Penguji 1 (for PKL)
+            if ($isPkl) {
                 $newDosenPenguji1Id = $validatedData['dosen_penguji_id'];
-                $sidang->dosen_penguji1_id = $newDosenPenguji1Id;
                 if ($oldDosenPenguji1Id !== $newDosenPenguji1Id) {
+                    $sidang->dosen_penguji1_id = $newDosenPenguji1Id;
                     $sidang->persetujuan_dosen_penguji1 = 'pending';
                 } else {
                     $sidang->persetujuan_dosen_penguji1 = $oldPersetujuanDosenPenguji1;
                 }
             }
 
-            // Fill remaining validated data (tanggal_waktu_sidang, ruangan_sidang, etc.)
+            // Fill common validated data
             $sidang->tanggal_waktu_sidang = $validatedData['tanggal_waktu_sidang'];
             $sidang->ruangan_sidang = $validatedData['ruangan_sidang'];
-            $sidang->dosen_penguji1_id = $validatedData['dosen_penguji_id'];
+
+            if (!$isPkl) { // Only for TA
+                $sidang->ketua_sidang_dosen_id = $validatedData['ketua_sidang_dosen_id'] ?? null;
+                $sidang->sekretaris_sidang_dosen_id = $validatedData['sekretaris_sidang_id'] ?? null;
+                $sidang->anggota1_sidang_dosen_id = $validatedData['anggota_sidang_1_id'] ?? null;
+                $sidang->anggota2_sidang_dosen_id = $validatedData['anggota_sidang_2_id'] ?? null;
+            }
+
+            // Debugging: Dump sidang object before save
+            //dd($sidang);
+
             $sidang->save();
 
             $dosenChanged = false;

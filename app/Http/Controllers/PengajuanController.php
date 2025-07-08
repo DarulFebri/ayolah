@@ -174,7 +174,7 @@ class PengajuanController extends Controller
                 // Untuk TA, ketua sidang bisa jadi dosen pembimbing atau penguji1/penguji2,
                 // tergantung kebijakan. Untuk contoh ini, kita biarkan null dulu atau set default.
                 // Jika dosen_pembimbing_id otomatis jadi ketua sidang untuk TA juga, set di sini.
-                // $sidangData['ketua_sidang_dosen_id'] = $request->dosen_pembimbing_id;
+                $sidangData['ketua_sidang_dosen_id'] = $request->dosen_pembimbing_id;
             } else { // Jika PKL
                 // Untuk PKL, dosen_pembimbing_id otomatis menjadi ketua sidang
                 $sidangData['ketua_sidang_dosen_id'] = $request->dosen_pembimbing_id;

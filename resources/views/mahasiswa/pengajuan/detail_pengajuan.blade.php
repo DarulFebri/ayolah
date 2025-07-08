@@ -118,7 +118,7 @@
                     <p class="value">{{ $pengajuan->sidang->dosenPenguji1->nama ?? '-' }}</p>
                 </div>
             @endif
-            @if ($pengajuan->jenis_pengajuan == 'pkl' && $pengajuan->sidang->ketuaSidang)
+            @if (($pengajuan->jenis_pengajuan == 'pkl' || $pengajuan->jenis_pengajuan == 'ta') && $pengajuan->sidang->ketuaSidang)
                 <div class="info-item">
                     <p class="label">Ketua Sidang</p>
                     <p class="value">{{ $pengajuan->sidang->ketuaSidang->nama ?? '-' }}</p>
