@@ -25,6 +25,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (isset($_SERVER['HTTP_X_ORIGINAL_HOST']) && !empty($_SERVER['HTTP_X_ORIGINAL_HOST'])) {
+            $url = 'https://' . $_SERVER['HTTP_X_ORIGINAL_HOST'];
+            \URL::forceRootUrl($url);
+            \URL::forceScheme('https');
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            \URL::forceScheme('https');
+        }
+
         Paginator::defaultView('vendor.pagination.custom');
         // This composer provides fresh mahasiswa data to all views in the 'mahasiswa'
         // directory and its subdirectories. This ensures the layout always has the latest data.
