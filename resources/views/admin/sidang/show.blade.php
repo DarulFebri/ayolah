@@ -102,17 +102,28 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 mb-2">
-                        <strong>Ketua Sidang:</strong> {{ $sidang->ketuaSidang->nama ?? 'Belum Ditunjuk' }}
+                        @if ($sidang->pengajuan->jenis_pengajuan === 'ta')
+                            <strong>Ketua Sidang:</strong> {{ $sidang->ketuaSidang->nama ?? 'Belum Ditunjuk' }}
+                        @elseif ($sidang->pengajuan->jenis_pengajuan === 'pkl')
+                            <strong>Dosen Pembimbing:</strong> {{ $sidang->dosenPembimbing->nama ?? 'Belum Ditunjuk' }}
+                        @endif
                     </div>
-                    <div class="col-md-6 mb-2">
-                        <strong>Sekretaris Sidang:</strong> {{ $sidang->sekretarisSidang->nama ?? 'Belum Ditunjuk' }}
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <strong>Anggota Sidang 1:</strong> {{ $sidang->anggota1Sidang->nama ?? 'Belum Ditunjuk' }}
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <strong>Anggota Sidang 2:</strong> {{ $sidang->anggota2Sidang->nama ?? 'Belum Ditunjuk' }}
-                    </div>
+                    @if ($sidang->pengajuan->jenis_pengajuan === 'pkl')
+                        <div class="col-md-6 mb-2">
+                            <strong>Dosen Penguji:</strong> {{ $sidang->dosenPenguji1->nama ?? 'Belum Ditunjuk' }}
+                        </div>
+                    @endif
+                    @if ($sidang->pengajuan->jenis_pengajuan !== 'pkl')
+                        <div class="col-md-6 mb-2">
+                            <strong>Sekretaris Sidang:</strong> {{ $sidang->sekretarisSidang->nama ?? 'Belum Ditunjuk' }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Anggota Sidang 1:</strong> {{ $sidang->anggota1Sidang->nama ?? 'Belum Ditunjuk' }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Anggota Sidang 2:</strong> {{ $sidang->anggota2Sidang->nama ?? 'Belum Ditunjuk' }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
