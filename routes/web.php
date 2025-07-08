@@ -282,6 +282,17 @@ Route::prefix('kaprodi')->group(function () {
         Route::get('/dashboard', [KaprodiController::class, 'dashboard'])->name('kaprodi.dashboard');
         Route::get('/dosen', [KaprodiController::class, 'daftarDosen'])->name('kaprodi.dosen.index');
 
+        Route::get('/profile/edit', [KaprodiController::class, 'editProfileForm'])->name('kaprodi.profile.edit');
+        Route::post('/profile/update', [KaprodiController::class, 'updateProfile'])->name('kaprodi.profile.update');
+
+        Route::get('/password/change', [KaprodiController::class, 'changePasswordForm'])->name('kaprodi.password.change.form');
+        Route::post('/password/change', [KaprodiController::class, 'changePassword'])->name('kaprodi.password.change');
+
+        // Notification routes
+        Route::get('/notifications', [KaprodiController::class, 'showNotifications'])->name('kaprodi.notifications.index');
+        Route::post('/notifications/{id}/mark-as-read', [KaprodiController::class, 'markNotificationAsRead'])->name('kaprodi.notifications.markAsRead');
+        Route::post('/notifications/mark-all-as-read', [KaprodiController::class, 'markAllNotificationsAsRead'])->name('kaprodi.notifications.markAllAsRead');
+
          // Pengajuan-related routes under KaprodiController
          Route::prefix('pengajuan')->name('kaprodi.pengajuan.')->group(function () {
             Route::get('/', [KaprodiController::class, 'indexPengajuan'])->name('index'); // Daftar pengajuan untuk Kaprodi

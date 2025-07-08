@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule; // Untuk validasi unique
 use App\Notifications\DosenSidangInvitation; // Pastikan ini di-import
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class KaprodiController extends Controller
 {
@@ -328,6 +329,8 @@ class KaprodiController extends Controller
     // Method untuk dashboard Kaprodi
     public function dashboard()
     {
+        $kaprodi_for_layout = Auth::user()->kaprodi;
+
         // 1. Ambil Jumlah Dosen
         $jumlahDosen = Dosen::count();
 
@@ -346,14 +349,15 @@ class KaprodiController extends Controller
 
 
         // Kirim semua data ini ke view
-        return view('kaprodi.dashboard', compact('jumlahDosen', 'jumlahPengajuan', 'pengajuanBaru'));
+        return view('kaprodi.dashboard', compact('jumlahDosen', 'jumlahPengajuan', 'pengajuanBaru', 'kaprodi_for_layout'));
     }
 
     // Method untuk menampilkan daftar dosen
     public function daftarDosen()
     {
+        $kaprodi_for_layout = Auth::user()->kaprodi;
         $dosens = Dosen::orderBy('nama')->get();
-        return view('kaprodi.dosen.index', compact('dosens'));
+        return view('kaprodi.dosen.index', compact('dosens', 'kaprodi_for_layout'));
     }
 
     // --- Pengajuan-related methods ---
@@ -361,6 +365,7 @@ class KaprodiController extends Controller
     // Menampilkan daftar pengajuan yang perlu ditinjau Kaprodi
     public function indexPengajuan()
     {
+        $kaprodi_for_layout = Auth::user()->kaprodi;
         // 1. Ambil pengajuan yang sedang menunggu aksi Kaprodi
         $pengajuansKaprodi = Pengajuan::where('status', 'diverifikasi_admin')
                                     ->orWhere('status', 'menunggu_persetujuan_dosen')
@@ -379,12 +384,13 @@ class KaprodiController extends Controller
 
 
         // Kirim kedua set data ke view
-        return view('kaprodi.pengajuan.index', compact('pengajuansKaprodi', 'pengajuansSelesaiKaprodi'));
+        return view('kaprodi.pengajuan.index', compact('pengajuansKaprodi', 'pengajuansSelesaiKaprodi', 'kaprodi_for_layout'));
     }
 
     // Menampilkan detail pengajuan
     public function showPengajuan(Pengajuan $pengajuan)
     {
+        $kaprodi_for_layout = Auth::user()->kaprodi;
         // Eager load relasi yang diperlukan untuk detail
         $pengajuan->load([
             'mahasiswa',
@@ -463,11 +469,12 @@ class KaprodiController extends Controller
         $dosens = Dosen::orderBy('nama')->get(); 
         $kelas = \App\Models\Kelas::orderBy('nama_kelas')->get();
     
-        return view('kaprodi.pengajuan.show', compact('pengajuan', 'dosens', 'calonKetuaSidang', 'bisaDifinalisasi', 'kelas'));
+        return view('kaprodi.pengajuan.show', compact('pengajuan', 'dosens', 'calonKetuaSidang', 'bisaDifinalisasi', 'kelas', 'kaprodi_for_layout'));
     }
 
     public function showAksiKaprodi(Pengajuan $pengajuan)
     {
+        $kaprodi_for_layout = Auth::user()->kaprodi;
         // Pastikan relasi sidang sudah ada atau buat jika belum
         // Ini memastikan $pengajuan->sidang selalu tersedia
         if (!$pengajuan->sidang) {
@@ -491,12 +498,13 @@ class KaprodiController extends Controller
         // Ambil daftar dosen untuk dropdown di form penjadwalan
         $dosens = Dosen::orderBy('nama')->get();
 
-        return view('kaprodi.pengajuan.aksi', compact('pengajuan', 'dosens'));
+        return view('kaprodi.pengajuan.aksi', compact('pengajuan', 'dosens', 'kaprodi_for_layout'));
     }
 
     // Menampilkan form untuk menjadwalkan/mengedit jadwal sidang
     public function jadwalkanSidangForm(Pengajuan $pengajuan)
     {
+        $kaprodi_for_layout = Auth::user()->kaprodi;
         // Kaprodi dapat menjadwalkan jika statusnya 'diverifikasi_admin' (setelah admin memverifikasi dokumen),
         // atau jika statusnya 'siap_dijadwalkan_kaprodi' (setelah kaprodi menyetujui),
         // atau jika statusnya 'dosen_ditunjuk' (untuk edit jadwal yang sudah ada).
@@ -508,7 +516,7 @@ class KaprodiController extends Controller
         $sidang = $pengajuan->sidang; 
 
         // View yang cocok adalah 'jadwal_sidang_form.blade.php'
-        return view('kaprodi.pengajuan.jadwal_sidang_form', compact('pengajuan', 'dosens', 'sidang'));
+        return view('kaprodi.pengajuan.jadwal_sidang_form', compact('pengajuan', 'dosens', 'sidang', 'kaprodi_for_layout'));
     }
 
     // Method untuk menyetujui pengajuan (setelah admin memverifikasi dokumen)
@@ -543,4 +551,121 @@ class KaprodiController extends Controller
         return redirect()->route('kaprodi.pengajuan.index')->with('success', 'Pengajuan berhasil ditolak.');
     }
 
+    // Method untuk menampilkan form edit profil Kaprodi
+    public function editProfileForm()
+    {
+        $kaprodi_for_layout = Auth::user()->kaprodi; // Asumsi ada relasi 'kaprodi' di model User
+        if (!$kaprodi_for_layout) {
+            return back()->with('error', 'Data Kaprodi tidak ditemukan.');
+        }
+        return view('kaprodi.profile.edit', compact('kaprodi_for_layout'));
+    }
+
+    // Method untuk mengupdate profil Kaprodi
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        $kaprodi = $user->kaprodi;
+
+        if (!$kaprodi) {
+            return back()->with('error', 'Data Kaprodi tidak ditemukan.');
+        }
+
+        $request->validate([
+            'nama_lengkap' => 'required|string|max:255',
+            'nip' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('dosens')->ignore($kaprodi->id), // Assuming 'dosens' table for Kaprodi's NIP
+            ],
+            'nomor_hp' => 'nullable|string|max:20',
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $kaprodi->nama_lengkap = $request->nama_lengkap;
+            $kaprodi->nip = $request->nip;
+            $kaprodi->nomor_hp = $request->nomor_hp;
+            $kaprodi->save();
+
+            // Update user's name if it's different
+            if ($user->name !== $request->nama_lengkap) {
+                $user->name = $request->nama_lengkap;
+                $user->save();
+            }
+
+            if ($request->hasFile('foto_profil')) {
+                // Delete old profile picture if exists
+                if ($kaprodi->foto_profil && Storage::disk('public')->exists($kaprodi->foto_profil)) {
+                    Storage::disk('public')->delete($kaprodi->foto_profil);
+                }
+                $path = $request->file('foto_profil')->store('profile_photos', 'public');
+                $kaprodi->foto_profil = $path;
+                $kaprodi->save();
+            }
+
+            DB::commit();
+            return redirect()->route('kaprodi.profile.edit')->with('success', 'Profil berhasil diperbarui.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal memperbarui profil: ' . $e->getMessage());
+        }
+    }
+
+    // Method untuk menampilkan form ubah sandi Kaprodi
+    public function changePasswordForm()
+    {
+        $kaprodi_for_layout = Auth::user()->kaprodi;
+        return view('kaprodi.password.change', compact('kaprodi_for_layout'));
+    }
+
+    // Method untuk memproses ubah sandi Kaprodi
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+
+        $user = Auth::user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Kata sandi saat ini salah.']);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return redirect()->route('kaprodi.password.change.form')->with('success', 'Kata sandi berhasil diubah.');
+    }
+
+    // Method untuk menampilkan notifikasi Kaprodi
+    public function showNotifications()
+    {
+        $kaprodi_for_layout = Auth::user()->kaprodi;
+        $notifications = Auth::user()->notifications()->paginate(10);
+        return view('kaprodi.notifications.index', compact('notifications', 'kaprodi_for_layout'));
+    }
+
+    // Method untuk menandai notifikasi sebagai sudah dibaca
+    public function markNotificationAsRead($id)
+    {
+        $notification = Auth::user()->notifications()->where('id', $id)->first();
+
+        if ($notification) {
+            $notification->markAsRead();
+            return back()->with('success', 'Notifikasi ditandai sudah dibaca.');
+        }
+
+        return back()->with('error', 'Notifikasi tidak ditemukan.');
+    }
+
+    // Method untuk menandai semua notifikasi sebagai sudah dibaca
+    public function markAllNotificationsAsRead()
+    {
+        Auth::user()->unreadNotifications->markAsRead();
+        return back()->with('success', 'Semua notifikasi ditandai sudah dibaca.');
+    }
 }

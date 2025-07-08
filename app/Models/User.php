@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Mahasiswa;
 use App\Models\Dosen; // Jika Anda juga membuat relasi dosen
+use App\Models\Kaprodi;
 
 class User extends Authenticatable
 {
@@ -63,5 +64,10 @@ class User extends Authenticatable
         // Asumsi: Di tabel 'dosens', ada kolom 'user_id' yang merupakan foreign key ke 'id' user.
         return $this->hasOne(Dosen::class); // Default: hasOne akan mencari 'dosen_id' di tabel users. Jika foreign key-nya 'user_id' di tabel dosens,
                                            // Anda mungkin perlu menuliskannya secara eksplisit: return $this->hasOne(Dosen::class, 'user_id');
+    }
+
+    public function kaprodi()
+    {
+        return $this->hasOne(Kaprodi::class, 'user_id');
     }
 }

@@ -10,7 +10,15 @@ class Kaprodi extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nama',
-        'email',
+        'user_id',
+        'nama_lengkap',
+        'nip',
+        'nomor_hp',
+        'foto_profil',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
