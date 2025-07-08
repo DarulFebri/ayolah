@@ -801,6 +801,14 @@
                 </a>
             </div>
             
+            <a href="{{ route('admin.sidang.index') }}" style="text-decoration: none; color: inherit;">
+                <div class="menu-item tooltip {{ request()->routeIs('admin.sidang.index') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Manajemen Sidang</span>
+                    <span class="tooltiptext">Manajemen Sidang</span>
+                </div>
+            </a>
+
             <a href="{{ route('admin.activities.index') }}" style="text-decoration: none; color: inherit;">
                 <div class="menu-item tooltip {{ request()->routeIs('admin.activities.*') ? 'active' : '' }}">
                     <i class="fas fa-bell"></i>
