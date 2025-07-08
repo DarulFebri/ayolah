@@ -421,7 +421,7 @@
             @else
                 <ul>
                     @foreach($kelas as $kls)
-                        <li>{{ $kls->nama }}</li>
+                        <li>{{ $kls->nama_kelas }}</li>
                     @endforeach
                 </ul>
             @endif

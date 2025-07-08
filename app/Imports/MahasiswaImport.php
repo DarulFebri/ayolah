@@ -116,8 +116,9 @@ class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, W
                     'user_id'       => $user->id,
                     'nim'           => $nim,
                     'nama_lengkap'  => $namaLengkap,
+                    'jenis_kelamin' => $jenisKelamin,
                     'prodi_id'      => $prodiModel->id,
-                    'kelas_id'      => $row['kelas_id'],
+                    'kelas_id'      => $kelasModel->id,
                 ]);
                 Log::info('Mahasiswa baru dibuat untuk user ID: ' . $user->id);
 

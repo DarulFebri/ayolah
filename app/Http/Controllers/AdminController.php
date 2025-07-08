@@ -290,6 +290,7 @@ class AdminController extends Controller
             'nim' => $request->nim,
             'nama_lengkap' => $request->nama_lengkap,
             'prodi_id' => $request->prodi_id,
+            'jenis_kelamin' => $request->jenis_kelamin,
             'kelas_id' => $request->kelas_id,
         ]);
 
@@ -485,9 +486,52 @@ class AdminController extends Controller
     }
 
     // Dibawah ini Persidangan Methods
-    public function daftarSidang()
+    public function daftarSidang(Request $request)
     {
-        $sidangs = Sidang::with('pengajuan.mahasiswa')->get();
+        $query = Sidang::with(['pengajuan.mahasiswa', 'pengajuan.prodi', 'pengajuan.kelas']);
+
+        // Search functionality
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->whereHas('pengajuan.mahasiswa', function($q) use ($search) {
+                    $q->where('nama_lengkap', 'like', "%{$search}%")
+                      ->orWhere('nim', 'like', "%{$search}%");
+                })
+                ->orWhereHas('pengajuan', function($q) use ($search) {
+                    $q->where('judul_pengajuan', 'like', "%{$search}%")
+                      ->orWhere('jenis_pengajuan', 'like', "%{$search}%")
+                      ->orWhere('status', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        // Sorting functionality
+        switch ($request->sort) {
+            case 'tanggal_sidang_asc':
+                $query->orderBy('tanggal_sidang', 'asc');
+                break;
+            case 'tanggal_sidang_desc':
+                $query->orderBy('tanggal_sidang', 'desc');
+                break;
+            case 'mahasiswa_asc':
+                $query->join('pengajuans', 'sidangs.pengajuan_id', '=', 'pengajuans.id')
+                      ->join('mahasiswas', 'pengajuans.mahasiswa_id', '=', 'mahasiswas.id')
+                      ->orderBy('mahasiswas.nama_lengkap', 'asc')
+                      ->select('sidangs.*'); // Select sidangs.* to avoid column ambiguity
+                break;
+            case 'mahasiswa_desc':
+                $query->join('pengajuans', 'sidangs.pengajuan_id', '=', 'pengajuans.id')
+                      ->join('mahasiswas', 'pengajuans.mahasiswa_id', '=', 'mahasiswas.id')
+                      ->orderBy('mahasiswas.nama_lengkap', 'desc')
+                      ->select('sidangs.*'); // Select sidangs.* to avoid column ambiguity
+                break;
+            default:
+                $query->orderBy('created_at', 'desc');
+        }
+
+        $sidangs = $query->paginate(10);
+
         return view('admin.sidang.index', compact('sidangs'));
     }
 

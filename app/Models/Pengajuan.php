@@ -37,6 +37,18 @@ class Pengajuan extends Model
         return $this->hasOne(Sidang::class);
     }
 
+    // Relasi ke Prodi melalui Mahasiswa
+    public function prodi()
+    {
+        return $this->hasOneThrough(Prodi::class, Mahasiswa::class, 'id', 'id', 'mahasiswa_id', 'prodi_id');
+    }
+
+    // Relasi ke Kelas melalui Mahasiswa
+    public function kelas()
+    {
+        return $this->hasOneThrough(Kelas::class, Mahasiswa::class, 'id', 'id', 'mahasiswa_id', 'kelas_id');
+    }
+
     // Hapus relasi-relasi ini dari Pengajuan karena foreign key ada di model Sidang
     /*
     public function pembimbing()

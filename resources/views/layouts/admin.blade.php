@@ -792,6 +792,13 @@
                         <span class="tooltiptext">Kalender Sidang</span>
                     </div>
                 </a>
+                <a href="{{ route('admin.sidang.index') }}" style="text-decoration: none; color: inherit;">
+                    <div class="submenu-item tooltip {{ request()->routeIs('admin.sidang.index') ? 'active' : '' }}">
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Daftar Sidang</span>
+                        <span class="tooltiptext">Daftar Sidang</span>
+                    </div>
+                </a>
             </div>
             
             <a href="{{ route('admin.activities.index') }}" style="text-decoration: none; color: inherit;">

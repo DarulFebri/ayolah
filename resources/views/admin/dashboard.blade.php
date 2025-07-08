@@ -112,5 +112,16 @@
                 </h3>
             </div>
         </a>
+
+        <a href="{{ route('admin.sidang.index') }}" class="card-link">
+            <div class="card clickable-card medium">
+                <div class="card-icon">
+                    <i class="fas fa-gavel"></i> {{-- Icon for sidang management --}}
+                </div>
+                <h3 class="card-title">
+                    Manajemen Sidang
+                </h3>
+            </div>
+        </a>
     </div>
 @endsection
