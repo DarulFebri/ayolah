@@ -148,6 +148,7 @@
                 </div>
             </div>
 
+            @if ($pengajuan->jenis_pengajuan !== 'pkl')
             <div class="card">
                 <h3><i class="fas fa-users"></i> Tim Dosen</h3>
                 <ul class="dosen-list">
@@ -157,6 +158,15 @@
                     <li><strong>Anggota Sidang 2:</strong> {{ optional($pengajuan->sidang->anggota2Sidang)->nama ?? 'N/A' }}</li>
                 </ul>
             </div>
+            @else
+            <div class="card">
+                <h3><i class="fas fa-users"></i> Tim Dosen PKL</h3>
+                <ul class="dosen-list">
+                    <li><strong>Dosen Pembimbing:</strong> {{ optional($pengajuan->sidang->dosenPembimbing)->nama ?? 'N/A' }}</li>
+                    <li><strong>Dosen Penguji:</strong> {{ optional($pengajuan->sidang->dosenPenguji1)->nama ?? 'N/A' }}</li>
+                </ul>
+            </div>
+            @endif
         @endif
 
         <a href="{{ route('mahasiswa.pengajuan.index') }}" class="back-link">

@@ -118,6 +118,10 @@
         .status-badge.status-badge-primary { background-color: #cfe2ff; color: #0a58ca; }
         .status-badge.status-badge-secondary { background-color: #e2e3e5; color: #495057; }
 
+        .no-wrap-text {
+            white-space: nowrap;
+        }
+
         .approval-status {
             font-size: 0.9em;
             font-weight: 600;
@@ -173,7 +177,7 @@
                         @else
                             <p class="text-muted">Informasi pengajuan atau mahasiswa tidak tersedia.</p>
                         @endif
-                        <p><strong>Tanggal Waktu Sidang:</strong> {{ $sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($sidang->tanggal_waktu_sidang)->translatedFormat('l, d F Y H:i') : 'Belum Dijadwalkan' }}</p>
+                        <p class="no-wrap-text"><strong>Tanggal Waktu Sidang:</strong> {{ $sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($sidang->tanggal_waktu_sidang)->translatedFormat('l, d F Y H:i') : 'Belum Dijadwalkan' }}</p>
                         <p><strong>Ruangan Sidang:</strong> {{ $sidang->ruangan_sidang ?? 'Belum Ditentukan' }}</p>
                     </div>
                     <div class="col-md-6 text-md-right">
