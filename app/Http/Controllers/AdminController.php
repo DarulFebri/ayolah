@@ -490,6 +490,14 @@ class AdminController extends Controller
     {
         $query = Sidang::with(['pengajuan.mahasiswa', 'pengajuan.prodi', 'pengajuan.kelas']);
 
+        // Filter functionality
+        if ($request->has('filter_jenis') && !empty($request->filter_jenis)) {
+            $filterJenis = $request->filter_jenis;
+            $query->whereHas('pengajuan', function($q) use ($filterJenis) {
+                $q->where('jenis_pengajuan', $filterJenis);
+            });
+        }
+
         // Search functionality
         if ($request->has('search')) {
             $search = $request->search;
@@ -525,6 +533,16 @@ class AdminController extends Controller
                       ->join('mahasiswas', 'pengajuans.mahasiswa_id', '=', 'mahasiswas.id')
                       ->orderBy('mahasiswas.nama_lengkap', 'desc')
                       ->select('sidangs.*'); // Select sidangs.* to avoid column ambiguity
+                break;
+            case 'jenis_pengajuan_asc':
+                $query->join('pengajuans', 'sidangs.pengajuan_id', '=', 'pengajuans.id')
+                      ->orderBy('pengajuans.jenis_pengajuan', 'asc')
+                      ->select('sidangs.*');
+                break;
+            case 'jenis_pengajuan_desc':
+                $query->join('pengajuans', 'sidangs.pengajuan_id', '=', 'pengajuans.id')
+                      ->orderBy('pengajuans.jenis_pengajuan', 'desc')
+                      ->select('sidangs.*');
                 break;
             default:
                 $query->orderBy('created_at', 'desc');

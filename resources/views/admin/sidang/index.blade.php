@@ -48,8 +48,16 @@
                             </div>
                         </form>
                     </div>
-                    <div class="col-md-6 text-right">
-                        <form action="{{ route('admin.sidang.index') }}" method="GET" class="form-inline justify-content-end">
+                    <div class="col-md-6 d-flex justify-content-end">
+                        <form action="{{ route('admin.sidang.index') }}" method="GET" class="form-inline mr-3">
+                            <label for="filter_jenis" class="mr-2">Filter Jenis:</label>
+                            <select name="filter_jenis" id="filter_jenis" class="form-control" onchange="this.form.submit()">
+                                <option value="" {{ request('filter_jenis') == '' ? 'selected' : '' }}>Semua Jenis</option>
+                                <option value="ta" {{ request('filter_jenis') == 'ta' ? 'selected' : '' }}>Tugas Akhir (TA)</option>
+                                <option value="pkl" {{ request('filter_jenis') == 'pkl' ? 'selected' : '' }}>Praktik Kerja Lapangan (PKL)</option>
+                            </select>
+                        </form>
+                        <form action="{{ route('admin.sidang.index') }}" method="GET" class="form-inline">
                             <label for="sort" class="mr-2">Urutkan:</label>
                             <select name="sort" id="sort" class="form-control" onchange="this.form.submit()">
                                 <option value="created_at_desc" {{ request('sort') == 'created_at_desc' ? 'selected' : '' }}>Terbaru</option>
@@ -57,6 +65,7 @@
                                 <option value="tanggal_sidang_desc" {{ request('sort') == 'tanggal_sidang_desc' ? 'selected' : '' }}>Tanggal (Z-A)</option>
                                 <option value="mahasiswa_asc" {{ request('sort') == 'mahasiswa_asc' ? 'selected' : '' }}>Nama (A-Z)</option>
                                 <option value="mahasiswa_desc" {{ request('sort') == 'mahasiswa_desc' ? 'selected' : '' }}>Nama (Z-A)</option>
+                                
                             </select>
                         </form>
                     </div>
@@ -70,12 +79,12 @@
                                 <th>Mahasiswa (NIM)</th>
                                 <th>Judul Pengajuan</th>
                                 <th>Jenis</th>
-                                <th>Prodi</th>
+                                
                                 <th>Kelas</th>
-                                <th>Status</th>
-                                <th>Tanggal</th>
-                                <th>Waktu</th>
-                                <th>Tempat</th>
+                                
+                                
+                                
+                                
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -86,23 +95,19 @@
                                     <td>{{ $sidang->pengajuan->mahasiswa->nama_lengkap }} ({{ $sidang->pengajuan->mahasiswa->nim }})</td>
                                     <td>{{ $sidang->pengajuan->judul_pengajuan }}</td>
                                     <td>{{ strtoupper($sidang->pengajuan->jenis_pengajuan) }}</td>
-                                    <td>{{ $sidang->pengajuan->prodi->nama_prodi ?? 'N/A' }}</td>
+                                    
                                     <td>{{ $sidang->pengajuan->kelas->nama_kelas ?? 'N/A' }}</td>
-                                    <td>
-                                        <span class="badge badge-{{ \App\Helpers\StatusHelper::getStatusBadgeClass($sidang->pengajuan->status) }}">
-                                            {{ \App\Helpers\StatusHelper::formatStatus($sidang->pengajuan->status) }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($sidang->tanggal_waktu_sidang)->format('d F Y') : 'Belum Dijadwalkan' }}</td>
-                                    <td>{{ $sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($sidang->tanggal_waktu_sidang)->format('H:i') . ' WIB' : 'Belum Dijadwalkan' }}</td>
-                                    <td>{{ $sidang->ruangan_sidang ? $sidang->ruangan_sidang : 'Belum Ditentukan' }}</td>
+                                    
+                                    
+                                    
+                                    
                                     <td>
                                         <a href="{{ route('admin.sidang.show', $sidang->id) }}" class="btn btn-info btn-sm">Detail</a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="11" class="text-center">Tidak ada data sidang.</td>
+                                    <td colspan="6" class="text-center">Tidak ada data sidang.</td>
                                 </tr>
                             @endforelse
                         </tbody>
