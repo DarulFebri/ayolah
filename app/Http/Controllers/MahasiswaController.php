@@ -36,6 +36,12 @@ class MahasiswaController extends Controller
         return Excel::download(new MahasiswaExport, $fileName);
     }
 
+    public function downloadTemplate()
+    {
+        $fileName = 'format_import_mahasiswa.xlsx';
+        return Excel::download(new MahasiswaExport(true), $fileName); // Pass true to indicate template export
+    }
+
     // Method untuk memproses file Excel mahasiswa
     public function import(Request $request)
     {

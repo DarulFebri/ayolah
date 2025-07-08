@@ -9,11 +9,22 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize; // Opsional: Tambahkan ini untuk 
 
 class MahasiswaExport implements FromCollection, WithHeadings, ShouldAutoSize // Tambahkan interfaces
 {
+    protected $isTemplate;
+
+    public function __construct(bool $isTemplate = false)
+    {
+        $this->isTemplate = $isTemplate;
+    }
+
     /**
     * @return \Illuminate\Support\Collection
     */
     public function collection()
     {
+        if ($this->isTemplate) {
+            return collect([]); // Return an empty collection for template export
+        }
+
         // Ambil semua data mahasiswa
         // Gunakan select() untuk memilih kolom yang ingin Anda ekspor
         // Pastikan nama kolom sesuai dengan nama kolom di tabel mahasiswas
@@ -54,7 +65,7 @@ class MahasiswaExport implements FromCollection, WithHeadings, ShouldAutoSize //
             'Prodi',
             'Jenis Kelamin',
             'Kelas',
-            'Email User',
+            'Email',
         ];
     }
 }

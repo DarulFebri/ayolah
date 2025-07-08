@@ -360,6 +360,26 @@
             <button type="submit"><i class="fas fa-upload"></i> Impor Data</button>
         </form>
 
+        <div class="form-group" style="margin-top: 20px;">
+            <a href="{{ route('admin.mahasiswa.downloadTemplate') }}" class="btn btn-primary" style="
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 24px;
+                background-color: var(--success-color); /* Using success color for download */
+                color: var(--white);
+                border: none;
+                border-radius: var(--border-radius);
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-decoration: none; /* Ensure it looks like a button */
+            ">
+                <i class="fas fa-download"></i> Unduh Format Impor Data Mahasiswa
+            </a>
+        </div>
+
         <p class="info-text">
             <i class="fas fa-info-circle"></i> Pastikan file Excel Anda memiliki format kolom seperti tabel berikut (header tidak case sensitive):
         </p>

@@ -39,6 +39,7 @@ Route::prefix('admin')->group(function () {
         // Mahasiswa Import/Export
         Route::get('/mahasiswa/import', [MahasiswaController::class, 'importForm'])->name('admin.mahasiswa.import.form');
         Route::post('/mahasiswa/import', [MahasiswaController::class, 'import'])->name('admin.mahasiswa.import');
+        Route::get('/mahasiswa/download-template', [MahasiswaController::class, 'downloadTemplate'])->name('admin.mahasiswa.downloadTemplate');
         Route::get('/mahasiswas/export', [MahasiswaController::class, 'export'])->name('mahasiswas.export');
         
         // Mahasiswa Management
