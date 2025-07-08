@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pengajuan;
-use App\Models\Dosen; // Assuming you might need this
+use App\Models\Dosen;
+use App\Models\Mahasiswa; // Add this line
 use App\Models\Sidang;
 use App\Models\PengajuanStatusHistory; // Import the new model
 use Illuminate\Http\Request;
@@ -64,11 +65,13 @@ class KajurController extends Controller
                                         ->where('status', 'sidang_dijadwalkan_final')
                                         ->get();
 
+        $kajur_for_layout = Auth::user()->kajur; // Fetch Kajur data for layout
         return view('kajur.dashboard', compact(
             'jumlahSidangSedang',
             'jumlahSidangTelah',
             'jumlahSidangAkan',
-            'pengajuanSiapSidang' // PASTIKAN ini ada di compact!
+            'pengajuanSiapSidang', // PASTIKAN ini ada di compact!
+            'kajur_for_layout' // Pass the kajur data to the layout
         ));
     }
 
@@ -97,6 +100,18 @@ class KajurController extends Controller
                                           ->get();
 
         return view('kajur.pengajuan.sudah_verifikasi', compact('pengajuanTerverifikasi'));
+    }
+
+    public function daftarPengajuan()
+    {
+        $pengajuans = Pengajuan::with('mahasiswa', 'dosenPembimbing', 'dosenPenguji1')->get();
+        return view('kajur.pengajuan.index', compact('pengajuans'));
+    }
+
+    public function daftarSidang()
+    {
+        $sidangs = Sidang::with(['pengajuan.mahasiswa', 'ketuaSidang', 'sekretarisSidang', 'dosenPembimbing', 'dosenPenguji1'])->get();
+        return view('kajur.sidang.index', compact('sidangs'));
     }
 
     // Methods for daftarSidangSedang, daftarSidangTelah, daftarSidangAkan are fine as is
@@ -167,5 +182,99 @@ class KajurController extends Controller
     {
         $pengajuan->load(['mahasiswa', 'dosenPembimbing', 'dosenPenguji1']); // Assuming these are sufficient for a general detail view
         return view('kajur.pengajuan.detail', compact('pengajuan'));
+    }
+
+    public function daftarDosen()
+    {
+        $dosens = Dosen::all();
+        return view('kajur.dosen.index', compact('dosens'));
+    }
+
+    public function daftarMahasiswa()
+    {
+        $mahasiswas = Mahasiswa::all();
+        return view('kajur.mahasiswa.index', compact('mahasiswas'));
+    }
+
+    public function editProfileForm()
+    {
+        $kajur = Auth::user()->kajur; // Assuming Kajur model is related to User model
+        return view('kajur.profile.edit', compact('kajur'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $kajur = Auth::user()->kajur;
+
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'nip' => ['required', 'string', 'max:255', Rule::unique('kajurs')->ignore($kajur->id)],
+            'nomor_hp' => ['nullable', 'string', 'max:15'],
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $kajur->nama = $request->nama;
+        $kajur->nip = $request->nip;
+        $kajur->nomor_hp = $request->nomor_hp;
+
+        if ($request->hasFile('foto_profil')) {
+            // Delete old profile photo if exists
+            if ($kajur->foto_profil && file_exists(public_path('images/profile/' . $kajur->foto_profil))) {
+                unlink(public_path('images/profile/' . $kajur->foto_profil));
+            }
+            $imageName = time().'.'.$request->foto_profil->extension();
+            $request->foto_profil->move(public_path('images/profile'), $imageName);
+            $kajur->foto_profil = $imageName;
+        }
+
+        $kajur->save();
+
+        return redirect()->route('kajur.profile.edit')->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    public function changePasswordForm()
+    {
+        return view('kajur.password.change');
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|current_password',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = Auth::user();
+        $user->password = bcrypt($request->new_password);
+        $user->save();
+
+        return redirect()->route('kajur.password.change.form')->with('success', 'Password berhasil diubah.');
+    }
+
+    public function showNotifications()
+    {
+        $user = Auth::user();
+        $notifications = $user->notifications()->paginate(10); // Adjust pagination as needed
+        return view('kajur.notifications.index', compact('notifications'));
+    }
+
+    public function markNotificationAsRead($id)
+    {
+        $user = Auth::user();
+        $notification = $user->notifications()->where('id', $id)->first();
+
+        if ($notification) {
+            $notification->markAsRead();
+            return back()->with('success', 'Notifikasi ditandai sudah dibaca.');
+        }
+
+        return back()->with('error', 'Notifikasi tidak ditemukan.');
+    }
+
+    public function markAllNotificationsAsRead()
+    {
+        $user = Auth::user();
+        $user->unreadNotifications->markAsRead();
+        return back()->with('success', 'Semua notifikasi ditandai sudah dibaca.');
     }
 }

@@ -1,61 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Pengajuan Menunggu Pengesahan (Kajur)</title>
-    </head>
-<body>
-    <div class="container">
-        <h2>Daftar Pengajuan Menunggu Pengesahan Kajur</h2>
+@extends('layouts.kajur')
 
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-        @if (session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
+@section('content')
+<div class="container">
+    <h1>Daftar Pengajuan</h1>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>NIM</th>
-                    <th>Nama Mahasiswa</th>
-                    <th>Jenis Pengajuan</th>
-                    <th>Tanggal Sidang</th>
-                    <th>Ruangan</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($pengajuans as $pengajuan)
-                <tr>
-                    <td>{{ $pengajuan->mahasiswa->nim }}</td>
-                    <td>{{ $pengajuan->mahasiswa->nama_lengkap }}</td>
-                    <td>{{ strtoupper($pengajuan->jenis_pengajuan) }}</td>
-                    <td>{{ $pengajuan->sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d F Y H:i') : '-' }}</td>
-                    <td>{{ $pengajuan->sidang->ruangan_sidang ?? '-' }}</td>
-                    <td>
-                        @if ($pengajuan->status == 'siap_sidang_kajur')
-                            <span class="status-warning">Menunggu Pengesahan Kajur</span>
-                        @else
-                            {{ $pengajuan->status }}
-                        @endif
-                    </td>
-                    <td>
-                        <a href="{{ route('kajur.pengajuan.show', $pengajuan->id) }}">Lihat Detail & Sahkan</a>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="7">Tidak ada pengajuan yang menunggu pengesahan Kajur.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
 
-        {{ $pengajuans->links() }}
-    </div>
-</body>
-</html>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Mahasiswa</th>
+                <th>Jenis Pengajuan</th>
+                <th>Judul</th>
+                <th>Status</th>
+                <th>Tanggal Pengajuan</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($pengajuans as $pengajuan)
+            <tr>
+                <td>{{ $pengajuan->id }}</td>
+                <td>{{ $pengajuan->mahasiswa->nama ?? 'N/A' }}</td>
+                <td>{{ $pengajuan->jenis_pengajuan }}</td>
+                <td>{{ $pengajuan->judul_pengajuan ?? 'N/A' }}</td>
+                <td>{{ $pengajuan->status }}</td>
+                <td>{{ $pengajuan->created_at->format('d-m-Y H:i') }}</td>
+                <td>
+                    <a href="{{ route('kajur.pengajuan.show', $pengajuan->id) }}" class="btn btn-info btn-sm">Detail</a>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="7">Tidak ada data pengajuan.</td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+@endsection

@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'kajur' => [
+            'driver' => 'session',
+            'provider' => 'kajurs',
+        ],
     ],
 
     /*
@@ -63,6 +67,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
+        ],
+        'kajurs' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Kajur::class,
         ],
 
         // 'users' => [

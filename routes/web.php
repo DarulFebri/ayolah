@@ -337,7 +337,19 @@ Route::prefix('kajur')->group(function () {
         // Dashboard
         Route::get('/dashboard', [KajurController::class, 'dashboard'])->name('kajur.dashboard');
 
+        Route::get('/profile/edit', [KajurController::class, 'editProfileForm'])->name('kajur.profile.edit');
+        Route::post('/profile/update', [KajurController::class, 'updateProfile'])->name('kajur.profile.update');
+
+        Route::get('/password/change', [KajurController::class, 'changePasswordForm'])->name('kajur.password.change.form');
+        Route::post('/password/change', [KajurController::class, 'changePassword'])->name('kajur.password.change');
+
+        // Notification routes
+        Route::get('/notifications', [KajurController::class, 'showNotifications'])->name('kajur.notifications.index');
+        Route::post('/notifications/{id}/mark-as-read', [KajurController::class, 'markNotificationAsRead'])->name('kajur.notifications.markAsRead');
+        Route::post('/notifications/mark-all-as-read', [KajurController::class, 'markAllNotificationsAsRead'])->name('kajur.notifications.markAllAsRead');
+
         // Rute untuk daftar pengajuan
+        Route::get('/pengajuan', [KajurController::class, 'daftarPengajuan'])->name('kajur.pengajuan.index');
         Route::get('/pengajuan/perlu-verifikasi', [KajurController::class, 'daftarPengajuanVerifikasi'])->name('kajur.pengajuan.perlu_verifikasi');
         Route::get('/pengajuan/sudah-verifikasi', [KajurController::class, 'daftarPengajuanTerverifikasi'])->name('kajur.pengajuan.sudah_verifikasi');
 
@@ -347,10 +359,17 @@ Route::prefix('kajur')->group(function () {
         Route::post('/pengajuan/{pengajuan}/verifikasi', [KajurController::class, 'verifikasiPengajuan'])->name('kajur.verifikasi.store');
 
         // Rute untuk daftar sidang
+        Route::get('/sidang', [KajurController::class, 'daftarSidang'])->name('kajur.sidang.index');
         Route::get('/sidang/sedang', [KajurController::class, 'daftarSidangSedang'])->name('kajur.sidang.sedang');
         Route::get('/sidang/telah', [KajurController::class, 'daftarSidangTelah'])->name('kajur.sidang.telah');
         Route::get('/sidang/akan', [KajurController::class, 'daftarSidangAkan'])->name('kajur.sidang.akan');
         Route::get('/sidang/{sidang}', [KajurController::class, 'detailSidang'])->name('kajur.sidang.show');
+
+        // Rute untuk daftar dosen
+        Route::get('/dosen', [KajurController::class, 'daftarDosen'])->name('kajur.dosen.index');
+
+        // Rute untuk daftar mahasiswa
+        Route::get('/mahasiswa', [KajurController::class, 'daftarMahasiswa'])->name('kajur.mahasiswa.index');
     });
 });
 

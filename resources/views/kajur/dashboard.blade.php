@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Kajur - SIPRAKTA</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
+@extends('layouts.kajur')
+
+@section('title', 'Dashboard Kajur')
+
+@push('styles')
+    
         /* Salin semua CSS dari dashboard-admin.html di sini */
         :root {
             --primary-100: #e6f2ff;
@@ -1010,133 +1007,16 @@
             
         }
     </style>
-</head>
-<body>
-    <div class="sidebar" id="sidebar">
-        <div class="logo-container">
-            {{-- Pastikan path gambar ini benar di Laravel public folder Anda --}}
-            <img src="{{ asset('assets/images/sipraktawhite2.png') }}" alt="Logo SIPRAKTA" class="logo-img">
-        </div>
+@endpush
+
+
+    
+
+    
         
-        <div class="menu-title">Menu Utama</div>
-        <div class="menu-items-wrapper">
-            <a href="{{ route('kajur.dashboard') }}" style="text-decoration: none; color: inherit;">
-                <div class="menu-item {{ Request::routeIs('kajur.dashboard') ? 'active' : '' }} tooltip">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                    <span class="tooltiptext">Dashboard</span>
-                </div>
-            </a>
-            
-            <div class="menu-item tooltip" onclick="toggleSubmenu('pengajuan', event)">
-                <i class="fas fa-file-alt"></i>
-                <span>Pengajuan Sidang</span>
-                <span class="tooltiptext">Pengajuan Sidang</span>
-                <i class="fas fa-chevron-down" style="margin-left: auto;"></i>
-            </div>
-            <div class="submenu" id="pengajuan-submenu">
-                <a href="{{ route('kajur.pengajuan.perlu_verifikasi') }}" style="text-decoration: none; color: inherit;">
-                    <div class="submenu-item tooltip">
-                        <i class="fas fa-chevron-right"></i>
-                        <span>Perlu Verifikasi</span>
-                        <span class="tooltiptext">Perlu Verifikasi</span>
-                    </div>
-                </a>
-                <a href="{{ route('kajur.pengajuan.sudah_verifikasi') }}" style="text-decoration: none; color: inherit;">
-                    <div class="submenu-item tooltip">
-                        <i class="fas fa-chevron-right"></i>
-                        <span>Sudah Verifikasi</span>
-                        <span class="tooltiptext">Sudah Verifikasi</span>
-                    </div>
-                </a>
-            </div>
-            
-            <div class="menu-item tooltip" onclick="toggleSubmenu('jadwal', event)">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Jadwal Sidang</span>
-                <span class="tooltiptext">Jadwal Sidang</span>
-                <i class="fas fa-chevron-down" style="margin-left: auto;"></i>
-            </div>
-            <div class="submenu" id="jadwal-submenu">
-                <a href="{{ route('kajur.sidang.sedang') }}" style="text-decoration: none; color: inherit;">
-                    <div class="submenu-item tooltip">
-                        <i class="fas fa-chevron-right"></i>
-                        <span>Sidang Sedang Berlangsung</span>
-                        <span class="tooltiptext">Sidang Sedang Berlangsung</span>
-                    </div>
-                </a>
-                <a href="{{ route('kajur.sidang.telah') }}" style="text-decoration: none; color: inherit;">
-                    <div class="submenu-item tooltip">
-                        <i class="fas fa-chevron-right"></i>
-                        <span>Sidang Telah Berlangsung</span>
-                        <span class="tooltiptext">Sidang Telah Berlangsung</span>
-                    </div>
-                </a>
-                <a href="{{ route('kajur.sidang.akan') }}" style="text-decoration: none; color: inherit;">
-                    <div class="submenu-item tooltip">
-                        <i class="fas fa-chevron-right"></i>
-                        <span>Sidang Akan Datang</span>
-                        <span class="tooltiptext">Sidang Akan Datang</span>
-                    </div>
-                </a>
-            </div>
-
-            {{-- Notification item --}}
-            <div class="menu-item tooltip">
-                <i class="fas fa-bell"></i>
-                <span>Notifikasi</span>
-                <span class="notification-badge">5</span> {{-- Static notification count for display --}}
-                <span class="tooltiptext">Notifikasi</span>
-            </div>
-        </div> {{-- End of menu-items-wrapper --}}
-
-    </div>
-
-    <div class="main-content" id="mainContent">
-        <div class="header">
-            <div class="header-content">
-                <div style="display: flex; align-items: center;">
-                    <button class="toggle-sidebar" id="toggleSidebar">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h1 style="font-size: 28px; color: var(--primary-700);">
-                        <i class="fas fa-tachometer-alt" style="margin-right: 15px;"></i>
-                        Dashboard Kajur
-                    </h1>
-                </div>
-                <div class="user-profile" id="userProfile">
-                    <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name ?? 'Kajur' }}&background=1a88ff&color=fff" 
-                         class="profile-pic" alt="Foto Profil">
-                    <div class="profile-info">
-                        <div class="profile-name">{{ Auth::user()->name ?? 'Kajur' }}</div>
-                        <div class="profile-role">Ketua Jurusan</div> {{-- Assuming a role for Kajur --}}
-                    </div>
-                    <i class="fas fa-chevron-down" style="margin-left: 8px; font-size: 12px;"></i>
-                    
-                    <div class="profile-dropdown" id="profileDropdown">
-                        {{-- If there are routes for Kajur profile/password change --}}
-                        <a href="#" class="dropdown-item"> {{-- Placeholder for actual profile route --}}
-                            <i class="fas fa-user"></i>
-                            <span>Profil Saya</span>
-                        </a>
-                        <a href="#" class="dropdown-item"> {{-- Placeholder for actual password change route --}}
-                            <i class="fas fa-key"></i>
-                            <span>Ubah Sandi</span>
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item" onclick="showLogoutConfirmation()"> {{-- Changed to call showLogoutConfirmation --}}
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Keluar</span>
-                        </a>
-                        <form id="logout-form" action="{{ route('kajur.logout') }}" method="POST" style="display: none;">
-                            @csrf
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
         
-        <div class="welcome-box">
+        @section('content')
+    <div class="welcome-box">
             <h2 class="welcome-title">
                 <i class="fas fa-user-tie"></i>
                 Selamat Datang, {{ Auth::user()->name ?? 'Kajur SIPRAKTA' }}
@@ -1356,23 +1236,9 @@
             </div>
         </div>
 
-        <div class="notification-modal" id="logoutConfirmationModal">
-            <i class="fas fa-exclamation-triangle notification-icon notification-confirm"></i>
-            <div class="notification-message">Apakah Anda yakin ingin keluar dari sistem?</div>
-            <div class="modal-footer" style="justify-content: center; gap: 15px; margin-top: 20px; display: flex;">
-                <button class="btn btn-gray" onclick="hideLogoutConfirmation()">Batal</button>
-                <button class="btn btn-blue" id="confirmLogoutBtn" onclick="performLogout()">Ya</button>
-            </div>
-        </div>
+        @endsection
 
-        <div class="notification-modal" id="logoutSuccessModal">
-            <i class="fas fa-check-circle notification-icon notification-success"></i>
-            <div class="notification-message">Anda berhasil logout. Mengarahkan ke halaman login...</div>
-        </div>
-
-    </div>
-
-
+        
     <script>
         // Toggle sidebar
         const toggleSidebar = document.getElementById('toggleSidebar');
@@ -1515,5 +1381,3 @@
             }, 1500); // Simulated loading delay of 1.5 seconds
         }
     </script>
-</body>
-</html>
