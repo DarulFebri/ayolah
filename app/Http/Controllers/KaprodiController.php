@@ -37,8 +37,10 @@ class KaprodiController extends Controller
                 'pengajuan_id' => $pengajuan->id,
                 'dosen_pembimbing_id' => $pengajuan->mahasiswa->pembimbing1_id,
                 'persetujuan_dosen_pembimbing' => 'pending',
-                'dosen_penguji1_id' => $pengajuan->mahasiswa->pembimbing2_id,
+                'dosen_penguji1_id' => $request->input('dosen_penguji_id'), // Set during initialization
                 'persetujuan_dosen_penguji1' => $isPkl ? 'setuju' : 'pending', // Auto-approve for PKL
+                'tanggal_waktu_sidang' => $request->input('tanggal_waktu_sidang'), // Set during initialization
+                'ruangan_sidang' => $request->input('ruangan_sidang'), // Set during initialization
             ]);
             // For PKL, Dosen Pembimbing 1 is always Ketua Sidang and auto-approved on initialization
         if ($isPkl) {
@@ -52,9 +54,7 @@ class KaprodiController extends Controller
 
         // Validation Rules
         $rules = [
-            'sekretaris_sidang_id' => 'required|exists:dosens,id',
-            'anggota_1_sidang_id' => 'required|exists:dosens,id',
-            'anggota_2_sidang_id' => 'nullable|exists:dosens,id',
+            'dosen_penguji_id' => 'required|exists:dosens,id',
             'tanggal_waktu_sidang' => 'required|date|after_or_equal:now',
             'ruangan_sidang' => 'required|string|max:255',
         ];
@@ -67,57 +67,28 @@ class KaprodiController extends Controller
 
         DB::beginTransaction();
         try {
-            // Store old IDs and approval statuses for comparison
-            $oldKetuaSidangId = $sidang->ketua_sidang_dosen_id;
-            $oldSekretarisSidangId = $sidang->sekretaris_sidang_dosen_id;
-            $oldAnggota1SidangId = $sidang->anggota1_sidang_dosen_id;
-            $oldAnggota2SidangId = $sidang->anggota2_sidang_dosen_id;
+            $oldDosenPenguji1Id = $sidang->dosen_penguji1_id; // Capture old Penguji 1 ID
+            $oldPersetujuanDosenPenguji1 = $sidang->persetujuan_dosen_penguji1; // Capture old Penguji 1 approval
 
-            $oldPersetujuanKetuaSidang = $sidang->persetujuan_ketua_sidang;
-            $oldPersetujuanSekretarisSidang = $sidang->persetujuan_sekretaris_sidang;
-            $oldPersetujuanAnggota1Sidang = $sidang->persetujuan_anggota1_sidang;
-            $oldPersetujuanAnggota2Sidang = $sidang->persetujuan_anggota2_sidang;
-
-            
-
-            // Map form input names to database column names and set approval status
-            if (isset($validatedData['sekretaris_sidang_id'])) {
-                $newSekretarisSidangId = $validatedData['sekretaris_sidang_id'];
-                $sidang->sekretaris_sidang_dosen_id = $newSekretarisSidangId;
-                if ($oldSekretarisSidangId !== $newSekretarisSidangId) {
-                    $sidang->persetujuan_sekretaris_sidang = 'pending';
+            // Update Dosen Penguji 1
+            if (isset($validatedData['dosen_penguji_id'])) {
+                $newDosenPenguji1Id = $validatedData['dosen_penguji_id'];
+                $sidang->dosen_penguji1_id = $newDosenPenguji1Id;
+                if ($oldDosenPenguji1Id !== $newDosenPenguji1Id) {
+                    $sidang->persetujuan_dosen_penguji1 = 'pending';
                 } else {
-                    $sidang->persetujuan_sekretaris_sidang = $oldPersetujuanSekretarisSidang;
+                    $sidang->persetujuan_dosen_penguji1 = $oldPersetujuanDosenPenguji1;
                 }
-                unset($validatedData['sekretaris_sidang_id']); // Remove to avoid conflict with fill()
-            }
-            if (isset($validatedData['anggota_1_sidang_id'])) {
-                $newAnggota1SidangId = $validatedData['anggota_1_sidang_id'];
-                $sidang->anggota1_sidang_dosen_id = $newAnggota1SidangId;
-                if ($oldAnggota1SidangId !== $newAnggota1SidangId) {
-                    $sidang->persetujuan_anggota1_sidang = 'pending';
-                }
-                unset($validatedData['anggota_1_sidang_id']);
-            }
-            if (isset($validatedData['anggota_2_sidang_id'])) {
-                $newAnggota2SidangId = $validatedData['anggota_2_sidang_id'];
-                $sidang->anggota2_sidang_dosen_id = $newAnggota2SidangId;
-                if ($oldAnggota2SidangId !== $newAnggota2SidangId) {
-                    $sidang->persetujuan_anggota2_sidang = 'pending';
-                }
-                unset($validatedData['anggota_2_sidang_id']);
             }
 
             // Fill remaining validated data (tanggal_waktu_sidang, ruangan_sidang, etc.)
-            $sidang->fill($validatedData);
+            $sidang->tanggal_waktu_sidang = $validatedData['tanggal_waktu_sidang'];
+            $sidang->ruangan_sidang = $validatedData['ruangan_sidang'];
+            $sidang->dosen_penguji1_id = $validatedData['dosen_penguji_id'];
             $sidang->save();
 
-            // Check if any dosen assignment changed to determine if pengajuan status needs to be reset
             $dosenChanged = false;
-            if ($oldKetuaSidangId !== $sidang->ketua_sidang_dosen_id ||
-                $oldSekretarisSidangId !== $sidang->sekretaris_sidang_dosen_id ||
-                $oldAnggota1SidangId !== $sidang->anggota1_sidang_dosen_id ||
-                $oldAnggota2SidangId !== $sidang->anggota2_sidang_dosen_id) {
+            if ($oldDosenPenguji1Id !== $sidang->dosen_penguji1_id) { // Check if Dosen Penguji 1 changed
                 $dosenChanged = true;
             }
 
@@ -140,6 +111,7 @@ class KaprodiController extends Controller
                              ->with('success', 'Jadwal sidang berhasil disimpan. ' . ($dosenChanged ? 'Menunggu persetujuan dosen.' : ''));
         } catch (\Exception $e) {
             DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Gagal menyimpan jadwal sidang: ' . $e->getMessage());
             return back()->with('error', 'Gagal menyimpan jadwal: ' . $e->getMessage())->withInput();
         }
     }
@@ -173,8 +145,6 @@ class KaprodiController extends Controller
 
         $requiredRoles = [
             'Pembimbing' => $sidang->dosen_pembimbing_id,
-            'Sekretaris' => $sidang->sekretaris_sidang_dosen_id,
-            'Anggota 1' => $sidang->anggota1_sidang_dosen_id,
         ];
         if (!$isPkl) {
             $requiredRoles['Penguji 1'] = $sidang->dosen_penguji1_id;
@@ -191,16 +161,10 @@ class KaprodiController extends Controller
 
         $approvalChecks = [
             'dosen_pembimbing' => 'Pembimbing',
-            'sekretaris_sidang' => 'Sekretaris',
-            'anggota1_sidang' => 'Anggota 1',
         ];
         // For TA, Penguji 1 is also required
         if (!$isPkl) {
             $approvalChecks['dosen_penguji1'] = 'Penguji 1';
-        }
-        // Anggota 2 is optional
-        if ($sidang->anggota2_sidang_dosen_id) {
-            $approvalChecks['anggota2_sidang'] = 'Anggota 2';
         }
         // Ketua Sidang approval is not explicitly checked here as it's derived from pembimbing/penguji1 approval for TA,
         // and for PKL, dosen_pembimbing is the de facto ketua sidang and its approval is already checked.
@@ -443,19 +407,6 @@ class KaprodiController extends Controller
                 $allRequiredDosenAgreed = false;
             }
 
-            // Sekretaris Sidang dan Anggota 1 Sidang selalu wajib
-            if ($sidang->sekretaris_sidang_dosen_id && $sidang->persetujuan_sekretaris_sidang !== 'setuju') {
-                $allRequiredDosenAgreed = false;
-            }
-            if ($sidang->anggota1_sidang_dosen_id && $sidang->persetujuan_anggota1_sidang !== 'setuju') {
-                $allRequiredDosenAgreed = false;
-            }
-
-            // Anggota 2 Sidang (jika ada)
-            if ($sidang->anggota2_sidang_dosen_id && $sidang->persetujuan_anggota2_sidang !== 'setuju') {
-                $allRequiredDosenAgreed = false;
-            }
-
             // Untuk TA, pastikan ketua sidang sudah ditentukan
             $ketuaSidangDitentukan = true;
             if ($pengajuan->jenis_pengajuan === 'ta' && empty($sidang->ketua_sidang_dosen_id)) {
@@ -488,9 +439,6 @@ class KaprodiController extends Controller
         $pengajuan->load([
             'mahasiswa',
             'sidang.ketuaSidang',
-            'sidang.sekretarisSidang',
-            'sidang.anggota1Sidang',
-            'sidang.anggota2Sidang',
             'sidang.dosenPembimbing',
             'sidang.dosenPenguji1'
         ]);

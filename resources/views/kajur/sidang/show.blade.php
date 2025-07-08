@@ -219,34 +219,36 @@
                         </p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>Ketua Sidang:</strong> {{ $sidang->ketuaSidang->nama ?? 'Belum Ditunjuk' }}
-                            @if ($sidang->ketuaSidang)
-                                <span class="approval-status {{ $sidang->persetujuan_ketua_sidang == 'setuju' ? 'text-success' : ($sidang->persetujuan_ketua_sidang == 'tolak' ? 'text-danger' : 'text-warning') }}">
-                                    ({{ ucfirst(str_replace('_', ' ', $sidang->persetujuan_ketua_sidang)) }})
-                                </span>
-                            @endif
-                        </p>
-                        <p><strong>Sekretaris Sidang:</strong> {{ $sidang->sekretarisSidang->nama ?? 'Belum Ditunjuk' }}
-                            @if ($sidang->sekretarisSidang)
-                                <span class="approval-status {{ $sidang->persetujuan_sekretaris_sidang == 'setuju' ? 'text-success' : ($sidang->persetujuan_sekretaris_sidang == 'tolak' ? 'text-danger' : 'text-warning') }}">
-                                    ({{ ucfirst(str_replace('_', ' ', $sidang->persetujuan_sekretaris_sidang)) }})
-                                </span>
-                            @endif
-                        </p>
-                        <p><strong>Anggota Sidang 1:</strong> {{ $sidang->anggota1Sidang->nama ?? 'Belum Ditunjuk' }}
-                            @if ($sidang->anggota1Sidang)
-                                <span class="approval-status {{ $sidang->persetujuan_anggota1_sidang == 'setuju' ? 'text-success' : ($sidang->persetujuan_anggota1_sidang == 'tolak' ? 'text-danger' : 'text-warning') }}">
-                                    ({{ ucfirst(str_replace('_', ' ', $sidang->persetujuan_anggota1_sidang)) }})
-                                </span>
-                            @endif
-                        </p>
-                        <p><strong>Anggota Sidang 2:</strong> {{ $sidang->anggota2Sidang->nama ?? 'Belum Ditunjuk' }}
-                            @if ($sidang->anggota2Sidang)
-                                <span class="approval-status {{ $sidang->persetujuan_anggota2_sidang == 'setuju' ? 'text-success' : ($sidang->persetujuan_anggota2_sidang == 'tolak' ? 'text-danger' : 'text-warning') }}">
-                                    ({{ ucfirst(str_replace('_', ' ', $sidang->persetujuan_anggota2_sidang)) }})
-                                </span>
-                            @endif
-                        </p>
+                        @if ($sidang->pengajuan->jenis_pengajuan != 'pkl')
+                            <p><strong>Ketua Sidang:</strong> {{ $sidang->ketuaSidang->nama ?? 'Belum Ditunjuk' }}
+                                @if ($sidang->ketuaSidang)
+                                    <span class="approval-status {{ $sidang->persetujuan_ketua_sidang == 'setuju' ? 'text-success' : ($sidang->persetujuan_ketua_sidang == 'tolak' ? 'text-danger' : 'text-warning') }}">
+                                        ({{ ucfirst(str_replace('_', ' ', $sidang->persetujuan_ketua_sidang)) }})
+                                    </span>
+                                @endif
+                            </p>
+                            <p><strong>Sekretaris Sidang:</strong> {{ $sidang->sekretarisSidang->nama ?? 'Belum Ditunjuk' }}
+                                @if ($sidang->sekretarisSidang)
+                                    <span class="approval-status {{ $sidang->persetujuan_sekretaris_sidang == 'setuju' ? 'text-success' : ($sidang->persetujuan_sekretaris_sidang == 'tolak' ? 'text-danger' : 'text-warning') }}">
+                                        ({{ ucfirst(str_replace('_', ' ', $sidang->persetujuan_sekretaris_sidang)) }})
+                                    </span>
+                                @endif
+                            </p>
+                            <p><strong>Anggota Sidang 1:</strong> {{ $sidang->anggota1Sidang->nama ?? 'Belum Ditunjuk' }}
+                                @if ($sidang->anggota1Sidang)
+                                    <span class="approval-status {{ $sidang->persetujuan_anggota1_sidang == 'setuju' ? 'text-success' : ($sidang->persetujuan_anggota1_sidang == 'tolak' ? 'text-danger' : 'text-warning') }}">
+                                        ({{ ucfirst(str_replace('_', ' ', $sidang->persetujuan_anggota1_sidang)) }})
+                                    </span>
+                                @endif
+                            </p>
+                            <p><strong>Anggota Sidang 2:</strong> {{ $sidang->anggota2Sidang->nama ?? 'Belum Ditunjuk' }}
+                                @if ($sidang->anggota2Sidang)
+                                    <span class="approval-status {{ $sidang->persetujuan_anggota2_sidang == 'setuju' ? 'text-success' : ($sidang->persetujuan_anggota2_sidang == 'tolak' ? 'text-danger' : 'text-warning') }}">
+                                        ({{ ucfirst(str_replace('_', ' ', $sidang->persetujuan_anggota2_sidang)) }})
+                                    </span>
+                                @endif
+                            </p>
+                        @endif
                     </div>
                 </div>
             </div>

@@ -259,11 +259,18 @@
                 <p><strong>Tanggal & Waktu:</strong> {{ \Carbon\Carbon::parse($sidang->tanggal_waktu_sidang)->translatedFormat('l, d F Y H:i') }} WIB</p>
                 <p><strong>Ruangan:</strong> {{ $sidang->ruangan_sidang }}</p>
                 <p><strong>Ketua Sidang:</strong> {{ $sidang->ketuaSidang->nama ?? 'Belum Terpilih' }}</p>
+                @if ($sidang->pengajuan->jenis_pengajuan != 'pkl')
                 <p><strong>Sekretaris Sidang:</strong> {{ $sidang->sekretarisSidang->nama ?? 'N/A' }}</p>
                 <p><strong>Anggota Sidang 1:</strong> {{ $sidang->anggota1Sidang->nama ?? 'N/A' }}</p>
                 <p><strong>Anggota Sidang 2:</strong> {{ $sidang->anggota2Sidang->nama ?? 'N/A' }}</p>
+                @endif
+                @if ($sidang->pengajuan->jenis_pengajuan == 'pkl')
+                <p><strong>Dosen Pembimbing:</strong> {{ $sidang->dosenPembimbing->nama ?? 'N/A' }}</p>
+                <p><strong>Dosen Penguji:</strong> {{ $sidang->dosenPenguji1->nama ?? 'N/A' }}</p>
+                @else
                 <p><strong>Dosen Pembimbing 1:</strong> {{ $sidang->dosenPembimbing->nama ?? 'N/A' }}</p>
                 <p><strong>Dosen Pembimbing 2:</strong> {{ $sidang->dosenPenguji1->nama ?? 'N/A' }}</p>
+                @endif
             </div>
         </div>
 
@@ -276,8 +283,19 @@
                     elseif ($sidang->sekretaris_sidang_dosen_id == $dosenLoginId) echo 'Sekretaris Sidang';
                     elseif ($sidang->anggota1_sidang_dosen_id == $dosenLoginId) echo 'Anggota Sidang 1 ';
                     elseif ($sidang->anggota2_sidang_dosen_id == $dosenLoginId) echo 'Anggota Sidang 2 ';
-                    elseif ($sidang->dosen_pembimbing_id == $dosenLoginId) echo 'Dosen Pembimbing 1';
-                    elseif ($sidang->dosen_penguji1_id == $dosenLoginId) echo 'Dosen Pembimbing 2';
+                    elseif ($sidang->dosen_pembimbing_id == $dosenLoginId) {
+                        if ($sidang->pengajuan->jenis_pengajuan == 'pkl') {
+                            echo 'Dosen Pembimbing';
+                        } else {
+                            echo 'Dosen Pembimbing 1';
+                        }
+                    } elseif ($sidang->dosen_penguji1_id == $dosenLoginId) {
+                        if ($sidang->pengajuan->jenis_pengajuan == 'pkl') {
+                            echo 'Dosen Penguji';
+                        } else {
+                            echo 'Dosen Pembimbing 2';
+                        }
+                    }
                 @endphp
             </strong></p>
 
