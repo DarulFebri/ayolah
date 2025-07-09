@@ -54,7 +54,7 @@
             </div>
             <div class="info-group">
                 <label>Ketua Sidang:</label>
-                <p>{{ $pengajuan->sidang->ketuaSidang->nama ?? '-' }} (Persetujuan: {{ $pengajuan->sidang->persetujuan_ketua_sidang ?? '-' }})</p>
+                <p>{{ $pengajuan->sidang->ketuaSidang->nama ?? '-' }}</p>
             </div>
             <div class="info-group">
                 <label>Sekretaris Sidang:</label>

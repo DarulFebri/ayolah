@@ -224,13 +224,7 @@
                     </div>
                     <div class="col-md-6">
                         @if ($sidang->pengajuan->jenis_pengajuan != 'pkl')
-                            <p><strong>Ketua Sidang:</strong> {{ $sidang->ketuaSidang->nama ?? 'Belum Ditunjuk' }}
-                                @if ($sidang->ketuaSidang)
-                                    <span class="approval-status {{ $sidang->persetujuan_ketua_sidang == 'setuju' ? 'text-success' : ($sidang->persetujuan_ketua_sidang == 'tolak' ? 'text-danger' : 'text-warning') }}">
-                                        ({{ ucfirst(str_replace('_', ' ', $sidang->persetujuan_ketua_sidang)) }})
-                                    </span>
-                                @endif
-                            </p>
+                            <p><strong>Ketua Sidang:</strong> {{ $sidang->ketuaSidang->nama ?? 'Belum Ditunjuk' }}</p>
                             <p><strong>Sekretaris Sidang:</strong> {{ $sidang->sekretarisSidang->nama ?? 'Belum Ditunjuk' }}
                                 @if ($sidang->sekretarisSidang)
                                     <span class="approval-status {{ $sidang->persetujuan_sekretaris_sidang == 'setuju' ? 'text-success' : ($sidang->persetujuan_sekretaris_sidang == 'tolak' ? 'text-danger' : 'text-warning') }}">

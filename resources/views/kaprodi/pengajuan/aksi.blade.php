@@ -225,9 +225,7 @@
             <strong>Ketua Sidang:</strong> 
             {{ $pengajuan->sidang->ketuaSidang->nama ?? 'Belum Terpilih' }}
             @if ($pengajuan->sidang->ketuaSidang)
-                (<span class="{{ $pengajuan->sidang->persetujuan_ketua_sidang == 'setuju' ? 'text-success' : ($pengajuan->sidang->persetujuan_ketua_sidang == 'tolak' ? 'text-danger' : 'text-warning') }}">
-                    {{ ucfirst(str_replace('_', ' ', $pengajuan->sidang->persetujuan_ketua_sidang)) }}
-                </span>)
+                
             @endif
         </p>
         <p>

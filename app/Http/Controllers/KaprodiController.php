@@ -48,9 +48,7 @@ class KaprodiController extends Controller
                 'anggota2_sidang_dosen_id' => null,
             ]);
             // For PKL, Dosen Pembimbing 1 is always Ketua Sidang and auto-approved on initialization
-            if ($isPkl) {
-                $sidang->persetujuan_ketua_sidang = 'setuju';
-            }
+            
             $sidang->save();
             $pengajuan->load('sidang');
         }
@@ -248,7 +246,7 @@ class KaprodiController extends Controller
                 'sekretaris_sidang_dosen_id' => null,
                 'anggota1_sidang_dosen_id' => null,
                 'anggota2_sidang_dosen_id' => null,
-                'persetujuan_ketua_sidang' => 'pending',
+                
                 'persetujuan_sekretaris_sidang' => 'pending',
                 'persetujuan_anggota1_sidang' => 'pending',
                 'persetujuan_anggota2_sidang' => 'pending',
@@ -261,11 +259,11 @@ class KaprodiController extends Controller
 
         if ($ketuaSidangId) {
             $sidang->ketua_sidang_dosen_id = $ketuaSidangId;
-            $sidang->persetujuan_ketua_sidang = 'setuju'; // Otomatis setuju karena sudah dipilih berdasarkan persetujuan
+            
             $sidang->save();
         } else {
             // Jika ketua sidang tidak dapat ditentukan, pastikan status persetujuan ketua sidang direset
-            $sidang->persetujuan_ketua_sidang = 'pending';
+            
             $sidang->save();
         }
 

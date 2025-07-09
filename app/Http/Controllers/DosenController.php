@@ -69,24 +69,6 @@ class DosenController extends Controller
 
         // Ambil sidang di mana dosen ini terlibat dan statusnya masih 'pending'
         $sidangInvitations = Sidang::where(function ($query) use ($dosenLoginId) {
-            // For PKL, if dosen_pembimbing_id is the same as ketua_sidang_dosen_id,
-            // we only consider the 'dosen_pembimbing' role for pending invitations.
-            // So, exclude 'ketua_sidang' if it's a PKL and the roles are the same.
-            $query->where(function ($q) use ($dosenLoginId) {
-                $q->where('ketua_sidang_dosen_id', $dosenLoginId)
-                    ->where('persetujuan_ketua_sidang', 'pending')
-                    ->whereDoesntHave('pengajuan', function ($subQuery) use ($dosenLoginId) {
-                        $subQuery->where('jenis_pengajuan', 'pkl')
-                            ->whereHas('sidang', function ($innerSubQuery) use ($dosenLoginId) {
-                                $innerSubQuery->where('dosen_pembimbing_id', $dosenLoginId)
-                                    ->whereColumn('dosen_pembimbing_id', 'ketua_sidang_dosen_id');
-                            });
-                    })
-                    ->whereHas('pengajuan', function ($subQuery) {
-                        $subQuery->where('status', '!=', 'draft');
-                    });
-            });
-        })->orWhere(function ($query) use ($dosenLoginId) {
             $query->where('sekretaris_sidang_dosen_id', $dosenLoginId)
                 ->where('persetujuan_sekretaris_sidang', 'pending')
                 ->whereHas('pengajuan', function ($subQuery) {
@@ -136,15 +118,10 @@ class DosenController extends Controller
         // Helper function to check if a specific role for the logged-in dosen is 'setuju' or 'tolak'
         $getSidangsByResponse = function ($responseType) use ($dosenLoginId) {
             return Sidang::where(function ($query) use ($dosenLoginId, $responseType) {
-                // Check each role specifically for the logged-in dosen and the desired responseType
                 $query->where(function ($q) use ($dosenLoginId, $responseType) {
-                    $q->where('ketua_sidang_dosen_id', $dosenLoginId)
-                        ->where('persetujuan_ketua_sidang', $responseType);
+                    $q->where('sekretaris_sidang_dosen_id', $dosenLoginId)
+                        ->where('persetujuan_sekretaris_sidang', $responseType);
                 })
-                    ->orWhere(function ($q) use ($dosenLoginId, $responseType) {
-                        $q->where('sekretaris_sidang_dosen_id', $dosenLoginId)
-                            ->where('persetujuan_sekretaris_sidang', $responseType);
-                    })
                     ->orWhere(function ($q) use ($dosenLoginId, $responseType) {
                         $q->where('anggota1_sidang_dosen_id', $dosenLoginId)
                             ->where('persetujuan_anggota1_sidang', $responseType);
@@ -423,9 +400,7 @@ class DosenController extends Controller
 
         // Determine if the logged-in dosen is involved and still has a pending response
         $isPending = false;
-        if ($sidang->ketua_sidang_dosen_id === $dosenLoginId && $sidang->persetujuan_ketua_sidang === 'pending') {
-            $isPending = true;
-        }
+        
         if ($sidang->sekretaris_sidang_dosen_id === $dosenLoginId && $sidang->persetujuan_sekretaris_sidang === 'pending') {
             $isPending = true;
         }
@@ -488,9 +463,7 @@ class DosenController extends Controller
             // For PKL, Dosen Pembimbing 1 is also Ketua Sidang, but we only need one approval for 'dosen_pembimbing'
             $sidang->persetujuan_dosen_pembimbing = $respon;
             $peranDosen = 'Dosen Pembimbing 1 (Ketua Sidang)';
-        } elseif ($sidang->ketua_sidang_dosen_id === $dosen->id && $sidang->persetujuan_ketua_sidang === 'pending') {
-            $sidang->persetujuan_ketua_sidang = $respon;
-            $peranDosen = 'Ketua Sidang';
+        
         } elseif ($sidang->sekretaris_sidang_dosen_id === $dosen->id && $sidang->persetujuan_sekretaris_sidang === 'pending') {
             $sidang->persetujuan_sekretaris_sidang = $respon;
             $peranDosen = 'Sekretaris Sidang';

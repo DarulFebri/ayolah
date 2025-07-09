@@ -171,10 +171,10 @@ class PengajuanController extends Controller
                 // Untuk TA, ketua sidang bisa jadi dosen pembimbing atau penguji1/penguji2,
                 // tergantung kebijakan. Untuk contoh ini, kita biarkan null dulu atau set default.
                 // Jika dosen_pembimbing_id otomatis jadi ketua sidang untuk TA juga, set di sini.
-                $sidangData['ketua_sidang_dosen_id'] = $request->dosen_pembimbing_id;
+                // $sidangData['ketua_sidang_dosen_id'] = $request->dosen_pembimbing_id; // Removed to prevent duplicate notification if same as pembimbing
             } else { // Jika PKL
                 // Untuk PKL, dosen_pembimbing_id otomatis menjadi ketua sidang
-                $sidangData['ketua_sidang_dosen_id'] = $request->dosen_pembimbing_id;
+                // $sidangData['ketua_sidang_dosen_id'] = $request->dosen_pembimbing_id; // Removed to prevent duplicate notification if same as pembimbing
             }
 
             \Illuminate\Support\Facades\Log::info('Sebelum Sidang::create', ['stack' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5)]);
@@ -352,7 +352,7 @@ class PengajuanController extends Controller
                 $sidangData['dosen_penguji1_id'] = $request->dosen_penguji1_id; // Ini adalah Dosen Pembimbing 2
                 // $sidangData['ketua_sidang_dosen_id'] = $request->dosen_pembimbing_id; // Jika otomatis jadi ketua sidang untuk TA
             } else { // Jika PKL
-                $sidangData['ketua_sidang_dosen_id'] = $request->dosen_pembimbing_id;
+                // $sidangData['ketua_sidang_dosen_id'] = $request->dosen_pembimbing_id; // Removed to prevent duplicate notification if same as pembimbing
             }
             \Illuminate\Support\Facades\Log::info('Sebelum sidang->update', ['stack' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5)]);
             $pengajuan->sidang->update($sidangData);

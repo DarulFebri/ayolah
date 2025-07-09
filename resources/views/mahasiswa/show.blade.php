@@ -18,7 +18,7 @@
                 <hr>
                 <h5>Tim Sidang</h5>
                 <ul>
-                    <li><strong>Ketua Sidang:</strong> {{ $sidang->ketuaSidangDosen->nama ?? 'N/A' }} (Persetujuan: {{ $sidang->persetujuan_ketua_sidang }})</li>
+                    <li><strong>Ketua Sidang:</strong> {{ $sidang->ketuaSidangDosen->nama ?? 'N/A' }}</li>
                     <li><strong>Sekretaris Sidang:</strong> {{ $sidang->sekretarisSidangDosen->nama ?? 'N/A' }} (Persetujuan: {{ $sidang->persetujuan_sekretaris_sidang }})</li>
                     <li><strong>Anggota 1 Sidang:</strong> {{ $sidang->anggota1SidangDosen->nama ?? 'N/A' }} (Persetujuan: {{ $sidang->persetujuan_anggota1_sidang }})</li>
                     <li><strong>Anggota 2 Sidang:</strong> {{ $sidang->anggota2SidangDosen->nama ?? 'N/A' }} (Persetujuan: {{ $sidang->persetujuan_anggota2_sidang }})</li>

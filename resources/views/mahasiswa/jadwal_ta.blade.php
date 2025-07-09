@@ -35,7 +35,7 @@
                             <td>{{ $sidang->status }}</td>
                             <td>{{ $sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($sidang->tanggal_waktu_sidang)->format('d M Y H:i') : 'Belum Dijadwalkan' }}</td>
                             <td>{{ $sidang->ruangan_sidang ?? 'N/A' }}</td>
-                            <td>{{ $sidang->ketuaSidangDosen->nama ?? 'N/A' }} (P: {{ $sidang->persetujuan_ketua_sidang }})</td>
+                            <td>{{ $sidang->ketuaSidangDosen->nama ?? 'N/A' }}</td>
                             <td>{{ $sidang->sekretarisSidangDosen->nama ?? 'N/A' }} (P: {{ $sidang->persetujuan_sekretaris_sidang }})</td>
                             <td>{{ $sidang->anggota1SidangDosen->nama ?? 'N/A' }} (P: {{ $sidang->persetujuan_anggota1_sidang }})</td>
                             <td>{{ $sidang->anggota2SidangDosen->nama ?? 'N/A' }} (P: {{ $sidang->persetujuan_anggota2_sidang }})</td>
