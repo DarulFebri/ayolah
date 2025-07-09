@@ -10,6 +10,7 @@ use App\Models\Sidang;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Auth; // Import this!
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage; // Import the new model
 
 class DosenController extends Controller
@@ -80,23 +81,41 @@ class DosenController extends Controller
                                 $innerSubQuery->where('dosen_pembimbing_id', $dosenLoginId)
                                     ->whereColumn('dosen_pembimbing_id', 'ketua_sidang_dosen_id');
                             });
+                    })
+                    ->whereHas('pengajuan', function ($subQuery) {
+                        $subQuery->where('status', '!=', 'draft');
                     });
             });
         })->orWhere(function ($query) use ($dosenLoginId) {
             $query->where('sekretaris_sidang_dosen_id', $dosenLoginId)
-                ->where('persetujuan_sekretaris_sidang', 'pending');
+                ->where('persetujuan_sekretaris_sidang', 'pending')
+                ->whereHas('pengajuan', function ($subQuery) {
+                    $subQuery->where('status', '!=', 'draft');
+                });
         })->orWhere(function ($query) use ($dosenLoginId) {
             $query->where('anggota1_sidang_dosen_id', $dosenLoginId)
-                ->where('persetujuan_anggota1_sidang', 'pending');
+                ->where('persetujuan_anggota1_sidang', 'pending')
+                ->whereHas('pengajuan', function ($subQuery) {
+                    $subQuery->where('status', '!=', 'draft');
+                });
         })->orWhere(function ($query) use ($dosenLoginId) {
             $query->where('anggota2_sidang_dosen_id', $dosenLoginId)
-                ->where('persetujuan_anggota2_sidang', 'pending');
+                ->where('persetujuan_anggota2_sidang', 'pending')
+                ->whereHas('pengajuan', function ($subQuery) {
+                    $subQuery->where('status', '!=', 'draft');
+                });
         })->orWhere(function ($query) use ($dosenLoginId) {
             $query->where('dosen_pembimbing_id', $dosenLoginId)
-                ->where('persetujuan_dosen_pembimbing', 'pending');
+                ->where('persetujuan_dosen_pembimbing', 'pending')
+                ->whereHas('pengajuan', function ($subQuery) {
+                    $subQuery->where('status', '!=', 'draft');
+                });
         })->orWhere(function ($query) use ($dosenLoginId) {
             $query->where('dosen_penguji1_id', $dosenLoginId)
-                ->where('persetujuan_dosen_penguji1', 'pending');
+                ->where('persetujuan_dosen_penguji1', 'pending')
+                ->whereHas('pengajuan', function ($subQuery) {
+                    $subQuery->where('status', '!=', 'draft');
+                });
         })
             ->with([
                 'pengajuan.mahasiswa',
@@ -108,6 +127,10 @@ class DosenController extends Controller
                 'dosenPenguji1',
             ])
             ->get();
+
+        foreach ($sidangInvitations as $sidangInvitation) {
+            Log::info('Sidang Invitation Pengajuan Status: ' . $sidangInvitation->pengajuan->status . ' for Pengajuan ID: ' . $sidangInvitation->pengajuan->id);
+        }
 
         // --- CORRECTED QUERIES FOR APPROVED AND REJECTED SIDANGS ---
         // Helper function to check if a specific role for the logged-in dosen is 'setuju' or 'tolak'

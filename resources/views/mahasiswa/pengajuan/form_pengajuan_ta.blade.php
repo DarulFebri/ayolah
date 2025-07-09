@@ -124,8 +124,8 @@
                 <button type="submit" name="status_action" value="draft" class="btn" style="background-color: var(--warning); border-color: var(--warning); color: #000;">
                     <i class="fas fa-save"></i> Simpan sebagai Draft
                 </button>
-                <button type="submit" name="status_action" value="finalisasi" class="btn btn-success" style="background-color: var(--success); border-color: var(--success);">
-                    <i class="fas fa-check-circle"></i> Finalisasi & Ajukan
+                <button type="submit" name="status_action" value="finalisasi" class="btn btn-success" style="background-color: var(--success); border-color: var(--success);" onclick="return confirm('Apakah Anda yakin ingin mengajukan submission ini? Setelah diajukan, data tidak dapat diubah kembali.')">
+                    <i class="fas fa-check-circle"></i> Ajukan
                 </button>
             </div>
         </form>

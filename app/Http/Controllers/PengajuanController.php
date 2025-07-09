@@ -177,7 +177,9 @@ class PengajuanController extends Controller
                 $sidangData['ketua_sidang_dosen_id'] = $request->dosen_pembimbing_id;
             }
 
+            \Illuminate\Support\Facades\Log::info('Sebelum Sidang::create', ['stack' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5)]);
             Sidang::create($sidangData);
+            \Illuminate\Support\Facades\Log::info('Setelah Sidang::create');
 
             // Menentukan daftar dokumen yang diharapkan
             $expectedDocuments = ($jenisPengajuan == 'pkl') ? $this->dokumenPkl : $this->dokumenTa;
@@ -352,7 +354,9 @@ class PengajuanController extends Controller
             } else { // Jika PKL
                 $sidangData['ketua_sidang_dosen_id'] = $request->dosen_pembimbing_id;
             }
+            \Illuminate\Support\Facades\Log::info('Sebelum sidang->update', ['stack' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5)]);
             $pengajuan->sidang->update($sidangData);
+            \Illuminate\Support\Facades\Log::info('Setelah sidang->update');
 
             // Menentukan daftar dokumen yang diharapkan
             $expectedDocuments = ($jenisPengajuan == 'pkl') ? $this->dokumenPkl : $this->dokumenTa;

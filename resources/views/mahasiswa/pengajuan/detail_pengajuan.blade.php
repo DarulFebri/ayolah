@@ -106,6 +106,7 @@
         </div>
 
         <!-- Informasi Dosen -->
+        @if($pengajuan->sidang)
         <h3 class="form-title mt-4"><i class="fas fa-user-tie"></i> Informasi Dosen</h3>
         <div class="info-grid">
             <div class="info-item">
@@ -125,6 +126,7 @@
                 </div>
             @endif
         </div>
+        @endif
 
         <!-- Dokumen Terunggah -->
         <h3 class="form-title mt-4"><i class="fas fa-folder-open"></i> Dokumen Persyaratan</h3>
