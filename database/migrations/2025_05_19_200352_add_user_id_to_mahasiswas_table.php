@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); // Buat foreign key ke tabel 'users'
         });
     }
-    
 
     /**
      * Reverse the migrations.

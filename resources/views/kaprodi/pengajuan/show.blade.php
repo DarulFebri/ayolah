@@ -272,7 +272,7 @@
             <h3><i class="fas fa-calendar-alt"></i> Informasi Sidang</h3>
             @if ($pengajuan->sidang)
                 @if ($pengajuan->jenis_pengajuan === 'ta')
-                    <p><strong>Dosen Pembimbing 1:</strong> {{ $pengajuan->sidang->dosenPembimbing ? $pengajuan->sidang->dosenPembimbing->nama : 'N/A' }}
+                    <p><strong>Ketua Sidang:</strong> {{ $pengajuan->sidang->dosenPembimbing ? $pengajuan->sidang->dosenPembimbing->nama : 'N/A' }} (Dosen Pembimbing 1)
                         @if($pengajuan->sidang->dosenPembimbing)
                             <span class="status-badge {{ $pengajuan->sidang->persetujuan_dosen_pembimbing === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_dosen_pembimbing === 'tolak' ? 'tolak' : 'menunggu') }}">
                                 {{ ucfirst($pengajuan->sidang->persetujuan_dosen_pembimbing) }}
@@ -286,10 +286,27 @@
                             </span>
                         @endif
                     </p>
-                    <p><strong>Ketua Sidang:</strong> {{ $pengajuan->sidang->ketuaSidang ? $pengajuan->sidang->ketuaSidang->nama : 'N/A' }}</p>
-                    <p><strong>Sekretaris Sidang:</strong> {{ $pengajuan->sidang->sekretarisSidang ? $pengajuan->sidang->sekretarisSidang->nama : 'N/A' }}</p>
-                    <p><strong>Anggota Sidang 1:</strong> {{ $pengajuan->sidang->anggota1Sidang ? $pengajuan->sidang->anggota1Sidang->nama : 'N/A' }}</p>
-                    <p><strong>Anggota Sidang 2:</strong> {{ $pengajuan->sidang->anggota2Sidang ? $pengajuan->sidang->anggota2Sidang->nama : 'N/A' }}</p>
+                    <p><strong>Sekretaris Sidang:</strong> {{ $pengajuan->sidang->sekretarisSidang ? $pengajuan->sidang->sekretarisSidang->nama : 'N/A' }}
+                        @if($pengajuan->sidang->sekretarisSidang)
+                            <span class="status-badge {{ $pengajuan->sidang->persetujuan_sekretaris_sidang === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_sekretaris_sidang === 'tolak' ? 'tolak' : 'menunggu') }}">
+                                {{ ucfirst($pengajuan->sidang->persetujuan_sekretaris_sidang) }}
+                            </span>
+                        @endif
+                    </p>
+                    <p><strong>Dosen Penguji 1:</strong> {{ $pengajuan->sidang->anggota1Sidang ? $pengajuan->sidang->anggota1Sidang->nama : 'N/A' }}
+                        @if($pengajuan->sidang->anggota1Sidang)
+                            <span class="status-badge {{ $pengajuan->sidang->persetujuan_anggota1_sidang === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_anggota1_sidang === 'tolak' ? 'tolak' : 'menunggu') }}">
+                                {{ ucfirst($pengajuan->sidang->persetujuan_anggota1_sidang) }}
+                            </span>
+                        @endif
+                    </p>
+                    <p><strong>Dosen Penguji 2:</strong> {{ $pengajuan->sidang->anggota2Sidang ? $pengajuan->sidang->anggota2Sidang->nama : 'N/A' }}
+                        @if($pengajuan->sidang->anggota2Sidang)
+                            <span class="status-badge {{ $pengajuan->sidang->persetujuan_anggota2_sidang === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_anggota2_sidang === 'tolak' ? 'tolak' : 'menunggu') }}">
+                                {{ ucfirst($pengajuan->sidang->persetujuan_anggota2_sidang) }}
+                            </span>
+                        @endif
+                    </p>
                     <p><strong>Ruangan Sidang:</strong> {{ $pengajuan->sidang->ruangan_sidang ?? 'N/A' }}</p>
                     <p><strong>Tanggal & Waktu Sidang:</strong> {{ $pengajuan->sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->format('d F Y, H:i') : 'N/A' }}</p>
                 @elseif ($pengajuan->jenis_pengajuan === 'pkl')
@@ -333,20 +350,24 @@
                     
                     @if ($pengajuan->jenis_pengajuan === 'ta')
                         <div class="form-group">
+                            <label>Ketua Sidang:</label>
+                            <input type="text" class="form-control" value="{{ $pengajuan->mahasiswa->pembimbing1->nama ?? 'Dosen Pembimbing 1 (otomatis)' }}" disabled>
+                        </div>
+                        <div class="form-group">
                             <label for="sekretaris_sidang_id">Sekretaris Sidang:</label>
                             <select name="sekretaris_sidang_id" id="sekretaris_sidang_id" class="form-control" required>
                                 <option value="">Pilih Sekretaris Sidang</option>
                                 @foreach ($dosens as $dosen)
-                                    <option value="{{ $dosen->id }}" {{ optional($pengajuan->sidang)->sekretaris_sidang_id == $dosen->id ? 'selected' : '' }}>
+                                    <option value="{{ $dosen->id }}" {{ optional($pengajuan->sidang)->sekretaris_sidang_dosen_id == $dosen->id ? 'selected' : '' }}>
                                         {{ $dosen->nama }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="anggota_sidang_1_id">Anggota Sidang 1:</label>
-                            <select name="anggota_sidang_1_id" id="anggota_sidang_1_id" class="form-control" required>
-                                <option value="">Pilih Anggota Sidang 1</option>
+                            <label for="dosen_penguji_1_id">Dosen Penguji 1:</label>
+                            <select name="dosen_penguji_1_id" id="dosen_penguji_1_id" class="form-control" required>
+                                <option value="">Pilih Dosen Penguji 1</option>
                                 @foreach ($dosens as $dosen)
                                     <option value="{{ $dosen->id }}" {{ optional($pengajuan->sidang)->anggota1_sidang_dosen_id == $dosen->id ? 'selected' : '' }}>
                                         {{ $dosen->nama }}
@@ -355,9 +376,9 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="anggota_sidang_2_id">Anggota Sidang 2:</label>
-                            <select name="anggota_sidang_2_id" id="anggota_sidang_2_id" class="form-control">
-                                <option value="">Pilih Anggota Sidang 2</option>
+                            <label for="dosen_penguji_2_id">Dosen Penguji 2:</label>
+                            <select name="dosen_penguji_2_id" id="dosen_penguji_2_id" class="form-control">
+                                <option value="">Pilih Dosen Penguji 2 (opsional)</option>
                                 @foreach ($dosens as $dosen)
                                     <option value="{{ $dosen->id }}" {{ optional($pengajuan->sidang)->anggota2_sidang_dosen_id == $dosen->id ? 'selected' : '' }}>
                                         {{ $dosen->nama }}

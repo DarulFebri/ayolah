@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::table('pengajuans', function (Blueprint $table) {
             // Menambahkan kolom jenis_pengajuan jika belum ada
-            if (!Schema::hasColumn('pengajuans', 'jenis_pengajuan')) {
+            if (! Schema::hasColumn('pengajuans', 'jenis_pengajuan')) {
                 $table->string('jenis_pengajuan')->after('mahasiswa_id'); // Sesuaikan posisi jika perlu
             }
             // Menambahkan kolom status jika belum ada
-            if (!Schema::hasColumn('pengajuans', 'status')) {
+            if (! Schema::hasColumn('pengajuans', 'status')) {
                 $table->string('status')->default('draft')->after('jenis_pengajuan'); // Default status 'draft'
             }
         });

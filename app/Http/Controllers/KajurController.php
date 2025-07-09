@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pengajuan;
 use App\Models\Dosen;
-use App\Models\Mahasiswa; // Add this line
-use App\Models\Sidang;
-use App\Models\PengajuanStatusHistory; // Import the new model
+use App\Models\Mahasiswa;
+use App\Models\Pengajuan; // Add this line
+use App\Models\PengajuanStatusHistory;
+use App\Models\Sidang; // Import the new model
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator; // Not used in provided code but good to keep if needed
-use Illuminate\Validation\Rule; // Not used in provided code but good to keep if needed
-use App\Notifications\DosenSidangInvitation; // Not used in provided code but good to keep if needed
+// Not used in provided code but good to keep if needed
+use Illuminate\Support\Facades\Auth; // Not used in provided code but good to keep if needed
+// Not used in provided code but good to keep if needed
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon; // Make sure Carbon is imported
+use Illuminate\Validation\Rule; // Make sure Carbon is imported
 
 class KajurController extends Controller
 {
@@ -45,6 +45,7 @@ class KajurController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+
             return redirect()->intended(route('kajur.dashboard'));
         }
 
@@ -62,10 +63,11 @@ class KajurController extends Controller
 
         // **Penting: Pastikan variabel ini didefinisikan dan dikirim ke view**
         $pengajuanSiapSidang = Pengajuan::with('mahasiswa', 'sidang') // Eager load sidang juga
-                                        ->where('status', 'sidang_dijadwalkan_final')
-                                        ->get();
+            ->where('status', 'sidang_dijadwalkan_final')
+            ->get();
 
         $kajur_for_layout = Auth::user()->kajur; // Fetch Kajur data for layout
+
         return view('kajur.dashboard', compact(
             'jumlahSidangSedang',
             'jumlahSidangTelah',
@@ -80,6 +82,7 @@ class KajurController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect('/');
     }
 
@@ -87,8 +90,9 @@ class KajurController extends Controller
     {
         // Hanya tampilkan pengajuan yang statusnya 'sidang_dijadwalkan_final'
         $pengajuanSiapSidang = Pengajuan::with('mahasiswa')
-                                        ->where('status', 'sidang_dijadwalkan_final')
-                                        ->get();
+            ->where('status', 'sidang_dijadwalkan_final')
+            ->get();
+
         return view('kajur.pengajuan.perlu_verifikasi', compact('pengajuanSiapSidang'));
     }
 
@@ -96,8 +100,8 @@ class KajurController extends Controller
     {
         // Ambil pengajuan dengan status 'diverifikasi_kajur'
         $pengajuanTerverifikasi = Pengajuan::with(['mahasiswa', 'sidang']) // Eager load sidang juga jika ingin tampilkan detail sidang
-                                          ->where('status', 'diverifikasi_kajur')
-                                          ->get();
+            ->where('status', 'diverifikasi_kajur')
+            ->get();
 
         return view('kajur.pengajuan.sudah_verifikasi', compact('pengajuanTerverifikasi'));
     }
@@ -105,12 +109,14 @@ class KajurController extends Controller
     public function daftarPengajuan()
     {
         $pengajuans = Pengajuan::with('mahasiswa', 'dosenPembimbing', 'dosenPenguji1')->get();
+
         return view('kajur.pengajuan.index', compact('pengajuans'));
     }
 
     public function daftarSidang()
     {
         $sidangs = Sidang::with(['pengajuan.mahasiswa', 'ketuaSidang', 'sekretarisSidang', 'dosenPembimbing', 'dosenPenguji1'])->get();
+
         return view('kajur.sidang.index', compact('sidangs'));
     }
 
@@ -127,6 +133,7 @@ class KajurController extends Controller
             'anggota1Sidang',
             'anggota2Sidang',
         ]);
+
         return view('kajur.sidang.show', compact('sidang'));
     }
 
@@ -145,7 +152,7 @@ class KajurController extends Controller
             'sidang.dosenPembimbing',
             'sidang.dosenPenguji1',
             'sidang.anggota1Sidang',
-            'sidang.anggota2Sidang'
+            'sidang.anggota2Sidang',
         ]);
 
         return view('kajur.pengajuan.verifikasi', compact('pengajuan'));
@@ -174,31 +181,36 @@ class KajurController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat memverifikasi pengajuan: ' . $e->getMessage());
+
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memverifikasi pengajuan: '.$e->getMessage());
         }
     }
 
     public function showPengajuanDetail(Pengajuan $pengajuan)
     {
         $pengajuan->load(['mahasiswa', 'dosenPembimbing', 'dosenPenguji1']); // Assuming these are sufficient for a general detail view
+
         return view('kajur.pengajuan.detail', compact('pengajuan'));
     }
 
     public function daftarDosen()
     {
         $dosens = Dosen::all();
+
         return view('kajur.dosen.index', compact('dosens'));
     }
 
     public function daftarMahasiswa()
     {
         $mahasiswas = Mahasiswa::all();
+
         return view('kajur.mahasiswa.index', compact('mahasiswas'));
     }
 
     public function editProfileForm()
     {
         $kajur = Auth::user()->kajur; // Assuming Kajur model is related to User model
+
         return view('kajur.profile.edit', compact('kajur'));
     }
 
@@ -219,8 +231,8 @@ class KajurController extends Controller
 
         if ($request->hasFile('foto_profil')) {
             // Delete old profile photo if exists
-            if ($kajur->foto_profil && file_exists(public_path('images/profile/' . $kajur->foto_profil))) {
-                unlink(public_path('images/profile/' . $kajur->foto_profil));
+            if ($kajur->foto_profil && file_exists(public_path('images/profile/'.$kajur->foto_profil))) {
+                unlink(public_path('images/profile/'.$kajur->foto_profil));
             }
             $imageName = time().'.'.$request->foto_profil->extension();
             $request->foto_profil->move(public_path('images/profile'), $imageName);
@@ -255,6 +267,7 @@ class KajurController extends Controller
     {
         $user = Auth::user();
         $notifications = $user->notifications()->paginate(10); // Adjust pagination as needed
+
         return view('kajur.notifications.index', compact('notifications'));
     }
 
@@ -265,6 +278,7 @@ class KajurController extends Controller
 
         if ($notification) {
             $notification->markAsRead();
+
             return back()->with('success', 'Notifikasi ditandai sudah dibaca.');
         }
 
@@ -275,6 +289,7 @@ class KajurController extends Controller
     {
         $user = Auth::user();
         $user->unreadNotifications->markAsRead();
+
         return back()->with('success', 'Semua notifikasi ditandai sudah dibaca.');
     }
 }

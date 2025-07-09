@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Models\Mahasiswa; // Jika ada model Mahasiswa terpisah
+use App\Models\Mahasiswa;
+use App\Models\User; // Jika ada model Mahasiswa terpisah
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -27,7 +27,7 @@ class TambahMahasiswa extends Seeder
             'user_id' => $mahasiswaUser->id,
             'nim' => '2311082011', // Contoh NIM
             'nama_lengkap' => 'Arlan Diana',
-            
+
             'prodi' => 'Rekayasa Perangkat Lunak',
             'jenis_kelamin' => 'P',
             'kelas' => 'TI-1',
@@ -45,7 +45,7 @@ class TambahMahasiswa extends Seeder
             'user_id' => $mahasiswaUser->id,
             'nim' => '2311082096', // Contoh NIM
             'nama_lengkap' => 'ayung',
-            
+
             'prodi' => 'Rekayasa Perangkat Lunak',
             'jenis_kelamin' => 'L',
             'kelas' => 'TI-1',
@@ -63,7 +63,7 @@ class TambahMahasiswa extends Seeder
             'user_id' => $mahasiswaUser->id,
             'nim' => '2311082037', // Contoh NIM
             'nama_lengkap' => 'Hilmi Muhammad Faiz',
-            
+
             'prodi' => 'Rekayasa Perangkat Lunak',
             'jenis_kelamin' => 'L',
             'kelas' => 'TI-1',
@@ -81,14 +81,11 @@ class TambahMahasiswa extends Seeder
             'user_id' => $mahasiswaUser->id,
             'nim' => '2311082054', // Contoh NIM
             'nama_lengkap' => 'Rafayel Ulayya',
-            
+
             'prodi' => 'Rekayasa Perangkat Lunak',
             'jenis_kelamin' => 'L',
             'kelas' => 'TI-1',
         ]);
         echo "Berhasil nambahin 3 user mahasiswa\n";
     }
-
-    
-    
 }

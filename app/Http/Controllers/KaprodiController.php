@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pengajuan;
 use App\Models\Dosen;
-use App\Models\Sidang; // Pastikan model Sidang di-import
-use App\Models\PengajuanStatusHistory; // Import the new model
+use App\Models\Pengajuan;
+use App\Models\PengajuanStatusHistory; // Pastikan model Sidang di-import
+use App\Models\Sidang; // Import the new model
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule; // Untuk validasi unique
-use App\Notifications\DosenSidangInvitation; // Pastikan ini di-import
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Hash; // Untuk validasi unique
+// Pastikan ini di-import
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class KaprodiController extends Controller
 {
@@ -29,11 +29,11 @@ class KaprodiController extends Controller
 
     public function storeUpdateJadwalSidang(Request $request, Pengajuan $pengajuan)
     {
-        
+
         $isPkl = $pengajuan->jenis_pengajuan === 'pkl';
 
         // Initialize Sidang if not exists or ensure correct initial values
-        if (!$pengajuan->sidang) {
+        if (! $pengajuan->sidang) {
             $sidang = new Sidang([
                 'pengajuan_id' => $pengajuan->id,
                 'dosen_pembimbing_id' => $pengajuan->mahasiswa->pembimbing1_id,
@@ -42,7 +42,7 @@ class KaprodiController extends Controller
                 'persetujuan_dosen_penguji1' => 'pending', // Auto-approve for PKL
                 'tanggal_waktu_sidang' => $request->input('tanggal_waktu_sidang'), // Set during initialization
                 'ruangan_sidang' => $request->input('ruangan_sidang'), // Set during initialization
-                'ketua_sidang_dosen_id' => $isPkl ? $pengajuan->mahasiswa->pembimbing1_id : null, // Set for PKL, null for TA initially
+                'ketua_sidang_dosen_id' => $pengajuan->mahasiswa->pembimbing1_id, // Always set to pembimbing1_id
                 'sekretaris_sidang_dosen_id' => null,
                 'anggota1_sidang_dosen_id' => null,
                 'anggota2_sidang_dosen_id' => null,
@@ -52,9 +52,13 @@ class KaprodiController extends Controller
                 $sidang->persetujuan_ketua_sidang = 'setuju';
             }
             $sidang->save();
-        $pengajuan->load('sidang');
+            $pengajuan->load('sidang');
         }
         $sidang = $pengajuan->sidang;
+
+        // Ensure ketua_sidang_dosen_id is always set to dosen_pembimbing_id
+        // This ensures the correct assignment regardless of initial creation or update
+        $sidang->ketua_sidang_dosen_id = $pengajuan->mahasiswa->pembimbing1_id;
 
         // Validation Rules
         $rules = [
@@ -66,9 +70,8 @@ class KaprodiController extends Controller
             $rules['dosen_penguji_id'] = 'required|exists:dosens,id';
         } else { // TA
             $rules['sekretaris_sidang_id'] = 'required|exists:dosens,id';
-            $rules['anggota_sidang_1_id'] = 'required|exists:dosens,id';
-            $rules['anggota_sidang_2_id'] = 'nullable|exists:dosens,id';
-            $rules['ketua_sidang_dosen_id'] = 'nullable|exists:dosens,id';
+            $rules['dosen_penguji_1_id'] = 'required|exists:dosens,id';
+            $rules['dosen_penguji_2_id'] = 'nullable|exists:dosens,id';
         }
 
         $validator = Validator::make($request->all(), $rules);
@@ -78,7 +81,7 @@ class KaprodiController extends Controller
         $validatedData = $validator->validated();
 
         // Debugging: Dump validated data
-        //dd($validatedData);
+        // dd($validatedData);
 
         DB::beginTransaction();
         try {
@@ -100,16 +103,18 @@ class KaprodiController extends Controller
             $sidang->tanggal_waktu_sidang = $validatedData['tanggal_waktu_sidang'];
             $sidang->ruangan_sidang = $validatedData['ruangan_sidang'];
 
-            if (!$isPkl) { // Only for TA
-                $sidang->ketua_sidang_dosen_id = $validatedData['ketua_sidang_dosen_id'] ?? null;
+            if (! $isPkl) { // Only for TA
+                $sidang->ketua_sidang_dosen_id = $pengajuan->mahasiswa->pembimbing1_id;
                 $sidang->sekretaris_sidang_dosen_id = $validatedData['sekretaris_sidang_id'] ?? null;
-                $sidang->anggota1_sidang_dosen_id = $validatedData['anggota_sidang_1_id'] ?? null;
-                $sidang->anggota2_sidang_dosen_id = $validatedData['anggota_sidang_2_id'] ?? null;
+                // Leave dosen_penguji1_id alone, as it's for Dosen Pembimbing 2
+                $sidang->anggota1_sidang_dosen_id = $validatedData['dosen_penguji_1_id'] ?? null;
+                $sidang->anggota2_sidang_dosen_id = $validatedData['dosen_penguji_2_id'] ?? null;
             }
 
             // Debugging: Dump sidang object before save
-            //dd($sidang);
+            // dd($sidang);
 
+            $sidang->ketua_sidang_dosen_id = $sidang->dosen_pembimbing_id;
             $sidang->save();
 
             $dosenChanged = false;
@@ -132,12 +137,14 @@ class KaprodiController extends Controller
             // (Logic for notification remains the same)
 
             DB::commit();
+
             return redirect()->route('kaprodi.pengajuan.show', $pengajuan->id)
-                             ->with('success', 'Jadwal sidang berhasil disimpan. ' . ($dosenChanged ? 'Menunggu persetujuan dosen.' : ''));
+                ->with('success', 'Jadwal sidang berhasil disimpan. '.($dosenChanged ? 'Menunggu persetujuan dosen.' : ''));
         } catch (\Exception $e) {
             DB::rollBack();
-            \Illuminate\Support\Facades\Log::error('Gagal menyimpan jadwal sidang: ' . $e->getMessage());
-            return back()->with('error', 'Gagal menyimpan jadwal: ' . $e->getMessage())->withInput();
+            \Illuminate\Support\Facades\Log::error('Gagal menyimpan jadwal sidang: '.$e->getMessage());
+
+            return back()->with('error', 'Gagal menyimpan jadwal: '.$e->getMessage())->withInput();
         }
     }
 
@@ -146,12 +153,12 @@ class KaprodiController extends Controller
         $sidang = $pengajuan->sidang;
         $isPkl = $pengajuan->jenis_pengajuan === 'pkl';
 
-        if (!$sidang) {
+        if (! $sidang) {
             return back()->with('error', 'Jadwal sidang belum ada.');
         }
 
         // Panggil metode baru untuk menentukan ketua sidang untuk TA
-        if (!$isPkl) {
+        if (! $isPkl) {
             $penentuanKetua = $this->tentukanKetuaSidang($pengajuan);
             if ($penentuanKetua['status'] === 'error') {
                 return back()->with('error', $penentuanKetua['message']);
@@ -159,43 +166,31 @@ class KaprodiController extends Controller
             // Setelah penentuan ketua sidang, pastikan sidang di-reload untuk mendapatkan data terbaru
             $pengajuan->load('sidang');
             $sidang = $pengajuan->sidang; // Perbarui objek sidang
-            if (!$sidang->ketua_sidang_dosen_id) {
+            if (! $sidang->ketua_sidang_dosen_id) {
                 return back()->with('error', 'Ketua sidang belum dapat ditentukan. Pastikan dosen pembimbing atau penguji 1 menyetujui.');
             }
         }
-        
+
         if ($pengajuan->status === 'perlu_penjadwalan_ulang') {
             return back()->with('error', 'Jadwal sidang perlu dijadwalkan ulang karena dosen pembimbing dan penguji 1 menolak.');
         }
 
-        $requiredRoles = [
-            'Pembimbing' => $sidang->dosen_pembimbing_id,
-        ];
-        if (!$isPkl) {
-            $requiredRoles['Penguji 1'] = $sidang->dosen_penguji1_id;
-        }
-
-        foreach ($requiredRoles as $role => $dosenId) {
-            if (empty($dosenId)) {
-                return back()->with('error', "Peran {$role} wajib diisi sebelum finalisasi.");
-            }
-        }
-
-        $allDosenAgreed = true;
-        $missingApprovals = [];
-
+        // Dosen Pembimbing selalu wajib
         $approvalChecks = [
             'dosen_pembimbing' => 'Pembimbing',
         ];
-        // For TA, Penguji 1 is also required
-        if (!$isPkl) {
+        // Dosen Penguji 1 juga wajib untuk TA dan PKL
+        if ($sidang->dosen_penguji1_id) {
             $approvalChecks['dosen_penguji1'] = 'Penguji 1';
         }
         // Ketua Sidang approval is not explicitly checked here as it's derived from pembimbing/penguji1 approval for TA,
         // and for PKL, dosen_pembimbing is the de facto ketua sidang and its approval is already checked.
 
+        $allDosenAgreed = true; // Initialize to true
+        $missingApprovals = []; // Initialize as an empty array
+
         foreach ($approvalChecks as $relation => $roleName) {
-            if ($sidang->{$relation . '_dosen_id'} && $sidang->{'persetujuan_' . $relation} !== 'setuju') {
+            if ($sidang->{$relation.'_dosen_id'} && $sidang->{'persetujuan_'.$relation} !== 'setuju') {
                 $allDosenAgreed = false;
                 $missingApprovals[] = $roleName;
             }
@@ -206,9 +201,11 @@ class KaprodiController extends Controller
             $newStatus = 'sidang_dijadwalkan_final';
             $pengajuan->update(['status' => $newStatus]);
             $this->logPengajuanStatusChange($pengajuan, $oldStatus, $newStatus, 'Jadwal sidang difinalisasi oleh Kaprodi.');
+
             return redirect()->route('kaprodi.pengajuan.show', $pengajuan->id)->with('success', 'Jadwal sidang berhasil difinalisasi.');
         } else {
-            $errorMessage = 'Belum semua dosen menyetujui: ' . implode(', ', $missingApprovals) . '.';
+            $errorMessage = 'Belum semua dosen menyetujui: '.implode(', ', $missingApprovals).'.';
+
             return back()->with('finalisasi_error', $errorMessage);
         }
     }
@@ -216,7 +213,7 @@ class KaprodiController extends Controller
     private function tentukanKetuaSidang(Pengajuan $pengajuan)
     {
         $sidang = $pengajuan->sidang;
-        if (!$sidang) {
+        if (! $sidang) {
             return ['status' => 'error', 'message' => 'Sidang tidak ditemukan.'];
         }
 
@@ -225,12 +222,12 @@ class KaprodiController extends Controller
         $pembimbingId = $sidang->dosen_pembimbing_id;
         $penguji1Id = $sidang->dosen_penguji1_id;
 
-        //dd([
+        // dd([
         //    'persetujuanPembimbing' => $persetujuanPembimbing,
         //    'persetujuanPenguji1' => $persetujuanPenguji1,
         //    'pembimbingId' => $pembimbingId,
         //    'penguji1Id' => $penguji1Id,
-        //]);
+        // ]);
 
         $ketuaSidangId = null;
 
@@ -258,6 +255,7 @@ class KaprodiController extends Controller
                 'tanggal_waktu_sidang' => null,
                 'ruangan_sidang' => null,
             ]);
+
             return ['status' => 'error', 'message' => 'Dosen pembimbing dan penguji 1 menolak. Jadwal perlu diatur ulang.'];
         }
 
@@ -270,7 +268,7 @@ class KaprodiController extends Controller
             $sidang->persetujuan_ketua_sidang = 'pending';
             $sidang->save();
         }
-        
+
         return ['status' => 'success'];
     }
 
@@ -292,9 +290,11 @@ class KaprodiController extends Controller
             $user = Auth::user();
             if ($user->role === 'kaprodi') {
                 $request->session()->regenerate();
+
                 return redirect()->intended(route('kaprodi.dashboard'));
             } else {
                 Auth::logout();
+
                 return back()->withErrors([
                     'email' => 'Anda tidak memiliki akses sebagai Kaprodi.',
                 ]);
@@ -312,6 +312,7 @@ class KaprodiController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect()->route('kaprodi.login')->with('success', 'Anda telah berhasil logout.');
     }
 
@@ -331,11 +332,10 @@ class KaprodiController extends Controller
         // 3. Ambil Pengajuan Terbaru (misalnya 5 pengajuan terbaru dengan status 'diverifikasi_admin')
         // Eager load relasi 'mahasiswa' jika Anda ingin menampilkan nama mahasiswa di view
         $pengajuanBaru = Pengajuan::where('status', 'diverifikasi_admin')
-                                ->with('mahasiswa')
-                                ->latest() // Mengurutkan berdasarkan created_at secara descending
-                                ->take(5) // Mengambil 5 data terbaru
-                                ->get();
-
+            ->with('mahasiswa')
+            ->latest() // Mengurutkan berdasarkan created_at secara descending
+            ->take(5) // Mengambil 5 data terbaru
+            ->get();
 
         // Kirim semua data ini ke view
         return view('kaprodi.dashboard', compact('jumlahDosen', 'jumlahPengajuan', 'pengajuanBaru', 'kaprodi_for_layout'));
@@ -346,6 +346,7 @@ class KaprodiController extends Controller
     {
         $kaprodi_for_layout = Auth::user()->kaprodi;
         $dosens = Dosen::orderBy('nama')->get();
+
         return view('kaprodi.dosen.index', compact('dosens', 'kaprodi_for_layout'));
     }
 
@@ -357,20 +358,19 @@ class KaprodiController extends Controller
         $kaprodi_for_layout = Auth::user()->kaprodi;
         // 1. Ambil pengajuan yang sedang menunggu aksi Kaprodi
         $pengajuansKaprodi = Pengajuan::where('status', 'diverifikasi_admin')
-                                    ->orWhere('status', 'menunggu_persetujuan_dosen')
-                                    ->orWhere('status', 'perlu_penjadwalan_ulang')
-                                    ->with('mahasiswa')
-                                    ->orderBy('created_at', 'desc')
-                                    ->paginate(10); // Atau gunakan get() jika tidak ada pagination di bagian ini
+            ->orWhere('status', 'menunggu_persetujuan_dosen')
+            ->orWhere('status', 'perlu_penjadwalan_ulang')
+            ->with('mahasiswa')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10); // Atau gunakan get() jika tidak ada pagination di bagian ini
 
         // 2. Ambil pengajuan yang telah selesai ditangani oleh Kaprodi
         // Status 'sidang_dijadwalkan_final' berarti sudah difinalisasi Kaprodi.
         // Status 'ditolak_kaprodi' berarti sudah ditolak Kaprodi.
         $pengajuansSelesaiKaprodi = Pengajuan::whereIn('status', ['sidang_dijadwalkan_final', 'ditolak_kaprodi'])
-                                            ->with('mahasiswa') // Eager load relasi mahasiswa
-                                            ->orderBy('updated_at', 'desc') // Urutkan berdasarkan update terakhir
-                                            ->get(); // Atau gunakan paginate(10) jika Anda ingin pagination di bagian ini juga
-
+            ->with('mahasiswa') // Eager load relasi mahasiswa
+            ->orderBy('updated_at', 'desc') // Urutkan berdasarkan update terakhir
+            ->get(); // Atau gunakan paginate(10) jika Anda ingin pagination di bagian ini juga
 
         // Kirim kedua set data ke view
         return view('kaprodi.pengajuan.index', compact('pengajuansKaprodi', 'pengajuansSelesaiKaprodi', 'kaprodi_for_layout'));
@@ -389,36 +389,24 @@ class KaprodiController extends Controller
             'sidang.anggota1Sidang',
             'sidang.anggota2Sidang',
             'sidang.dosenPembimbing',
-            'sidang.dosenPenguji1'
+            'sidang.dosenPenguji1',
         ]);
 
         $calonKetuaSidang = null;
         // Tentukan calon ketua sidang untuk TA secara dinamis untuk ditampilkan di view
-            if ($pengajuan->jenis_pengajuan === 'ta' && $pengajuan->sidang) {
-                // Panggil tentukanKetuaSidang di sini untuk memastikan ketua sidang ditentukan
-                // sebelum ditampilkan di view, jika belum ada.
-                if (empty($pengajuan->sidang->ketua_sidang_dosen_id)) {
-                    $this->tentukanKetuaSidang($pengajuan);
-                    // Reload sidang relationship to get the updated ketua_sidang_dosen_id
-                    $pengajuan->load('sidang.ketuaSidang');
-                }
-
-                $sidang = $pengajuan->sidang;
-                $persetujuanPembimbing = $sidang->persetujuan_dosen_pembimbing;
-                $persetujuanPenguji1 = $sidang->persetujuan_dosen_penguji1;
-
-                if ($persetujuanPembimbing === 'setuju') {
-                    $calonKetuaSidang = $sidang->dosenPembimbing;
-                } elseif ($persetujuanPembimbing === 'tolak' && $persetujuanPenguji1 === 'setuju') {
-                    $calonKetuaSidang = $sidang->dosenPenguji1;
-                }
+        if ($pengajuan->jenis_pengajuan === 'ta' && $pengajuan->sidang) {
+            // Dosen Pembimbing 1 is always the Ketua Sidang for TA
+            if ($pengajuan->sidang->dosen_pembimbing_id) {
+                $pengajuan->sidang->ketua_sidang_dosen_id = $pengajuan->sidang->dosen_pembimbing_id;
+                $calonKetuaSidang = $pengajuan->sidang->dosenPembimbing;
             }
+        }
 
         // Logika untuk menentukan apakah tombol finalisasi bisa ditampilkan
         $bisaDifinalisasi = false;
         if ($pengajuan->sidang && ($pengajuan->status === 'menunggu_persetujuan_dosen' || $pengajuan->status === 'dosen_menyetujui')) {
             $sidang = $pengajuan->sidang;
-            
+
             // Periksa persetujuan semua dosen yang terlibat
             $allRequiredDosenAgreed = true;
 
@@ -427,8 +415,8 @@ class KaprodiController extends Controller
                 $allRequiredDosenAgreed = false;
             }
 
-            // Untuk TA, Dosen Penguji 1 juga wajib
-            if ($pengajuan->jenis_pengajuan === 'ta' && $sidang->dosen_penguji1_id && $sidang->persetujuan_dosen_penguji1 !== 'setuju') {
+            // Dosen Penguji 1 juga wajib untuk TA dan PKL
+            if ($sidang->dosen_penguji1_id && $sidang->persetujuan_dosen_penguji1 !== 'setuju') {
                 $allRequiredDosenAgreed = false;
             }
 
@@ -440,11 +428,11 @@ class KaprodiController extends Controller
 
             $bisaDifinalisasi = $allRequiredDosenAgreed && $ketuaSidangDitentukan;
         }
-    
+
         // Ambil daftar dosen untuk dropdown di form penjadwalan
-        $dosens = Dosen::orderBy('nama')->get(); 
+        $dosens = Dosen::orderBy('nama')->get();
         $kelas = \App\Models\Kelas::orderBy('nama_kelas')->get();
-    
+
         return view('kaprodi.pengajuan.show', compact('pengajuan', 'dosens', 'calonKetuaSidang', 'bisaDifinalisasi', 'kelas', 'kaprodi_for_layout'));
     }
 
@@ -453,8 +441,8 @@ class KaprodiController extends Controller
         $kaprodi_for_layout = Auth::user()->kaprodi;
         // Pastikan relasi sidang sudah ada atau buat jika belum
         // Ini memastikan $pengajuan->sidang selalu tersedia
-        if (!$pengajuan->sidang) {
-            $sidang = new Sidang();
+        if (! $pengajuan->sidang) {
+            $sidang = new Sidang;
             $sidang->pengajuan_id = $pengajuan->id;
             $sidang->save();
             $pengajuan->load('sidang'); // Reload pengajuan untuk mendapatkan relasi sidang yang baru
@@ -465,7 +453,7 @@ class KaprodiController extends Controller
             'mahasiswa',
             'sidang.ketuaSidang',
             'sidang.dosenPembimbing',
-            'sidang.dosenPenguji1'
+            'sidang.dosenPenguji1',
         ]);
 
         // Ambil daftar dosen untuk dropdown di form penjadwalan
@@ -481,12 +469,12 @@ class KaprodiController extends Controller
         // Kaprodi dapat menjadwalkan jika statusnya 'diverifikasi_admin' (setelah admin memverifikasi dokumen),
         // atau jika statusnya 'siap_dijadwalkan_kaprodi' (setelah kaprodi menyetujui),
         // atau jika statusnya 'dosen_ditunjuk' (untuk edit jadwal yang sudah ada).
-        if (!in_array($pengajuan->status, ['diverifikasi_admin', 'siap_dijadwalkan_kaprodi', 'dosen_ditunjuk'])) {
+        if (! in_array($pengajuan->status, ['diverifikasi_admin', 'siap_dijadwalkan_kaprodi', 'dosen_ditunjuk'])) {
             return redirect()->route('kaprodi.pengajuan.index')->with('error', 'Pengajuan ini tidak dapat dijadwalkan pada tahap ini.');
         }
 
         $dosens = Dosen::orderBy('nama')->get();
-        $sidang = $pengajuan->sidang; 
+        $sidang = $pengajuan->sidang;
 
         // View yang cocok adalah 'jadwal_sidang_form.blade.php'
         return view('kaprodi.pengajuan.jadwal_sidang_form', compact('pengajuan', 'dosens', 'sidang', 'kaprodi_for_layout'));
@@ -500,6 +488,7 @@ class KaprodiController extends Controller
         }
 
         $pengajuan->update(['status' => 'siap_dijadwalkan_kaprodi']); // Status baru: siap dijadwalkan oleh Kaprodi
+
         // TODO: Kirim notifikasi ke admin atau pihak terkait jika diperlukan
         return redirect()->route('kaprodi.pengajuan.index')->with('success', 'Pengajuan berhasil disetujui untuk dijadwalkan.');
     }
@@ -528,9 +517,10 @@ class KaprodiController extends Controller
     public function editProfileForm()
     {
         $kaprodi_for_layout = Auth::user()->kaprodi; // Asumsi ada relasi 'kaprodi' di model User
-        if (!$kaprodi_for_layout) {
+        if (! $kaprodi_for_layout) {
             return back()->with('error', 'Data Kaprodi tidak ditemukan.');
         }
+
         return view('kaprodi.profile.edit', compact('kaprodi_for_layout'));
     }
 
@@ -540,7 +530,7 @@ class KaprodiController extends Controller
         $user = Auth::user();
         $kaprodi = $user->kaprodi;
 
-        if (!$kaprodi) {
+        if (! $kaprodi) {
             return back()->with('error', 'Data Kaprodi tidak ditemukan.');
         }
 
@@ -580,10 +570,12 @@ class KaprodiController extends Controller
             }
 
             DB::commit();
+
             return redirect()->route('kaprodi.profile.edit')->with('success', 'Profil berhasil diperbarui.');
         } catch (Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal memperbarui profil: ' . $e->getMessage());
+
+            return back()->with('error', 'Gagal memperbarui profil: '.$e->getMessage());
         }
     }
 
@@ -591,6 +583,7 @@ class KaprodiController extends Controller
     public function changePasswordForm()
     {
         $kaprodi_for_layout = Auth::user()->kaprodi;
+
         return view('kaprodi.password.change', compact('kaprodi_for_layout'));
     }
 
@@ -604,7 +597,7 @@ class KaprodiController extends Controller
 
         $user = Auth::user();
 
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Kata sandi saat ini salah.']);
         }
 
@@ -619,6 +612,7 @@ class KaprodiController extends Controller
     {
         $kaprodi_for_layout = Auth::user()->kaprodi;
         $notifications = Auth::user()->notifications()->paginate(10);
+
         return view('kaprodi.notifications.index', compact('notifications', 'kaprodi_for_layout'));
     }
 
@@ -629,6 +623,7 @@ class KaprodiController extends Controller
 
         if ($notification) {
             $notification->markAsRead();
+
             return back()->with('success', 'Notifikasi ditandai sudah dibaca.');
         }
 
@@ -639,6 +634,7 @@ class KaprodiController extends Controller
     public function markAllNotificationsAsRead()
     {
         Auth::user()->unreadNotifications->markAsRead();
+
         return back()->with('success', 'Semua notifikasi ditandai sudah dibaca.');
     }
 }

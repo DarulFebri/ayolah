@@ -2,19 +2,20 @@
 
 namespace App\Notifications;
 
+use App\Models\Pengajuan;
+use App\Models\Sidang;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\Sidang;
-use App\Models\Pengajuan;
 
 class DosenSidangInvitation extends Notification
 {
     use Queueable;
 
     protected $sidang;
+
     protected $pengajuan;
+
     protected $peranDosen; // Contoh: 'ketua_sidang', 'sekretaris_sidang', 'pembimbing', dll.
 
     /**
@@ -45,9 +46,9 @@ class DosenSidangInvitation extends Notification
     {
         // Jika Anda memutuskan untuk mengirim email juga
         return (new MailMessage)
-                    ->line('Anda telah diundang untuk berpartisipasi dalam Sidang ' . strtoupper($this->pengajuan->jenis_pengajuan) . ' Mahasiswa ' . $this->pengajuan->mahasiswa->nama_lengkap . '.')
-                    ->action('Lihat Detail Sidang', url('/dosen/sidang/' . $this->sidang->id)) // Contoh URL untuk dosen
-                    ->line('Terima kasih!');
+            ->line('Anda telah diundang untuk berpartisipasi dalam Sidang '.strtoupper($this->pengajuan->jenis_pengajuan).' Mahasiswa '.$this->pengajuan->mahasiswa->nama_lengkap.'.')
+            ->action('Lihat Detail Sidang', url('/dosen/sidang/'.$this->sidang->id)) // Contoh URL untuk dosen
+            ->line('Terima kasih!');
     }
 
     /**
@@ -65,7 +66,7 @@ class DosenSidangInvitation extends Notification
             'peran_dosen' => $this->peranDosen,
             'tanggal_sidang' => $this->sidang->tanggal_waktu_sidang ? $this->sidang->tanggal_waktu_sidang->format('d M Y H:i') : 'Belum ditentukan',
             'ruangan_sidang' => $this->sidang->ruangan_sidang,
-            'message' => 'Anda telah diundang sebagai ' . ucfirst(str_replace('_', ' ', $this->peranDosen)) . ' dalam Sidang ' . strtoupper($this->pengajuan->jenis_pengajuan) . ' mahasiswa ' . $this->pengajuan->mahasiswa->nama_lengkap . '.',
+            'message' => 'Anda telah diundang sebagai '.ucfirst(str_replace('_', ' ', $this->peranDosen)).' dalam Sidang '.strtoupper($this->pengajuan->jenis_pengajuan).' mahasiswa '.$this->pengajuan->mahasiswa->nama_lengkap.'.',
         ];
     }
 }

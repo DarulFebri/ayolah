@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\Prodi; // Import the Prodi model
+use App\Models\Prodi;
+use Illuminate\Database\Seeder; // Import the Prodi model
 
 class ProdiSeeder extends Seeder
 {

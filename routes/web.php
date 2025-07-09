@@ -1,24 +1,17 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\MahasiswaController;
-use App\Http\Controllers\DosenController;
-use App\Http\Controllers\KaprodiController;
-use App\Http\Controllers\DokumenController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\KajurController;
-use App\Http\Controllers\PengajuanController;
-use App\Http\Controllers\KelasController;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-
-use Illuminate\Support\Facades\Mail;
-use App\Mail\OtpMail;
-
-use App\Http\Controllers\Kaprodi\PengajuanKaprodiController;
 use App\Http\Controllers\Admin\PengajuanAdminController;
-
-
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DokumenController;
+use App\Http\Controllers\DosenController;
+use App\Http\Controllers\KajurController;
+use App\Http\Controllers\KaprodiController;
+use App\Http\Controllers\KelasController;
+use App\Http\Controllers\MahasiswaController;
+use App\Http\Controllers\PengajuanController;
+use App\Mail\OtpMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Route;
 
 // Rute Default
 Route::get('/', function () {
@@ -31,7 +24,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/login', [AdminController::class, 'loginForm'])->name('admin.login');
     Route::post('/login', [AdminController::class, 'login']);
     Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
-    
+
     // Protected routes
     Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -41,17 +34,16 @@ Route::prefix('admin')->group(function () {
         Route::post('/mahasiswa/import', [MahasiswaController::class, 'import'])->name('admin.mahasiswa.import');
         Route::get('/mahasiswa/download-template', [MahasiswaController::class, 'downloadTemplate'])->name('admin.mahasiswa.downloadTemplate');
         Route::get('/mahasiswas/export', [MahasiswaController::class, 'export'])->name('mahasiswas.export');
-        
+
         // Mahasiswa Management
         Route::get('/mahasiswa', [MahasiswaController::class, 'index'])->name('admin.mahasiswa.index');
-        //Route::get('/mahasiswa', [AdminController::class, 'daftarMahasiswa'])->name('admin.mahasiswa.index');
+        // Route::get('/mahasiswa', [AdminController::class, 'daftarMahasiswa'])->name('admin.mahasiswa.index');
         Route::get('/mahasiswa/create', [AdminController::class, 'createMahasiswa'])->name('admin.mahasiswa.create');
         Route::get('/mahasiswa/{mahasiswa}', [AdminController::class, 'detailMahasiswa'])->name('admin.mahasiswa.show');
         Route::post('/mahasiswa', [AdminController::class, 'storeMahasiswa'])->name('admin.mahasiswa.store');
         Route::get('/mahasiswa/{mahasiswa}/edit', [AdminController::class, 'editMahasiswa'])->name('admin.mahasiswa.edit');
         Route::put('/mahasiswa/{mahasiswa}', [AdminController::class, 'updateMahasiswa'])->name('admin.mahasiswa.update');
         Route::delete('/mahasiswa/{mahasiswa}', [AdminController::class, 'destroyMahasiswa'])->name('admin.mahasiswa.destroy');
-        
 
         // Dosen Import/Export
         Route::get('/dosen/import', [AdminController::class, 'importForm'])->name('admin.dosen.import.form');
@@ -66,7 +58,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/dosen/{dosen}/edit', [AdminController::class, 'editDosen'])->name('admin.dosen.edit');
         Route::put('/dosen/{dosen}', [AdminController::class, 'updateDosen'])->name('admin.dosen.update');
         Route::delete('/dosen/{dosen}', [AdminController::class, 'destroyDosen'])->name('admin.dosen.destroy');
-        
+
         // Pengajuan Management
 
         // New route for selecting submission type (TA or PKL)
@@ -82,13 +74,13 @@ Route::prefix('admin')->group(function () {
         Route::get('/pengajuan/{pengajuan}', [AdminController::class, 'detailPengajuan'])->name('admin.pengajuan.show');
         Route::put('/pengajuan/{pengajuan}/setujui', [AdminController::class, 'setujuiPengajuan'])->name('admin.pengajuan.setujui');
         Route::put('/pengajuan/{pengajuan}/tolak', [AdminController::class, 'tolakPengajuan'])->name('admin.pengajuan.tolak');
-        
+
         // Sidang Management
         Route::get('/sidang', [AdminController::class, 'daftarSidang'])->name('admin.sidang.index');
         Route::get('/sidang/kalender', [AdminController::class, 'kalenderSidang'])->name('admin.sidang.kalender');
         Route::get('/sidang/{sidang}', [AdminController::class, 'detailSidang'])->name('admin.sidang.show');
         Route::get('/sidang/export', [AdminController::class, 'exportSidang'])->name('admin.sidang.export');
-        
+
         // Activities Log
         Route::get('/activities', [AdminController::class, 'showActivities'])->name('admin.activities.index');
 
@@ -100,11 +92,9 @@ Route::prefix('admin')->group(function () {
         Route::put('/prodi/{prodi}', [AdminController::class, 'updateProdi'])->name('admin.prodi.update');
         Route::delete('/prodi/{prodi}', [AdminController::class, 'destroyProdi'])->name('admin.prodi.destroy');
 
-        
-
         // Kelas Management
         Route::resource('kelas', KelasController::class)->parameters([
-            'kelas' => 'kelas'
+            'kelas' => 'kelas',
         ])->names([
             'index' => 'admin.kelas.index',
             'create' => 'admin.kelas.create',
@@ -131,21 +121,17 @@ Route::prefix('admin/pengajuan-verifikasi')->name('admin.pengajuan.verifikasi.')
         Route::put('/{pengajuan}/reject', [PengajuanAdminController::class, 'reject'])->name('reject');
     });
 
-
 // Mahasiswa Routes
 Route::prefix('mahasiswa')->group(function () {
 
-
     // For Sidang PKL
     Route::get('/sidang/pkl/jadwal', [PengajuanController::class, 'jadwalSidangPkl'])->name('sidang.pkl.jadwal');
-    
+
     // For Sidang TA
     Route::get('/sidang/ta/jadwal', [PengajuanController::class, 'jadwalSidangTa'])->name('sidang.ta.jadwal');
-    
+
     // For showing a single sidang (optional, but good for details)
     Route::get('/sidang/{id}', [PengajuanController::class, 'showSidang'])->name('sidang.show');
-
-
 
     // Public routes
     Route::get('/login', [MahasiswaController::class, 'loginForm'])->name('mahasiswa.login');
@@ -186,7 +172,6 @@ Route::prefix('mahasiswa')->group(function () {
         Route::get('/password/change', [MahasiswaController::class, 'changePasswordForm'])->name('mahasiswa.password.change.form');
         Route::post('/password/change', [MahasiswaController::class, 'changePassword'])->name('mahasiswa.password.change');
 
-
         // Pengajuan routes
         Route::prefix('pengajuan')->name('mahasiswa.pengajuan.')->group(function () {
             // Halaman utama pengajuan (menampilkan daftar pengajuan dan pilihan buat baru)
@@ -194,19 +179,19 @@ Route::prefix('mahasiswa')->group(function () {
 
             // Menampilkan form untuk membuat pengajuan baru berdasarkan jenis (PKL/TA)
             Route::get('/create/{jenis_pengajuan}', [PengajuanController::class, 'create'])->name('create');
-            
+
             // Menyimpan pengajuan baru (termasuk draft dan finalisasi)
             Route::post('/store', [PengajuanController::class, 'store'])->name('store');
-            
+
             // Menampilkan detail pengajuan
             Route::get('/{id}', [PengajuanController::class, 'show'])->name('detail');
 
             // Menampilkan detail pengajuan yang sudah diverifikasi kajur
             Route::get('/{id}/verified', [PengajuanController::class, 'showVerified'])->name('verified.detail');
-            
+
             // Menampilkan form edit pengajuan (hanya untuk draft)
             Route::get('/{id}/edit', [PengajuanController::class, 'edit'])->name('edit');
-            
+
             // Mengupdate pengajuan (draft menjadi draft atau finalisasi)
             Route::put('/{id}', [PengajuanController::class, 'update'])->name('update');
 
@@ -225,31 +210,33 @@ Route::prefix('mahasiswa')->group(function () {
 // Dosen Routes
 Route::post('/dosen/notifications/{notification}/mark-as-read', function (\Illuminate\Notifications\DatabaseNotification $notification) {
     $notification->markAsRead();
-    return back()->with('success', 'Notifikasi ditandai sudah dibaca.');})->name('dosen.notifications.markAsRead')->middleware(['auth', 'dosen']);
+
+    return back()->with('success', 'Notifikasi ditandai sudah dibaca.');
+})->name('dosen.notifications.markAsRead')->middleware(['auth', 'dosen']);
 Route::prefix('dosen')->group(function () {
     // Public routes
     Route::get('/login', [DosenController::class, 'loginForm'])->name('dosen.login');
     Route::post('/login', [DosenController::class, 'login']);
     Route::post('/logout', [DosenController::class, 'logout'])->name('dosen.logout');
-    
+
     // Protected routes
     Route::middleware(['auth', 'dosen'])->group(function () {
         Route::get('/dashboard', [DosenController::class, 'dashboard'])->name('dosen.dashboard');
         Route::get('/pengajuan-saya', [DosenController::class, 'pengajuanSaya'])->name('dosen.pengajuan.saya');
-        
+
         // Pengajuan routes
         Route::get('/pengajuan', [DosenController::class, 'daftarPengajuan'])->name('dosen.pengajuan.index');
         Route::get('/pengajuan/{pengajuan}', [DosenController::class, 'detailPengajuan'])->name('dosen.pengajuan.show');
-        
+
         // Dokumen validation
         Route::put('/dokumen/{dokumen}/setujui', [DosenController::class, 'setujuiDokumen'])->name('dosen.dokumen.setujui');
         Route::put('/dokumen/{dokumen}/tolak', [DosenController::class, 'tolakDokumen'])->name('dosen.dokumen.tolak');
-        
+
         // Jadwal sidang
         Route::get('/pengajuan/{pengajuan}/jadwal', [DosenController::class, 'formJadwalSidang'])->name('dosen.jadwal.create');
         Route::post('/pengajuan/{pengajuan}/jadwal', [DosenController::class, 'simpanJadwalSidang'])->name('dosen.jadwal.store');
         Route::get('/jadwal/{sidang}', [DosenController::class, 'detailJadwalSidang'])->name('dosen.jadwal.show');
-        
+
         // Sidang routes
         Route::get('/sidang/{sidang}/laporan', [DosenController::class, 'unduhLaporan'])->name('dosen.sidang.laporan');
         Route::get('/sidang/{sidang}/nilai', [DosenController::class, 'formNilaiSidang'])->name('dosen.sidang.nilai.edit');
@@ -263,7 +250,7 @@ Route::prefix('dosen')->group(function () {
         // Dosen Sidang Invitation Response
         Route::get('/sidang/{sidang}/respon', [DosenController::class, 'formResponSidang'])->name('dosen.sidang.respon.form');
         Route::post('/sidang/{sidang}/respon', [DosenController::class, 'submitResponSidang'])->name('dosen.sidang.respon.submit');
-        
+
         // Import routes
         Route::get('/import/form', [DosenController::class, 'importForm'])->name('dosen.import.form');
         Route::post('/import', [DosenController::class, 'import'])->name('dosen.import');
@@ -276,7 +263,7 @@ Route::prefix('kaprodi')->group(function () {
     Route::get('/login', [KaprodiController::class, 'loginForm'])->name('kaprodi.login');
     Route::post('/login', [KaprodiController::class, 'login']);
     Route::post('/logout', [KaprodiController::class, 'logout'])->name('kaprodi.logout');
-    
+
     // Protected routes for Kaprodi dashboard and general lists
     Route::middleware(['auth', 'kaprodi'])->group(function () {
         Route::get('/dashboard', [KaprodiController::class, 'dashboard'])->name('kaprodi.dashboard');
@@ -293,8 +280,8 @@ Route::prefix('kaprodi')->group(function () {
         Route::post('/notifications/{id}/mark-as-read', [KaprodiController::class, 'markNotificationAsRead'])->name('kaprodi.notifications.markAsRead');
         Route::post('/notifications/mark-all-as-read', [KaprodiController::class, 'markAllNotificationsAsRead'])->name('kaprodi.notifications.markAllAsRead');
 
-         // Pengajuan-related routes under KaprodiController
-         Route::prefix('pengajuan')->name('kaprodi.pengajuan.')->group(function () {
+        // Pengajuan-related routes under KaprodiController
+        Route::prefix('pengajuan')->name('kaprodi.pengajuan.')->group(function () {
             Route::get('/', [KaprodiController::class, 'indexPengajuan'])->name('index'); // Daftar pengajuan untuk Kaprodi
             Route::get('/{pengajuan}', [KaprodiController::class, 'showPengajuan'])->name('show'); // Detail pengajuan
             Route::get('/{pengajuan}/aksi', [KaprodiController::class, 'showAksiKaprodi'])->name('aksi');
@@ -315,15 +302,14 @@ Route::prefix('kaprodi')->group(function () {
         });
 
         // Dosen Persetujuan Sidang Routes (ini untuk dosen merespon undangan sidang)
-        //Route::prefix('persetujuan-sidang')->name('kaprodi.persetujuan-sidang.')->group(function () {
-            // Ini seharusnya ada di route khusus dosen atau punya controller tersendiri untuk dosen
-            // Untuk sementara, kita letakkan di sini sebagai placeholder, nanti bisa dipindahkan.
-            //Route::get('/{sidang}/respon', [DosenController::class, 'formResponSidang'])->name('respon.form'); // Form respon dosen
-            //Route::post('/{sidang}/respon', [DosenController::class, 'submitResponSidang'])->name('respon.submit'); // Submit respon dosen
-        //});
+        // Route::prefix('persetujuan-sidang')->name('kaprodi.persetujuan-sidang.')->group(function () {
+        // Ini seharusnya ada di route khusus dosen atau punya controller tersendiri untuk dosen
+        // Untuk sementara, kita letakkan di sini sebagai placeholder, nanti bisa dipindahkan.
+        // Route::get('/{sidang}/respon', [DosenController::class, 'formResponSidang'])->name('respon.form'); // Form respon dosen
+        // Route::post('/{sidang}/respon', [DosenController::class, 'submitResponSidang'])->name('respon.submit'); // Submit respon dosen
+        // });
     });
 });
-
 
 // Kajur Routes
 Route::prefix('kajur')->group(function () {
@@ -373,16 +359,17 @@ Route::prefix('kajur')->group(function () {
     });
 });
 
-
 Route::get('/test-otp-email', function () {
     $otp = \Illuminate\Support\Str::random(6); // Generate OTP dummy
     $recipientEmail = 'darulfer097@gmail.com'; // Alamat email tujuan yang sama
 
     try {
         Mail::to($recipientEmail)->send(new OtpMail($otp));
-        return "Email OTP berhasil dikirim ke " . $recipientEmail . " (OTP: " . $otp . ")";
+
+        return 'Email OTP berhasil dikirim ke '.$recipientEmail.' (OTP: '.$otp.')';
     } catch (\Exception $e) {
-        \Illuminate\Support\Facades\Log::error('Gagal mengirim email OTP uji coba: ' . $e->getMessage());
-        return "Gagal mengirim email OTP uji coba: " . $e->getMessage();
+        \Illuminate\Support\Facades\Log::error('Gagal mengirim email OTP uji coba: '.$e->getMessage());
+
+        return 'Gagal mengirim email OTP uji coba: '.$e->getMessage();
     }
 });

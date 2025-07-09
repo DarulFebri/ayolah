@@ -2,29 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mahasiswa;
-use App\Models\Dosen;
-use App\Models\Pengajuan;
-use App\Models\Sidang;
-use App\Models\Dokumen;
-use App\Models\User;
-use App\Models\Prodi; // Import the Prodi model
-use App\Models\Activity; // Import the Activity model
-use App\Models\Kelas; // Import the Kelas model
-use App\Models\PengajuanStatusHistory; // Import the new model
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DosenExport;
+use App\Exports\MahasiswaExport;
+use App\Exports\SidangExport;
 use App\Imports\DosenImport;
 use App\Imports\MahasiswaImport;
-use App\Exports\MahasiswaExport; // Perbaikan: singular
-use App\Exports\DosenExport;     // Perbaikan: singular
-use App\Exports\SidangExport;    // Perbaikan: singular
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Activity;
+use App\Models\Dokumen; // Import the Prodi model
+use App\Models\Dosen; // Import the Activity model
+use App\Models\Kelas; // Import the Kelas model
+use App\Models\Mahasiswa; // Import the new model
+use App\Models\Pengajuan;
+use App\Models\PengajuanStatusHistory;
+use App\Models\Prodi;
+use App\Models\Sidang;
+use App\Models\User; // Perbaikan: singular
+use Illuminate\Http\Request;     // Perbaikan: singular
+use Illuminate\Support\Facades\Auth;    // Perbaikan: singular
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AdminController extends Controller
 {
@@ -60,13 +57,13 @@ class AdminController extends Controller
         // Search functionality
         if ($request->has('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%")
-                  ->orWhere('nidn', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhereHas('prodi', function($q) use ($search) {
-                      $q->where('nama_prodi', 'like', "%{$search}%");
-                  });
+                    ->orWhere('nidn', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('prodi', function ($q) use ($search) {
+                        $q->where('nama_prodi', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -93,7 +90,6 @@ class AdminController extends Controller
         return view('admin.dosen.index', compact('dosens'));
     }
 
-
     public function importForm()
     {
         return view('admin.dosen.import');
@@ -108,20 +104,21 @@ class AdminController extends Controller
 
         try {
             Excel::import(new DosenImport, $request->file('file')); // Proses impor
+
             return redirect()->back()->with('success', 'Data dosen berhasil diimpor!');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             $errors = [];
             foreach ($failures as $failure) {
-                $errors[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+                $errors[] = 'Baris '.$failure->row().': '.implode(', ', $failure->errors());
             }
-            return redirect()->back()->with('error', 'Gagal mengimpor data dosen. Ada kesalahan validasi: ' . implode('; ', $errors));
+
+            return redirect()->back()->with('error', 'Gagal mengimpor data dosen. Ada kesalahan validasi: '.implode('; ', $errors));
         } catch (\Exception $e) {
             // Tangani error umum lainnya
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengimpor data dosen: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengimpor data dosen: '.$e->getMessage());
         }
     }
-
 
     public function pilihJenisPengajuanSidang()
     {
@@ -132,9 +129,10 @@ class AdminController extends Controller
     public function daftarPengajuanTa()
     {
         $pengajuans = Pengajuan::with('mahasiswa')
-                            ->where('jenis_pengajuan', 'ta')
-                            ->orderBy('created_at', 'desc')
-                            ->paginate(10);
+            ->where('jenis_pengajuan', 'ta')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
         return view('admin.pengajuan.sidang.ta', compact('pengajuans'));
     }
 
@@ -142,9 +140,10 @@ class AdminController extends Controller
     public function daftarPengajuanPkl()
     {
         $pengajuans = Pengajuan::with('mahasiswa')
-                            ->where('jenis_pengajuan', 'pkl')
-                            ->orderBy('created_at', 'desc')
-                            ->paginate(10);
+            ->where('jenis_pengajuan', 'pkl')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
         return view('admin.pengajuan.sidang.pkl', compact('pengajuans'));
     }
 
@@ -154,6 +153,7 @@ class AdminController extends Controller
     public function detailPengajuan(Pengajuan $pengajuan)
     {
         $dokumens = Dokumen::where('pengajuan_id', $pengajuan->id)->get();
+
         return view('admin.pengajuan.show', compact('pengajuan', 'dokumens'));
     }
 
@@ -163,6 +163,7 @@ class AdminController extends Controller
         $newStatus = 'diverifikasi_admin';
         $pengajuan->update(['status' => $newStatus]);
         $this->logPengajuanStatusChange($pengajuan, $oldStatus, $newStatus, 'Pengajuan disetujui oleh Admin.');
+
         return back()->with('success', 'Pengajuan berhasil disetujui.');
     }
 
@@ -172,6 +173,7 @@ class AdminController extends Controller
         $newStatus = 'ditolak_admin';
         $pengajuan->update(['status' => $newStatus]);
         $this->logPengajuanStatusChange($pengajuan, $oldStatus, $newStatus, 'Pengajuan ditolak oleh Admin.');
+
         return back()->with('error', 'Pengajuan berhasil ditolak.');
     }
 
@@ -205,6 +207,7 @@ class AdminController extends Controller
     {
         $totalMahasiswa = Mahasiswa::count();
         $totalDosen = Dosen::count();
+
         return view('admin.dashboard', compact('totalMahasiswa', 'totalDosen'));
     }
 
@@ -220,7 +223,8 @@ class AdminController extends Controller
     }
 
     // Dibawah ini untuk CRUD mahasiswa
-    public function daftarMahasiswa(Request $request){
+    public function daftarMahasiswa(Request $request)
+    {
         $mahasiswas = Mahasiswa::with(['prodi', 'kelas']); // Eager load the prodi relationship
 
         // Sorting
@@ -236,13 +240,12 @@ class AdminController extends Controller
         // Search for mahasiswa
         if ($request->has('search')) {
             $search = $request->search;
-            $mahasiswas->where(function($q) use ($search) {
+            $mahasiswas->where(function ($q) use ($search) {
                 $q->where('nama_lengkap', 'like', "%{$search}%")
-                  ->orWhere('nim', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('nim', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
-
 
         $mahasiswas = $mahasiswas->paginate(10); // Add pagination here
 
@@ -252,6 +255,7 @@ class AdminController extends Controller
     public function detailMahasiswa(Mahasiswa $mahasiswa)
     {
         $mahasiswa->load(['prodi', 'kelas']); // Eager load prodi and kelas relationships
+
         return view('admin.mahasiswa.show', compact('mahasiswa'));
     }
 
@@ -259,6 +263,7 @@ class AdminController extends Controller
     {
         $prodis = Prodi::all(); // Fetch all program studies
         $kelas = Kelas::all(); // Fetch all classes
+
         return view('admin.mahasiswa.create', compact('prodis', 'kelas'));
     }
 
@@ -294,7 +299,7 @@ class AdminController extends Controller
             'kelas_id' => $request->kelas_id,
         ]);
 
-        $this->logActivity('Membuat mahasiswa baru: ' . $request->nama_lengkap, 'Mahasiswa'); // Menggunakan $this->logActivity
+        $this->logActivity('Membuat mahasiswa baru: '.$request->nama_lengkap, 'Mahasiswa'); // Menggunakan $this->logActivity
 
         return redirect()->route('admin.mahasiswa.index')->with('success', 'Mahasiswa berhasil ditambahkan!');
     }
@@ -303,18 +308,19 @@ class AdminController extends Controller
     {
         $prodis = Prodi::all(); // Fetch all program studies for the dropdown
         $kelas = Kelas::all(); // Fetch all classes
+
         return view('admin.mahasiswa.edit', compact('mahasiswa', 'prodis', 'kelas'));
     }
 
     public function updateMahasiswa(Request $request, Mahasiswa $mahasiswa)
     {
         $request->validate([
-            'nim' => 'required|unique:mahasiswas,nim,' . $mahasiswa->id,
+            'nim' => 'required|unique:mahasiswas,nim,'.$mahasiswa->id,
             'nama_lengkap' => 'required',
             'prodi_id' => 'required|exists:prodis,id',
             'jenis_kelamin' => 'required',
             'kelas_id' => 'required|exists:kelas,id',
-            'email' => 'required|email|unique:users,email,' . $mahasiswa->user->id, // Validate email for existing user
+            'email' => 'required|email|unique:users,email,'.$mahasiswa->user->id, // Validate email for existing user
         ]);
 
         // Update User data if email is changed
@@ -337,7 +343,7 @@ class AdminController extends Controller
             'kelas_id' => $request->kelas_id,
         ]);
 
-        $this->logActivity('Mengupdate mahasiswa: ' . $mahasiswa->nama_lengkap, 'Mahasiswa');
+        $this->logActivity('Mengupdate mahasiswa: '.$mahasiswa->nama_lengkap, 'Mahasiswa');
 
         return redirect()->route('admin.mahasiswa.index')->with('success', 'Mahasiswa berhasil diupdate.');
     }
@@ -347,7 +353,7 @@ class AdminController extends Controller
         $mahasiswa->user()->delete(); // Delete associated user first
         $mahasiswa->delete();
 
-        $this->logActivity('Menghapus mahasiswa: ' . $mahasiswa->nama_lengkap, 'Mahasiswa');
+        $this->logActivity('Menghapus mahasiswa: '.$mahasiswa->nama_lengkap, 'Mahasiswa');
 
         return redirect()->route('admin.mahasiswa.index')->with('success', 'Mahasiswa berhasil dihapus.');
     }
@@ -360,6 +366,7 @@ class AdminController extends Controller
     public function createDosen()
     {
         $prodis = Prodi::all(); // Fetch all program studies
+
         return view('admin.dosen.create', compact('prodis'));
     }
 
@@ -393,24 +400,26 @@ class AdminController extends Controller
             // 'password' => $request->password, // Ini dihapus karena password ada di tabel users
         ]);
 
-        $this->logActivity('Membuat dosen baru: ' . $request->nama, 'Dosen');
-        return redirect()->route('admin.dosen.index')->with('success', 'Akun ' . $request->nama . ' berhasil dibuat!');
+        $this->logActivity('Membuat dosen baru: '.$request->nama, 'Dosen');
+
+        return redirect()->route('admin.dosen.index')->with('success', 'Akun '.$request->nama.' berhasil dibuat!');
     }
 
     public function editDosen(Dosen $dosen)
     {
         $prodis = Prodi::all(); // Fetch all program studies
+
         return view('admin.dosen.edit', compact('dosen', 'prodis'));
     }
 
     public function updateDosen(Request $request, Dosen $dosen)
     {
         $request->validate([
-            'nidn' => 'required|unique:dosens,nidn,' . $dosen->id,
+            'nidn' => 'required|unique:dosens,nidn,'.$dosen->id,
             'nama' => 'required',
             'prodi_id' => 'required|exists:prodis,id',
             'jenis_kelamin' => 'required',
-            'email' => 'required|email|unique:users,email,' . $dosen->user->id, // Validate email for existing user
+            'email' => 'required|email|unique:users,email,'.$dosen->user->id, // Validate email for existing user
         ]);
 
         // Update User data if email or name is changed
@@ -434,7 +443,7 @@ class AdminController extends Controller
             // Jika ada kolom lain yang diupdate di model Dosen, tambahkan di sini
         ]);
 
-        $this->logActivity('Mengupdate dosen: ' . $dosen->nama, 'Dosen'); // Menggunakan nama dari model Dosen
+        $this->logActivity('Mengupdate dosen: '.$dosen->nama, 'Dosen'); // Menggunakan nama dari model Dosen
 
         return redirect()->route('admin.dosen.index')->with('success', 'Dosen berhasil diupdate.');
     }
@@ -444,7 +453,7 @@ class AdminController extends Controller
         $dosen->user()->delete(); // Delete associated user first
         $dosen->delete();
 
-        $this->logActivity('Menghapus dosen: ' . $dosen->nama, 'Dosen');
+        $this->logActivity('Menghapus dosen: '.$dosen->nama, 'Dosen');
 
         return redirect()->route('admin.dosen.index')->with('success', 'Dosen berhasil dihapus.');
     }
@@ -462,16 +471,18 @@ class AdminController extends Controller
 
         try {
             Excel::import(new DosenImport, $request->file('file'));
+
             return redirect()->route('admin.dosen.index')->with('success', 'Data dosen berhasil diimport.');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             $errors = [];
             foreach ($failures as $failure) {
-                $errors[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+                $errors[] = 'Baris '.$failure->row().': '.implode(', ', $failure->errors());
             }
-            return redirect()->back()->with('error', 'Gagal mengimpor data dosen. Ada kesalahan validasi: ' . implode('; ', $errors));
+
+            return redirect()->back()->with('error', 'Gagal mengimpor data dosen. Ada kesalahan validasi: '.implode('; ', $errors));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengimpor data dosen: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengimpor data dosen: '.$e->getMessage());
         }
     }
 
@@ -491,9 +502,9 @@ class AdminController extends Controller
         $query = Sidang::with(['pengajuan.mahasiswa', 'pengajuan.prodi', 'pengajuan.kelas']);
 
         // Filter functionality
-        if ($request->has('filter_jenis') && !empty($request->filter_jenis)) {
+        if ($request->has('filter_jenis') && ! empty($request->filter_jenis)) {
             $filterJenis = $request->filter_jenis;
-            $query->whereHas('pengajuan', function($q) use ($filterJenis) {
+            $query->whereHas('pengajuan', function ($q) use ($filterJenis) {
                 $q->where('jenis_pengajuan', $filterJenis);
             });
         }
@@ -501,16 +512,16 @@ class AdminController extends Controller
         // Search functionality
         if ($request->has('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->whereHas('pengajuan.mahasiswa', function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('pengajuan.mahasiswa', function ($q) use ($search) {
                     $q->where('nama_lengkap', 'like', "%{$search}%")
-                      ->orWhere('nim', 'like', "%{$search}%");
+                        ->orWhere('nim', 'like', "%{$search}%");
                 })
-                ->orWhereHas('pengajuan', function($q) use ($search) {
-                    $q->where('judul_pengajuan', 'like', "%{$search}%")
-                      ->orWhere('jenis_pengajuan', 'like', "%{$search}%")
-                      ->orWhere('status', 'like', "%{$search}%");
-                });
+                    ->orWhereHas('pengajuan', function ($q) use ($search) {
+                        $q->where('judul_pengajuan', 'like', "%{$search}%")
+                            ->orWhere('jenis_pengajuan', 'like', "%{$search}%")
+                            ->orWhere('status', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -524,25 +535,25 @@ class AdminController extends Controller
                 break;
             case 'mahasiswa_asc':
                 $query->join('pengajuans', 'sidangs.pengajuan_id', '=', 'pengajuans.id')
-                      ->join('mahasiswas', 'pengajuans.mahasiswa_id', '=', 'mahasiswas.id')
-                      ->orderBy('mahasiswas.nama_lengkap', 'asc')
-                      ->select('sidangs.*'); // Select sidangs.* to avoid column ambiguity
+                    ->join('mahasiswas', 'pengajuans.mahasiswa_id', '=', 'mahasiswas.id')
+                    ->orderBy('mahasiswas.nama_lengkap', 'asc')
+                    ->select('sidangs.*'); // Select sidangs.* to avoid column ambiguity
                 break;
             case 'mahasiswa_desc':
                 $query->join('pengajuans', 'sidangs.pengajuan_id', '=', 'pengajuans.id')
-                      ->join('mahasiswas', 'pengajuans.mahasiswa_id', '=', 'mahasiswas.id')
-                      ->orderBy('mahasiswas.nama_lengkap', 'desc')
-                      ->select('sidangs.*'); // Select sidangs.* to avoid column ambiguity
+                    ->join('mahasiswas', 'pengajuans.mahasiswa_id', '=', 'mahasiswas.id')
+                    ->orderBy('mahasiswas.nama_lengkap', 'desc')
+                    ->select('sidangs.*'); // Select sidangs.* to avoid column ambiguity
                 break;
             case 'jenis_pengajuan_asc':
                 $query->join('pengajuans', 'sidangs.pengajuan_id', '=', 'pengajuans.id')
-                      ->orderBy('pengajuans.jenis_pengajuan', 'asc')
-                      ->select('sidangs.*');
+                    ->orderBy('pengajuans.jenis_pengajuan', 'asc')
+                    ->select('sidangs.*');
                 break;
             case 'jenis_pengajuan_desc':
                 $query->join('pengajuans', 'sidangs.pengajuan_id', '=', 'pengajuans.id')
-                      ->orderBy('pengajuans.jenis_pengajuan', 'desc')
-                      ->select('sidangs.*');
+                    ->orderBy('pengajuans.jenis_pengajuan', 'desc')
+                    ->select('sidangs.*');
                 break;
             default:
                 $query->orderBy('created_at', 'desc');
@@ -561,7 +572,7 @@ class AdminController extends Controller
         foreach ($sidangs as $sidang) {
             if ($sidang->tanggal_sidang) {
                 $events[] = [
-                    'title' => 'Sidang ' . $sidang->pengajuan->mahasiswa->nama_lengkap,
+                    'title' => 'Sidang '.$sidang->pengajuan->mahasiswa->nama_lengkap,
                     'start' => $sidang->tanggal_sidang,
                     // Tambahkan data lain yang ingin ditampilkan di kalender
                 ];
@@ -590,16 +601,18 @@ class AdminController extends Controller
 
         try {
             Excel::import(new MahasiswaImport, $request->file('file'));
+
             return redirect()->route('admin.mahasiswa.index')->with('success', 'Data mahasiswa berhasil diimport.');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             $errors = [];
             foreach ($failures as $failure) {
-                $errors[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+                $errors[] = 'Baris '.$failure->row().': '.implode(', ', $failure->errors());
             }
-            return redirect()->back()->with('error', 'Gagal mengimpor data mahasiswa. Ada kesalahan validasi: ' . implode('; ', $errors));
+
+            return redirect()->back()->with('error', 'Gagal mengimpor data mahasiswa. Ada kesalahan validasi: '.implode('; ', $errors));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengimpor data mahasiswa: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengimpor data mahasiswa: '.$e->getMessage());
         }
     }
 
@@ -626,16 +639,17 @@ class AdminController extends Controller
 
         if ($request->has('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('activity', 'like', "%{$search}%")
-                  ->orWhere('ip_address', 'like', "%{$search}%")
-                  ->orWhereHas('user', function($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('ip_address', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
         $activities = $query->paginate(10);
+
         return view('admin.activities.index', compact('activities'));
     }
 
@@ -650,6 +664,7 @@ class AdminController extends Controller
         }
 
         $prodis = $query->paginate(10);
+
         return view('admin.prodi.index', compact('prodis'));
     }
 
@@ -666,7 +681,8 @@ class AdminController extends Controller
 
         Prodi::create(['nama_prodi' => $request->nama_prodi]);
 
-        $this->logActivity('Menambah program studi baru: ' . $request->nama_prodi, 'Prodi');
+        $this->logActivity('Menambah program studi baru: '.$request->nama_prodi, 'Prodi');
+
         return redirect()->route('admin.prodi.index')->with('success', 'Program studi berhasil ditambahkan!');
     }
 
@@ -678,12 +694,13 @@ class AdminController extends Controller
     public function updateProdi(Request $request, Prodi $prodi)
     {
         $request->validate([
-            'nama_prodi' => 'required|unique:prodis,nama_prodi,' . $prodi->id,
+            'nama_prodi' => 'required|unique:prodis,nama_prodi,'.$prodi->id,
         ]);
 
         $prodi->update(['nama_prodi' => $request->nama_prodi]);
 
-        $this->logActivity('Mengupdate program studi: ' . $prodi->nama_prodi, 'Prodi');
+        $this->logActivity('Mengupdate program studi: '.$prodi->nama_prodi, 'Prodi');
+
         return redirect()->route('admin.prodi.index')->with('success', 'Program studi berhasil diupdate.');
     }
 
@@ -691,7 +708,8 @@ class AdminController extends Controller
     {
         $prodi->delete();
 
-        $this->logActivity('Menghapus program studi: ' . $prodi->nama_prodi, 'Prodi');
+        $this->logActivity('Menghapus program studi: '.$prodi->nama_prodi, 'Prodi');
+
         return redirect()->route('admin.prodi.index')->with('success', 'Program studi berhasil dihapus.');
     }
 }

@@ -4,10 +4,10 @@ namespace App\Exports;
 
 use App\Models\Mahasiswa;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings; // Tambahkan ini
-use Maatwebsite\Excel\Concerns\ShouldAutoSize; // Opsional: Tambahkan ini untuk auto-size kolom
+use Maatwebsite\Excel\Concerns\ShouldAutoSize; // Tambahkan ini
+use Maatwebsite\Excel\Concerns\WithHeadings; // Opsional: Tambahkan ini untuk auto-size kolom
 
-class MahasiswaExport implements FromCollection, WithHeadings, ShouldAutoSize // Tambahkan interfaces
+class MahasiswaExport implements FromCollection, ShouldAutoSize, WithHeadings // Tambahkan interfaces
 {
     protected $isTemplate;
 
@@ -17,8 +17,8 @@ class MahasiswaExport implements FromCollection, WithHeadings, ShouldAutoSize //
     }
 
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
         if ($this->isTemplate) {
@@ -36,25 +36,22 @@ class MahasiswaExport implements FromCollection, WithHeadings, ShouldAutoSize //
             'mahasiswas.kelas_id',
             'users.email as user_email'
         )
-        ->leftJoin('users', 'mahasiswas.user_id', '=', 'users.id')
-        ->where('users.role', 'mahasiswa')
-        ->with(['prodi', 'kelas'])
-        ->get()
-        ->map(function ($mahasiswa) {
-            return [
-                $mahasiswa->nim,
-                $mahasiswa->nama_lengkap,
-                $mahasiswa->prodi->nama_prodi ?? 'N/A',
-                $mahasiswa->jenis_kelamin,
-                $mahasiswa->kelas->nama_kelas ?? 'N/A',
-                $mahasiswa->user_email ?? 'N/A',
-            ];
-        });
+            ->leftJoin('users', 'mahasiswas.user_id', '=', 'users.id')
+            ->where('users.role', 'mahasiswa')
+            ->with(['prodi', 'kelas'])
+            ->get()
+            ->map(function ($mahasiswa) {
+                return [
+                    $mahasiswa->nim,
+                    $mahasiswa->nama_lengkap,
+                    $mahasiswa->prodi->nama_prodi ?? 'N/A',
+                    $mahasiswa->jenis_kelamin,
+                    $mahasiswa->kelas->nama_kelas ?? 'N/A',
+                    $mahasiswa->user_email ?? 'N/A',
+                ];
+            });
     }
 
-    /**
-     * @return array
-     */
     public function headings(): array
     {
         // Tentukan heading untuk kolom-kolom di Excel

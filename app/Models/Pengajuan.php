@@ -31,7 +31,7 @@ class Pengajuan extends Model
         return $this->hasMany(Dokumen::class);
     }
 
-    // Relasi ke Sidang 
+    // Relasi ke Sidang
     public function sidang()
     {
         return $this->hasOne(Sidang::class);
@@ -55,17 +55,17 @@ class Pengajuan extends Model
     {
         return $this->belongsTo(Dosen::class, 'dosen_pembimbing_id');
     }
-    
+
     public function penguji1()
     {
         return $this->belongsTo(Dosen::class, 'dosen_penguji1_id');
     }
-    
+
     public function penguji2()
     {
         return $this->belongsTo(Dosen::class, 'dosen_penguji2_id');
     }
-    
+
     public function ketuaSidang()
     {
         return $this->belongsTo(Dosen::class, 'ketua_sidang_dosen_id');

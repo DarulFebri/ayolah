@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 // Import model Dosen jika sudah ada relasi di sini
-use App\Models\Dosen;
-use App\Models\Pengajuan;
 
 class Sidang extends Model
 {
@@ -16,7 +14,7 @@ class Sidang extends Model
     protected $fillable = [
         'pengajuan_id',
         'ketua_sidang_dosen_id',
-        'sekretaris_sidang_dosen_id', 
+        'sekretaris_sidang_dosen_id',
         'anggota1_sidang_dosen_id',
         'anggota2_sidang_dosen_id',
         'tanggal_waktu_sidang',

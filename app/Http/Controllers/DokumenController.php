@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pengajuan;
 use App\Models\Dokumen;
+use App\Models\Mahasiswa;
+use App\Models\Pengajuan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use App\Models\Mahasiswa; // Tambahkan ini
+use Illuminate\Support\Facades\Validator; // Tambahkan ini
 
 class DokumenController extends Controller
 {
-
     private function getLoggedInMahasiswa()
     {
         return Mahasiswa::where('user_id', Auth::id())->firstOrFail();
@@ -20,7 +19,7 @@ class DokumenController extends Controller
 
     public function index(Pengajuan $pengajuan)
     {
-        if (!Auth::check() || Auth::user()->role !== 'mahasiswa') {
+        if (! Auth::check() || Auth::user()->role !== 'mahasiswa') {
             return redirect()->route('mahasiswa.login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
@@ -34,7 +33,7 @@ class DokumenController extends Controller
         $dokumenTerupload = Dokumen::where('pengajuan_id', $pengajuan->id)->get();
 
         // Mengambil jenis dokumen dari PengajuanController
-        $pengajuanController = new PengajuanController();
+        $pengajuanController = new PengajuanController;
         $jenisDokumen = $pengajuanController->getJenisDokumenPkl(); // Asumsi ini untuk PKL, sesuaikan jika ada jenis TA
 
         return view('mahasiswa.dokumen.index', compact('pengajuan', 'dokumenTerupload', 'jenisDokumen'));
@@ -42,7 +41,7 @@ class DokumenController extends Controller
 
     public function storeOrUpdate(Request $request)
     {
-        if (!Auth::check() || Auth::user()->role !== 'mahasiswa') {
+        if (! Auth::check() || Auth::user()->role !== 'mahasiswa') {
             return redirect()->route('mahasiswa.login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
@@ -56,9 +55,9 @@ class DokumenController extends Controller
 
         if ($validator->fails()) {
             return redirect()->back()
-                             ->withErrors($validator)
-                             ->withInput()
-                             ->with('error', 'Gagal mengunggah dokumen: ' . $validator->errors()->first());
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Gagal mengunggah dokumen: '.$validator->errors()->first());
         }
 
         $pengajuan = Pengajuan::findOrFail($request->pengajuan_id);
@@ -74,13 +73,13 @@ class DokumenController extends Controller
         }
 
         $file = $request->file('file');
-        $fileName = time() . '_' . Str::slug($request->jenis_dokumen) . '.' . $file->getClientOriginalExtension();
-        $path = 'storage/' . $file->storeAs('public/dokumen_pengajuan', $fileName); // Store in public/dokumen_pengajuan
+        $fileName = time().'_'.Str::slug($request->jenis_dokumen).'.'.$file->getClientOriginalExtension();
+        $path = 'storage/'.$file->storeAs('public/dokumen_pengajuan', $fileName); // Store in public/dokumen_pengajuan
 
         // Check if a document of this type already exists for this submission
         $existingDokumen = Dokumen::where('pengajuan_id', $pengajuan->id)
-                                  ->where('jenis_dokumen', $request->jenis_dokumen)
-                                  ->first();
+            ->where('jenis_dokumen', $request->jenis_dokumen)
+            ->first();
 
         if ($existingDokumen) {
             // Update existing document
@@ -106,7 +105,7 @@ class DokumenController extends Controller
 
     public function destroy(Dokumen $dokumen)
     {
-        if (!Auth::check() || Auth::user()->role !== 'mahasiswa') {
+        if (! Auth::check() || Auth::user()->role !== 'mahasiswa') {
             return redirect()->route('mahasiswa.login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
@@ -124,14 +123,6 @@ class DokumenController extends Controller
         return back()->with('success', 'Dokumen berhasil dihapus.');
     }
 
-
-
-
-
-
-
-
-
     // Helper untuk mendapatkan objek Mahasiswa dari user yang login
 
     // Metode store dan update di DokumenController dapat dihapus atau disesuaikan
@@ -143,7 +134,7 @@ class DokumenController extends Controller
     public function lihatDokumenAdmin(Dokumen $dokumen)
     {
         // Pastikan pengguna yang login adalah admin atau peran yang diizinkan
-        if (!Auth::check() || !in_array(Auth::user()->role, ['admin', 'kaprodi', 'dosen', 'kajur'])) {
+        if (! Auth::check() || ! in_array(Auth::user()->role, ['admin', 'kaprodi', 'dosen', 'kajur'])) {
             abort(403, 'Anda tidak memiliki akses untuk melihat dokumen ini.');
         }
 
@@ -154,17 +145,17 @@ class DokumenController extends Controller
         $relativePath = str_replace('/storage/', '', $dbPath);
 
         // Bangun path absolut yang benar ke file di dalam storage/app/public/
-        $path = storage_path('app/public/' . $relativePath);
+        $path = storage_path('app/public/'.$relativePath);
 
         // Periksa apakah file benar-benar ada sebelum mengirimkannya
-        if (!file_exists($path)) {
-            abort(404, 'File tidak ditemukan. Path yang dihasilkan: ' . $path);
+        if (! file_exists($path)) {
+            abort(404, 'File tidak ditemukan. Path yang dihasilkan: '.$path);
         }
 
         // Siapkan header untuk respons
         $headers = [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . $dokumen->nama_file . '"',
+            'Content-Disposition' => 'inline; filename="'.$dokumen->nama_file.'"',
         ];
 
         // Kembalikan file sebagai response dengan header yang sudah ditentukan

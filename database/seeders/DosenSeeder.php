@@ -3,11 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\Dosen;
-use App\Models\User;
-use App\Models\Prodi; // Tambahkan ini
+use App\Models\Prodi;
+use App\Models\User; // Tambahkan ini
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon; // Pastikan Carbon diimpor
+use Illuminate\Support\Facades\Hash; // Pastikan Carbon diimpor
 
 class DosenSeeder extends Seeder
 {

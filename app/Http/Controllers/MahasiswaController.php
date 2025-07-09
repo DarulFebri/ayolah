@@ -2,35 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\MahasiswaExport;
+use App\Imports\MahasiswaImport;
+use App\Mail\OtpMail; // Ini boleh di sini jika dipakai di dashboard Mahasiswa
+// Ini boleh di sini jika dipakai di dashboard Mahasiswa
+use App\Models\Kelas; // Ini boleh di sini jika dipakai di dashboard Mahasiswa
+use App\Models\Mahasiswa;
+use App\Models\Pengajuan;
+use App\Models\PengajuanStatusHistory;
+use App\Models\Prodi;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Pengajuan; // Ini boleh di sini jika dipakai di dashboard Mahasiswa
-use App\Models\Dosen;     // Ini boleh di sini jika dipakai di dashboard Mahasiswa
-use App\Models\Mahasiswa; // Ini boleh di sini jika dipakai di dashboard Mahasiswa
-use App\Imports\MahasiswaImport;
-use App\Exports\MahasiswaExport;
-use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\OtpMail;
-use App\Models\User;     // Pastikan model User diimpor
+use Illuminate\Support\Facades\Hash;     // Pastikan model User diimpor
 use Illuminate\Support\Facades\Log; // Add this line at the top
-use Illuminate\Validation\Rule; // Tambahkan ini untuk Rule::unique
-use App\Models\Prodi; // Import the Prodi model
-use App\Models\Kelas; // Import the Kelas model
-use App\Models\PengajuanStatusHistory; // Import the new model
-
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail; // Tambahkan ini untuk Rule::unique
+use Illuminate\Support\Facades\Storage; // Import the Prodi model
+use Illuminate\Support\Str; // Import the Kelas model
+use Illuminate\Validation\Rule; // Import the new model
+use Maatwebsite\Excel\Facades\Excel;
 
 class MahasiswaController extends Controller
 {
-
     public function export()
     {
         // Nama file yang akan diunduh
-        $fileName = 'data_mahasiswa_' . date('Ymd_His') . '.xlsx';
+        $fileName = 'data_mahasiswa_'.date('Ymd_His').'.xlsx';
 
         // Unduh file Excel menggunakan kelas export yang sudah dibuat
         return Excel::download(new MahasiswaExport, $fileName);
@@ -39,6 +37,7 @@ class MahasiswaController extends Controller
     public function downloadTemplate()
     {
         $fileName = 'format_import_mahasiswa.xlsx';
+
         return Excel::download(new MahasiswaExport(true), $fileName); // Pass true to indicate template export
     }
 
@@ -51,6 +50,7 @@ class MahasiswaController extends Controller
 
         try {
             Excel::import(new MahasiswaImport, $request->file('file')); // Proses impor
+
             return redirect()->back()->with('success', 'Data mahasiswa berhasil diimpor!');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
@@ -59,12 +59,14 @@ class MahasiswaController extends Controller
                 // Ambil header kolom yang menyebabkan kegagalan
                 $attribute = $failure->attribute();
                 $errorMessage = implode(', ', $failure->errors());
-                $errors[] = 'Baris ' . $failure->row() . ' (Kolom: ' . $attribute . '): ' . $errorMessage;
+                $errors[] = 'Baris '.$failure->row().' (Kolom: '.$attribute.'): '.$errorMessage;
             }
-            return redirect()->back()->with('error', 'Gagal mengimpor data mahasiswa. Ada kesalahan validasi: <ul><li>' . implode('</li><li>', $errors) . '</li></ul>');
+
+            return redirect()->back()->with('error', 'Gagal mengimpor data mahasiswa. Ada kesalahan validasi: <ul><li>'.implode('</li><li>', $errors).'</li></ul>');
         } catch (\Exception $e) {
-            Log::error('Kesalahan impor mahasiswa umum: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengimpor data mahasiswa: ' . $e->getMessage());
+            Log::error('Kesalahan impor mahasiswa umum: '.$e->getMessage());
+
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengimpor data mahasiswa: '.$e->getMessage());
         }
     }
 
@@ -80,12 +82,12 @@ class MahasiswaController extends Controller
             // Apply search filter
             // We use `where` for the first condition and `orWhere` for subsequent conditions
             // to search across multiple columns.
-            $query->where('nim', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('nama_lengkap', 'like', '%' . $searchTerm . '%')
-                  ->orWhereHas('prodi', function($q) use ($searchTerm) {
-                      $q->where('nama_prodi', 'like', '%' . $searchTerm . '%');
-                  });
-            
+            $query->where('nim', 'like', '%'.$searchTerm.'%')
+                ->orWhere('nama_lengkap', 'like', '%'.$searchTerm.'%')
+                ->orWhereHas('prodi', function ($q) use ($searchTerm) {
+                    $q->where('nama_prodi', 'like', '%'.$searchTerm.'%');
+                });
+
         }
 
         // Get the filtered (or unfiltered) students
@@ -97,7 +99,7 @@ class MahasiswaController extends Controller
 
     public function editProfile()
     {
-        if (!Auth::check() || Auth::user()->role !== 'mahasiswa') {
+        if (! Auth::check() || Auth::user()->role !== 'mahasiswa') {
             return redirect()->route('mahasiswa.login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
@@ -106,8 +108,6 @@ class MahasiswaController extends Controller
 
         return view('mahasiswa.edit_profile', compact('mahasiswa', 'prodis'));
     }
-
-    
 
     /**
      * Menampilkan form login mahasiswa.
@@ -124,17 +124,16 @@ class MahasiswaController extends Controller
      * Route: POST /mahasiswa/login
      * Name: mahasiswa.login
      */
+    public function changePasswordForm()
+    {
+        return view('mahasiswa.change-password'); // Akan membuat file ini di Langkah 3
+    }
 
-     public function changePasswordForm()
-     {
-         return view('mahasiswa.change-password'); // Akan membuat file ini di Langkah 3
-     }
- 
-     /**
-      * Memproses perubahan sandi mahasiswa.
-      * Route: POST /mahasiswa/password/change
-      * Name: mahasiswa.password.change
-      */
+    /**
+     * Memproses perubahan sandi mahasiswa.
+     * Route: POST /mahasiswa/password/change
+     * Name: mahasiswa.password.change
+     */
     public function changePassword(Request $request)
     {
         $request->validate([
@@ -149,7 +148,7 @@ class MahasiswaController extends Controller
 
         $user = Auth::user();
 
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Kata sandi saat ini salah.']);
         }
 
@@ -158,7 +157,7 @@ class MahasiswaController extends Controller
 
         return redirect()->route('mahasiswa.dashboard')->with('success', 'Kata sandi berhasil diubah!');
     }
-     
+
     public function login(Request $request)
     {
         $request->validate([
@@ -172,6 +171,7 @@ class MahasiswaController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+
             // Redirect ke dashboard mahasiswa setelah login berhasil
             return redirect()->intended(route('mahasiswa.dashboard'));
         }
@@ -212,7 +212,7 @@ class MahasiswaController extends Controller
         // Cari data mahasiswa berdasarkan email yang diinput
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !$user->mahasiswa) {
+        if (! $user || ! $user->mahasiswa) {
             return back()->withErrors([
                 'email' => 'Email ini tidak terdaftar sebagai email mahasiswa atau tidak terhubung ke akun pengguna.',
             ])->withInput($request->only('email'));
@@ -236,7 +236,8 @@ class MahasiswaController extends Controller
             Mail::to($user->email)->send(new OtpMail($otp));
         } catch (\Exception $e) {
             // Log error untuk debugging lebih lanjut
-            \Log::error('Gagal mengirim OTP reset password ke ' . $user->email . ': ' . $e->getMessage());
+            \Log::error('Gagal mengirim OTP reset password ke '.$user->email.': '.$e->getMessage());
+
             return back()->withErrors([
                 'email' => 'Gagal mengirim kode OTP. Silakan coba lagi nanti ya.',
             ])->withInput($request->only('email'));
@@ -244,7 +245,7 @@ class MahasiswaController extends Controller
 
         // In your sendResetOtp method, you have this:
         return redirect()->route('mahasiswa.otp.verify.form', ['email' => $user->email])
-        ->with('success', 'Kode OTP untuk reset password telah dikirim ke email Anda. Silakan cek kotak masuk Anda (termasuk folder spam).');
+            ->with('success', 'Kode OTP untuk reset password telah dikirim ke email Anda. Silakan cek kotak masuk Anda (termasuk folder spam).');
     }
 
     /**
@@ -255,9 +256,10 @@ class MahasiswaController extends Controller
     public function showOtpVerifyForm(Request $request)
     {
         // Pastikan ada parameter email di URL
-        if (!$request->has('email')) {
+        if (! $request->has('email')) {
             return redirect()->route('mahasiswa.forgot.password.form')->with('error', 'Akses tidak sah. Email tidak ditemukan.');
         }
+
         return view('mahasiswa.otp_verify', ['email' => $request->email]);
     }
 
@@ -268,8 +270,7 @@ class MahasiswaController extends Controller
      * Route: POST /mahasiswa/otp/verify
      * Name: mahasiswa.otp.verify
      */
-
-     public function verifyOtp(Request $request)
+    public function verifyOtp(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
@@ -278,7 +279,7 @@ class MahasiswaController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !$user->mahasiswa) {
+        if (! $user || ! $user->mahasiswa) {
             return back()->withErrors(['otp' => 'Email tidak ditemukan atau tidak terhubung ke akun pengguna.'])->withInput($request->only('email', 'otp'));
         }
 
@@ -292,7 +293,7 @@ class MahasiswaController extends Controller
 
             $user = $mahasiswa->user;
 
-            if (!$user) {
+            if (! $user) {
                 return back()->withErrors(['otp' => 'Akun pengguna tidak ditemukan terkait dengan mahasiswa ini.'])->withInput($request->only('email', 'otp'));
             }
 
@@ -306,7 +307,7 @@ class MahasiswaController extends Controller
             // Laravel's route helper does this automatically for route parameters defined with {}
             // and puts others as query parameters. This is already correct.
             return redirect()->route('mahasiswa.password.reset.form', ['token' => $resetToken, 'email' => $user->email])
-                             ->with('success', 'Kode OTP berhasil diverifikasi. Silakan atur password baru Anda.');
+                ->with('success', 'Kode OTP berhasil diverifikasi. Silakan atur password baru Anda.');
             // --- CHANGE END ---
 
         }
@@ -328,7 +329,7 @@ class MahasiswaController extends Controller
         // Cari mahasiswa berdasarkan email
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !$user->mahasiswa) {
+        if (! $user || ! $user->mahasiswa) {
             return back()->withErrors(['email' => 'Email mahasiswa tidak ditemukan atau tidak terhubung ke akun pengguna.'])->withInput($request->only('email'));
         }
 
@@ -348,7 +349,8 @@ class MahasiswaController extends Controller
         try {
             Mail::to($user->email)->send(new OtpMail($otp));
         } catch (\Exception $e) {
-            \Log::error('Gagal mengirim ulang OTP ke ' . $user->email . ': ' . $e->getMessage());
+            \Log::error('Gagal mengirim ulang OTP ke '.$user->email.': '.$e->getMessage());
+
             return back()->withErrors([
                 'email' => 'Gagal mengirim ulang kode OTP. Silakan coba lagi nanti.',
             ])->withInput($request->only('email'));
@@ -373,21 +375,21 @@ class MahasiswaController extends Controller
 
         // Perform initial validation. If token or email are missing from the URL,
         // redirect them back to the forgot password form.
-        if (!$token || !$email) {
+        if (! $token || ! $email) {
             return redirect()->route('mahasiswa.forgot.password.form')
-                             ->with('error', 'Tautan reset password tidak valid atau tidak lengkap. Silakan mulai proses dari awal.');
+                ->with('error', 'Tautan reset password tidak valid atau tidak lengkap. Silakan mulai proses dari awal.');
         }
 
         // Now, verify the token and email against the database.
         // Ensure you are using the correct User model here if Mahasiswa and User are separate.
         $user = User::where('email', $email)
-                    ->where('remember_token', $token)
-                    ->first();
+            ->where('remember_token', $token)
+            ->first();
 
-        if (!$user) {
+        if (! $user) {
             // If user not found with that token/email combo, the link is invalid/expired
             return redirect()->route('mahasiswa.forgot.password.form')
-                             ->with('error', 'Tautan reset password tidak valid atau sudah kadaluarsa. Silakan mulai proses dari awal.');
+                ->with('error', 'Tautan reset password tidak valid atau sudah kadaluarsa. Silakan mulai proses dari awal.');
         }
 
         // Pass the retrieved email and token to the view.
@@ -401,7 +403,6 @@ class MahasiswaController extends Controller
      * Route: POST /mahasiswa/reset-password
      * Name: mahasiswa.password.reset
      */
-
     public function resetPassword(Request $request)
     {
         $request->validate([
@@ -415,8 +416,9 @@ class MahasiswaController extends Controller
 
         $user = User::where('email', $request->email)->where('remember_token', $request->token)->first();
 
-        if (!$user) {
+        if (! $user) {
             Log::warning('Reset Password: User not found or token invalid', ['email' => $request->email, 'token' => $request->token]);
+
             return back()->withErrors(['email' => 'Tautan reset password tidak valid atau sudah kadaluarsa. Silakan mulai proses Lupa Sandi dari awal.']);
         }
 
@@ -435,7 +437,8 @@ class MahasiswaController extends Controller
             $user->save(); // Explicitly save the model
             Log::info('Reset Password: Password updated successfully for user ID:', ['id' => $user->id]);
         } catch (\Exception $e) {
-            Log::error('Reset Password: Failed to save password for user ID: ' . $user->id . ' Error: ' . $e->getMessage());
+            Log::error('Reset Password: Failed to save password for user ID: '.$user->id.' Error: '.$e->getMessage());
+
             return back()->withErrors(['password' => 'Terjadi kesalahan saat menyimpan password baru. Silakan coba lagi.']);
         }
 
@@ -444,7 +447,6 @@ class MahasiswaController extends Controller
         // but the actual stored value should be hashed due to the cast.
         $updatedUser = User::find($user->id); // Re-fetch to see stored hash
         Log::info('Reset Password: User after save. Hashed Password Sample:', ['hashed_password_start' => substr($updatedUser->password, 0, 10)]);
-
 
         return redirect()->route('mahasiswa.password.reset.success')->with('success', 'Password Anda berhasil diubah. Silakan login dengan password baru Anda.');
     }
@@ -467,15 +469,16 @@ class MahasiswaController extends Controller
      */
     public function showNotifications()
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('mahasiswa.login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
         $user = Auth::user();
         $mahasiswa = $user->mahasiswa;
 
-        if (!$mahasiswa) {
+        if (! $mahasiswa) {
             Auth::logout();
+
             return redirect()->route('mahasiswa.login')->with('error', 'Data mahasiswa tidak ditemukan.');
         }
 
@@ -483,19 +486,19 @@ class MahasiswaController extends Controller
         $unreadNotifications = PengajuanStatusHistory::whereHas('pengajuan', function ($query) use ($mahasiswa) {
             $query->where('mahasiswa_id', $mahasiswa->id);
         })
-        ->whereNull('read_at')
-        ->with(['pengajuan', 'changedBy'])
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->whereNull('read_at')
+            ->with(['pengajuan', 'changedBy'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         // Ambil notifikasi yang sudah dibaca
         $readNotifications = PengajuanStatusHistory::whereHas('pengajuan', function ($query) use ($mahasiswa) {
             $query->where('mahasiswa_id', $mahasiswa->id);
         })
-        ->whereNotNull('read_at')
-        ->with(['pengajuan', 'changedBy'])
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->whereNotNull('read_at')
+            ->with(['pengajuan', 'changedBy'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return view('mahasiswa.notifications', compact('unreadNotifications', 'readNotifications'));
     }
@@ -510,7 +513,7 @@ class MahasiswaController extends Controller
     {
         $notification = PengajuanStatusHistory::find($id);
 
-        if (!$notification) {
+        if (! $notification) {
             return back()->with('error', 'Notifikasi tidak ditemukan.');
         }
 
@@ -532,23 +535,24 @@ class MahasiswaController extends Controller
      */
     public function markAllNotificationsAsRead()
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('mahasiswa.login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
         $user = Auth::user();
         $mahasiswa = $user->mahasiswa;
 
-        if (!$mahasiswa) {
+        if (! $mahasiswa) {
             Auth::logout();
+
             return redirect()->route('mahasiswa.login')->with('error', 'Data mahasiswa tidak ditemukan.');
         }
 
         PengajuanStatusHistory::whereHas('pengajuan', function ($query) use ($mahasiswa) {
             $query->where('mahasiswa_id', $mahasiswa->id);
         })
-        ->whereNull('read_at')
-        ->update(['read_at' => now()]);
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
 
         return back()->with('success', 'Semua notifikasi berhasil ditandai sudah dibaca.');
     }
@@ -564,7 +568,7 @@ class MahasiswaController extends Controller
     public function dashboard()
     {
         // Pastikan pengguna sudah login
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('mahasiswa.login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
@@ -572,16 +576,17 @@ class MahasiswaController extends Controller
         $mahasiswa = $user->mahasiswa; // Dapatkan objek Mahasiswa terkait melalui relasi
 
         // Jika data mahasiswa tidak ditemukan untuk user ini, log out dan redirect
-        if (!$mahasiswa) {
+        if (! $mahasiswa) {
             Auth::logout();
+
             return redirect()->route('mahasiswa.login')->with('error', 'Data mahasiswa tidak ditemukan untuk akun ini. Silakan hubungi admin.');
         }
 
         // Mengambil pengajuan terbaru untuk ditampilkan di dashboard (contoh)
         $pengajuanTerbaru = Pengajuan::where('mahasiswa_id', $mahasiswa->id)
-                                     ->orderBy('created_at', 'desc')
-                                     ->limit(5)
-                                     ->get();
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
         // Memuat relasi yang diperlukan untuk pengajuan terbaru (misal: sidang)
         $pengajuanTerbaru->load('sidang'); // Sesuaikan dengan relasi yang ada di model Pengajuan
 
@@ -597,19 +602,21 @@ class MahasiswaController extends Controller
      */
     public function editProfileForm()
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('mahasiswa.login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
         $user = Auth::user();
         $mahasiswa = $user->mahasiswa;
 
-        if (!$mahasiswa) {
+        if (! $mahasiswa) {
             Auth::logout();
+
             return redirect()->route('mahasiswa.login')->with('error', 'Data mahasiswa tidak ditemukan.');
         }
 
         $prodis = Prodi::all(); // Fetch all program studies
+
         return view('mahasiswa.edit_profile', compact('mahasiswa', 'prodis'));
     }
 
@@ -621,14 +628,14 @@ class MahasiswaController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('mahasiswa.login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
         $user = Auth::user();
         $mahasiswa = $user->mahasiswa;
 
-        if (!$mahasiswa) {
+        if (! $mahasiswa) {
             return back()->with('error', 'Data mahasiswa tidak ditemukan.');
         }
 
@@ -645,17 +652,17 @@ class MahasiswaController extends Controller
         if ($request->filled('cropped_image')) {
             // Hapus foto lama jika ada
             if ($mahasiswa->foto_profil) {
-                Storage::delete('public/' . $mahasiswa->foto_profil);
+                Storage::delete('public/'.$mahasiswa->foto_profil);
             }
 
             $data = $request->cropped_image;
-            list($type, $data) = explode(';', $data);
-            list(, $data)      = explode(',', $data);
+            [$type, $data] = explode(';', $data);
+            [, $data] = explode(',', $data);
             $data = base64_decode($data);
-            $imageName = 'photos/' . Str::random(20) . '.png';
+            $imageName = 'photos/'.Str::random(20).'.png';
             Storage::disk('public')->put($imageName, $data);
             $dataToUpdate['foto_profil'] = $imageName;
-            Log::info('Foto profil disimpan: ' . $imageName);
+            Log::info('Foto profil disimpan: '.$imageName);
         }
 
         $mahasiswa->update($dataToUpdate);
@@ -669,7 +676,6 @@ class MahasiswaController extends Controller
         return redirect()->route('mahasiswa.profile.edit')->with('success', 'Profil berhasil diperbarui!');
     }
 
-
     /**
      * Memproses logout mahasiswa.
      * Route: POST /mahasiswa/logout
@@ -680,6 +686,7 @@ class MahasiswaController extends Controller
         Auth::logout(); // Logout user
         $request->session()->invalidate(); // Invalidasi sesi
         $request->session()->regenerateToken(); // Regenerasi token CSRF
+
         return redirect()->route('mahasiswa.login'); // Redirect ke halaman login
     }
 

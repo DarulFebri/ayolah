@@ -2,19 +2,21 @@
 
 namespace App\Notifications;
 
+use App\Models\Dosen;
+use App\Models\Pengajuan;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
-use App\Models\Pengajuan; // Pastikan Anda mengimpor model Pengajuan
-use App\Models\Dosen;     // Pastikan Anda mengimpor model Dosen
+use Illuminate\Notifications\Messages\MailMessage; // Pastikan Anda mengimpor model Pengajuan
+use Illuminate\Notifications\Notification;     // Pastikan Anda mengimpor model Dosen
 
 class DosenPeranSidangNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
     protected $pengajuan;
+
     protected $peran;
+
     protected $dosen;
 
     /**
@@ -50,13 +52,13 @@ class DosenPeranSidangNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject('Permintaan Persetujuan Peran Sidang Skripsi')
-                    ->greeting('Yth. ' . $this->dosen->nama_lengkap . ',')
-                    ->line('Anda telah ditunjuk sebagai **' . $this->peran . '** untuk sidang skripsi mahasiswa atas nama **' . $this->pengajuan->mahasiswa->nama . '** dengan judul **"' . $this->pengajuan->judul . '"**.')
-                    ->line('Tanggal Sidang: **' . \Carbon\Carbon::parse($this->pengajuan->sidang->tanggal_sidang)->translatedFormat('d F Y') . '**')
-                    ->line('Waktu Sidang: **' . \Carbon\Carbon::parse($this->pengajuan->sidang->jam_mulai)->format('H:i') . ' - ' . \Carbon\Carbon::parse($this->pengajuan->sidang->jam_selesai)->format('H:i') . ' WIB**')
-                    ->action('Lihat Detail Pengajuan', route('dosen.pengajuan.show', $this->pengajuan->id))
-                    ->line('Mohon segera berikan persetujuan Anda melalui sistem.');
+            ->subject('Permintaan Persetujuan Peran Sidang Skripsi')
+            ->greeting('Yth. '.$this->dosen->nama_lengkap.',')
+            ->line('Anda telah ditunjuk sebagai **'.$this->peran.'** untuk sidang skripsi mahasiswa atas nama **'.$this->pengajuan->mahasiswa->nama.'** dengan judul **"'.$this->pengajuan->judul.'"**.')
+            ->line('Tanggal Sidang: **'.\Carbon\Carbon::parse($this->pengajuan->sidang->tanggal_sidang)->translatedFormat('d F Y').'**')
+            ->line('Waktu Sidang: **'.\Carbon\Carbon::parse($this->pengajuan->sidang->jam_mulai)->format('H:i').' - '.\Carbon\Carbon::parse($this->pengajuan->sidang->jam_selesai)->format('H:i').' WIB**')
+            ->action('Lihat Detail Pengajuan', route('dosen.pengajuan.show', $this->pengajuan->id))
+            ->line('Mohon segera berikan persetujuan Anda melalui sistem.');
     }
 
     /**

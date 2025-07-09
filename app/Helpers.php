@@ -1,10 +1,10 @@
 <?php
 
 use App\Models\Activity;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
-if (!function_exists('logActivity')) {
+if (! function_exists('logActivity')) {
     function logActivity($activity, $module = null)
     {
         $log = [];

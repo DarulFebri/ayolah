@@ -17,6 +17,7 @@ class KelasController extends Controller
         }
 
         $kelas = $query->paginate(10);
+
         return view('admin.kelas.index', compact('kelas'));
     }
 
@@ -34,7 +35,7 @@ class KelasController extends Controller
     public function update(Request $request, Kelas $kelas)
     {
         $request->validate([
-            'nama_kelas' => 'required|unique:kelas,nama_kelas,' . $kelas->id,
+            'nama_kelas' => 'required|unique:kelas,nama_kelas,'.$kelas->id,
         ]);
 
         $kelas->update($request->all());

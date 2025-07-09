@@ -19,7 +19,7 @@ return new class extends Migration
             // $table->foreignId('ketua_sidang_dosen_id')->nullable()->constrained('dosens')->onDelete('set null');
         });
     }
-    
+
     public function down()
     {
         Schema::table('sidangs', function (Blueprint $table) {
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->dropForeign(['dosen_penguji1_id']);
             $table->dropForeign(['dosen_penguji2_id']);
             // $table->dropForeign(['ketua_sidang_dosen_id']);
-        
+
             $table->dropColumn(['dosen_pembimbing_id', 'dosen_penguji1_id', 'dosen_penguji2_id']);
             // $table->dropColumn(['ketua_sidang_dosen_id']);
         });

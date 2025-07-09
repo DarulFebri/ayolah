@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Models\Pengajuan;
 use App\Mail\PengajuanStatusNotification;
+use App\Models\Pengajuan;
 use Illuminate\Support\Facades\Mail;
 
 class PengajuanObserver

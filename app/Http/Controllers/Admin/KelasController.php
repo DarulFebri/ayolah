@@ -11,6 +11,7 @@ class KelasController extends Controller
     public function index()
     {
         $kelas = Kelas::all();
+
         return view('admin.kelas.index', compact('kelas'));
     }
 
@@ -43,7 +44,7 @@ class KelasController extends Controller
     public function update(Request $request, Kelas $kelas)
     {
         $request->validate([
-            'nama' => 'required|string|max:255|unique:kelas,nama,' . $kelas->id,
+            'nama' => 'required|string|max:255|unique:kelas,nama,'.$kelas->id,
         ]);
 
         $kelas->update($request->all());

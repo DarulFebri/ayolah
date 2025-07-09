@@ -2,22 +2,21 @@
 
 namespace App\Imports;
 
+use App\Models\Kelas;
 use App\Models\Mahasiswa;
+use App\Models\Prodi;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Log; 
-use App\Models\Prodi;
-use App\Models\Kelas; 
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithValidation;
 
-class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, WithBatchInserts, WithChunkReading
+class MahasiswaImport implements ToCollection, WithBatchInserts, WithChunkReading, WithHeadingRow, WithValidation
 {
     public function prepareForValidation($row)
     {
@@ -62,18 +61,17 @@ class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, W
             $row['prodi'] = null;
         }
 
-        Log::info('Data setelah prepareForValidation: ' . json_encode($row));
+        Log::info('Data setelah prepareForValidation: '.json_encode($row));
 
         return $row;
     }
 
-
     public function collection(Collection $rows)
     {
-        Log::info('Memulai impor mahasiswa. Jumlah baris: ' . $rows->count());
+        Log::info('Memulai impor mahasiswa. Jumlah baris: '.$rows->count());
 
         foreach ($rows as $row) {
-            Log::info('Memproses baris dari Excel (setelah prepareForValidation): ' . json_encode($row->toArray()));
+            Log::info('Memproses baris dari Excel (setelah prepareForValidation): '.json_encode($row->toArray()));
 
             // Ambil nilai yang sudah diproses dari $row ke variabel terpisah
             $nim = $row['nim'];
@@ -92,18 +90,19 @@ class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, W
                 $user = User::firstOrCreate(
                     ['email' => $email],
                     [
-                        'name'     => $namaLengkap, // Gunakan variabel $namaLengkap
+                        'name' => $namaLengkap, // Gunakan variabel $namaLengkap
                         'password' => Hash::make('password123'),
-                        'role'     => 'mahasiswa',
+                        'role' => 'mahasiswa',
                     ]
                 );
 
-                if (!$user->wasRecentlyCreated && Mahasiswa::where('user_id', $user->id)->exists()) {
-                     Log::warning('User dengan email ' . $email . ' sudah ada dan sudah terhubung dengan Mahasiswa. Melewati baris ini.');
-                     continue;
+                if (! $user->wasRecentlyCreated && Mahasiswa::where('user_id', $user->id)->exists()) {
+                    Log::warning('User dengan email '.$email.' sudah ada dan sudah terhubung dengan Mahasiswa. Melewati baris ini.');
+
+                    continue;
                 }
 
-                Log::info('User mahasiswa ditemukan/dibuat dengan ID: ' . $user->id . ' dan email: ' . $user->email);
+                Log::info('User mahasiswa ditemukan/dibuat dengan ID: '.$user->id.' dan email: '.$user->email);
 
                 // Cari atau buat Prodi
                 $prodiModel = Prodi::firstOrCreate(['nama_prodi' => $prodi]);
@@ -113,22 +112,23 @@ class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, W
 
                 // Buat Data Mahasiswa Baru
                 Mahasiswa::create([
-                    'user_id'       => $user->id,
-                    'nim'           => $nim,
-                    'nama_lengkap'  => $namaLengkap,
+                    'user_id' => $user->id,
+                    'nim' => $nim,
+                    'nama_lengkap' => $namaLengkap,
                     'jenis_kelamin' => $jenisKelamin,
-                    'prodi_id'      => $prodiModel->id,
-                    'kelas_id'      => $kelasModel->id,
+                    'prodi_id' => $prodiModel->id,
+                    'kelas_id' => $kelasModel->id,
                 ]);
-                Log::info('Mahasiswa baru dibuat untuk user ID: ' . $user->id);
+                Log::info('Mahasiswa baru dibuat untuk user ID: '.$user->id);
 
             } catch (\Exception $e) {
-                Log::error('Gagal menyimpan User/Mahasiswa ke DB untuk baris: ' . json_encode($row->toArray()) . ' Error: ' . $e->getMessage());
+                Log::error('Gagal menyimpan User/Mahasiswa ke DB untuk baris: '.json_encode($row->toArray()).' Error: '.$e->getMessage());
 
                 if (isset($user) && $user->wasRecentlyCreated) {
                     $user->delete();
-                    Log::info('Menghapus user baru dengan email ' . $user->email . ' karena pembuatan mahasiswa gagal.');
+                    Log::info('Menghapus user baru dengan email '.$user->email.' karena pembuatan mahasiswa gagal.');
                 }
+
                 continue;
             }
         }
@@ -138,12 +138,12 @@ class MahasiswaImport implements ToCollection, WithHeadingRow, WithValidation, W
     public function rules(): array
     {
         return [
-            'nim'           => ['required', 'string', 'max:255', Rule::unique('mahasiswas', 'nim')],
-            'nama_lengkap'  => 'required|string|max:255',
-            'prodi'         => 'required|string|max:255|exists:prodis,nama_prodi',
+            'nim' => ['required', 'string', 'max:255', Rule::unique('mahasiswas', 'nim')],
+            'nama_lengkap' => 'required|string|max:255',
+            'prodi' => 'required|string|max:255|exists:prodis,nama_prodi',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'kelas'         => 'required|string|max:255|exists:kelas,nama_kelas',
-            'email'         => [
+            'kelas' => 'required|string|max:255|exists:kelas,nama_kelas',
+            'email' => [
                 'required',
                 'string',
                 'email',
