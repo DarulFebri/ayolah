@@ -165,9 +165,9 @@
                         <hr class="my-4">
                         <h4 class="form-section-title" style="font-size: 1.1rem;"><i class="fas fa-paper-plane"></i>Aksi</h4>
                         <div class="d-grid gap-2">
-                            <button type="submit" name="status_action" value="draft" class="btn btn-warning btn-lg" style="color: #000;"><i class="fas fa-save me-2"></i>Simpan Perubahan</button>
-                            <button type="submit" name="status_action" value="finalisasi" class="btn btn-success btn-lg" onclick="return confirm('Apakah Anda yakin ingin memfinalisasi pengajuan ini? Setelah difinalisasi, data tidak dapat diubah kembali.')"><i class="fas fa-check-circle me-2"></i>Finalisasi</button>
                             <a href="{{ route('mahasiswa.pengajuan.index') }}" class="btn btn-secondary btn-lg mt-2"><i class="fas fa-arrow-left me-2"></i>Kembali</a>
+                            <button type="submit" name="status_action" value="draft" class="btn btn-warning btn-lg" style="color: #000;"><i class="fas fa-save me-2"></i>Simpan Sebagai Draft</button>
+                            <button type="submit" name="status_action" value="finalisasi" class="btn btn-success btn-lg" onclick="return confirm('Apakah Anda yakin ingin memfinalisasi pengajuan ini? Setelah difinalisasi, data tidak dapat diubah kembali.')"><i class="fas fa-check-circle me-2"></i>Finalisasi</button>
                         </div>
                     </div>
                 </div>
