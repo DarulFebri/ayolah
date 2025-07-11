@@ -1,4 +1,28 @@
 <!DOCTYPE html>
+<?php
+    $showTaColumns = false;
+    $showPklColumns = false;
+    foreach ($pengajuansKaprodi as $pengajuan) {
+        if ($pengajuan->jenis_pengajuan == 'ta') {
+            $showTaColumns = true;
+        }
+        if ($pengajuan->jenis_pengajuan == 'pkl') {
+            $showPklColumns = true;
+        }
+        if ($showTaColumns && $showPklColumns) break;
+    }
+    if (!$showTaColumns || !$showPklColumns) {
+        foreach ($pengajuansSelesaiKaprodi as $pengajuan) {
+            if ($pengajuan->jenis_pengajuan == 'ta') {
+                $showTaColumns = true;
+            }
+            if ($pengajuan->jenis_pengajuan == 'pkl') {
+                $showPklColumns = true;
+            }
+            if ($showTaColumns && $showPklColumns) break;
+        }
+    }
+?>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -277,12 +301,14 @@
                         <th>Jenis Pengajuan</th>
                         <th>Judul</th>
                         <th>Status</th>
-                        <th>Pembimbing 1</th>
-                        <th>Pembimbing 2</th>
+                        <th>@if($showPklColumns) Pembimbing @else Pembimbing 1 @endif</th>
+                        <th>@if($showPklColumns) Penguji @else Pembimbing 2 @endif</th>
                         <th>Ketua Sidang</th>
+                        @if ($showTaColumns)
                         <th>Sekretaris</th>
                         <th>Anggota 1</th>
                         <th>Anggota 2</th>
+                        @endif
                         <th>Tanggal/Waktu Sidang</th>
                         <th>Ruangan</th>
                         <th>Aksi</th>
@@ -294,7 +320,7 @@
                             <td>{{ $pengajuan->id }}</td>
                             <td>{{ $pengajuan->mahasiswa->nama_lengkap }} <br> ({{ $pengajuan->mahasiswa->nim }})</td>
                             <td>{{ strtoupper(str_replace('_', ' ', $pengajuan->jenis_pengajuan)) }}</td>
-                            <td>{{ $pengajuan->judul }}</td>
+                            <td>{{ $pengajuan->judul_pengajuan ?? 'N/A' }}</td>
                             <td>
                                 <span class="status-badge {{ str_contains($pengajuan->status, 'ditolak') ? 'tolak' : (str_contains($pengajuan->status, 'setuju') || str_contains($pengajuan->status, 'final') ? 'setuju' : 'menunggu') }}">
                                     {{ ucfirst(str_replace('_', ' ', $pengajuan->status)) }}
@@ -303,9 +329,11 @@
                             <td>{{ $pengajuan->sidang->dosenPembimbing->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->dosenPenguji1->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->ketuaSidang->nama ?? 'N/A' }}</td>
+                            @if ($pengajuan->jenis_pengajuan == 'ta')
                             <td>{{ $pengajuan->sidang->sekretarisSidang->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->anggota1Sidang->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->anggota2Sidang->nama ?? 'N/A' }}</td>
+                            @endif
                             <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y, H:i') : 'N/A' }}</td>
                             <td>{{ optional($pengajuan->sidang)->ruangan_sidang ?? 'N/A' }}</td>
                             <td class="action-buttons">
@@ -338,12 +366,14 @@
                         <th>Jenis Pengajuan</th>
                         <th>Judul</th>
                         <th>Status</th>
-                        <th>Pembimbing 1</th>
-                        <th>Pembimbing 2</th>
+                        <th>@if($showPklColumns) Pembimbing @else Pembimbing 1 @endif</th>
+                        <th>@if($showPklColumns) Penguji @else Pembimbing 2 @endif</th>
                         <th>Ketua Sidang</th>
+                        @if ($showTaColumns)
                         <th>Sekretaris</th>
                         <th>Anggota 1</th>
                         <th>Anggota 2</th>
+                        @endif
                         <th>Tanggal/Waktu Sidang</th>
                         <th>Ruangan</th>
                         <th>Aksi</th>
@@ -355,7 +385,7 @@
                             <td>{{ $pengajuan->id }}</td>
                             <td>{{ $pengajuan->mahasiswa->nama_lengkap }} <br> ({{ $pengajuan->mahasiswa->nim }})</td>
                             <td>{{ strtoupper(str_replace('_', ' ', $pengajuan->jenis_pengajuan)) }}</td>
-                            <td>{{ $pengajuan->judul }}</td>
+                            <td>{{ $pengajuan->judul ?? 'N/A' }}</td>
                             <td>
                                 <span class="status-badge {{ str_contains($pengajuan->status, 'ditolak') ? 'tolak' : 'setuju' }}">
                                     {{ ucfirst(str_replace('_', ' ', $pengajuan->status)) }}
@@ -364,9 +394,11 @@
                             <td>{{ $pengajuan->sidang->dosenPembimbing->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->dosenPenguji1->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->ketuaSidang->nama ?? 'N/A' }}</td>
+                            @if ($pengajuan->jenis_pengajuan == 'ta')
                             <td>{{ $pengajuan->sidang->sekretarisSidang->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->anggota1Sidang->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->anggota2Sidang->nama ?? 'N/A' }}</td>
+                            @endif
                             <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y, H:i') : 'N/A' }}</td>
                             <td>{{ optional($pengajuan->sidang)->ruangan_sidang ?? 'N/A' }}</td>
                             <td>
