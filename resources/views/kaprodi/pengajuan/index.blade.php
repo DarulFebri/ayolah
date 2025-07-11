@@ -1,27 +1,10 @@
 <!DOCTYPE html>
 <?php
-    $showTaColumns = false;
-    $showPklColumns = false;
-    foreach ($pengajuansKaprodi as $pengajuan) {
-        if ($pengajuan->jenis_pengajuan == 'ta') {
-            $showTaColumns = true;
-        }
-        if ($pengajuan->jenis_pengajuan == 'pkl') {
-            $showPklColumns = true;
-        }
-        if ($showTaColumns && $showPklColumns) break;
-    }
-    if (!$showTaColumns || !$showPklColumns) {
-        foreach ($pengajuansSelesaiKaprodi as $pengajuan) {
-            if ($pengajuan->jenis_pengajuan == 'ta') {
-                $showTaColumns = true;
-            }
-            if ($pengajuan->jenis_pengajuan == 'pkl') {
-                $showPklColumns = true;
-            }
-            if ($showTaColumns && $showPklColumns) break;
-        }
-    }
+    $pengajuansKaprodiTA = $pengajuansKaprodi->filter(fn($p) => $p->jenis_pengajuan === 'ta');
+    $pengajuansKaprodiPKL = $pengajuansKaprodi->filter(fn($p) => $p->jenis_pengajuan === 'pkl');
+
+    $pengajuansSelesaiKaprodiTA = $pengajuansSelesaiKaprodi->filter(fn($p) => $p->jenis_pengajuan === 'ta');
+    $pengajuansSelesaiKaprodiPKL = $pengajuansSelesaiKaprodi->filter(fn($p) => $p->jenis_pengajuan === 'pkl');
 ?>
 <html lang="en">
 <head>
@@ -255,18 +238,17 @@
             /* Labeling the cells for small screens */
             td:nth-of-type(1):before { content: "ID:"; }
             td:nth-of-type(2):before { content: "Mahasiswa:"; }
-            td:nth-of-type(3):before { content: "Jenis:"; }
-            td:nth-of-type(4):before { content: "Judul:"; }
-            td:nth-of-type(5):before { content: "Status:"; }
-            td:nth-of-type(6):before { content: "Pembimbing 1:"; }
-            td:nth-of-type(7):before { content: "Pembimbing 2:"; }
-            td:nth-of-type(8):before { content: "Ketua Sidang:"; }
-            td:nth-of-type(9):before { content: "Sekretaris:"; }
-            td:nth-of-type(10):before { content: "Anggota 1:"; }
-            td:nth-of-type(11):before { content: "Anggota 2:"; }
-            td:nth-of-type(12):before { content: "Tgl/Waktu Sidang:"; }
-            td:nth-of-type(13):before { content: "Ruangan:"; }
-            td:nth-of-type(14):before { content: "Aksi:"; }
+            td:nth-of-type(3):before { content: "Judul:"; }
+            td:nth-of-type(4):before { content: "Status:"; }
+            td:nth-of-type(5):before { content: "Pembimbing 1:"; }
+            td:nth-of-type(6):before { content: "Pembimbing 2:"; }
+            td:nth-of-type(7):before { content: "Ketua Sidang:"; }
+            td:nth-of-type(8):before { content: "Sekretaris:"; }
+            td:nth-of-type(9):before { content: "Anggota 1:"; }
+            td:nth-of-type(10):before { content: "Anggota 2:"; }
+            td:nth-of-type(11):before { content: "Tgl/Waktu Sidang:"; }
+            td:nth-of-type(12):before { content: "Ruangan:"; }
+            td:nth-of-type(13):before { content: "Aksi:"; }
         }
         .table-responsive {
             overflow-x: auto; /* Ini kunci untuk scroll horizontal */
@@ -285,41 +267,38 @@
 <div class="container">
     <h2><i class="fas fa-graduation-cap"></i> Manajemen Pengajuan Sidang</h2>
     <h3><i class="fas fa-hourglass-half"></i> Pengajuan Menunggu Aksi Anda</h3>
-    @if ($pengajuansKaprodi->isEmpty())
+
+    <h4>Pengajuan Tugas Akhir (TA)</h4>
+    @if ($pengajuansKaprodiTA->isEmpty())
         <p class="no-data">
             <i class="fas fa-inbox"></i>
-            Tidak ada pengajuan sidang yang menunggu penjadwalan atau pembaruan saat ini.
+            Tidak ada pengajuan Tugas Akhir (TA) yang menunggu penjadwalan atau pembaruan saat ini.
         </p>
     @else
-        {{-- Bungkus tabel dengan div baru ini --}}
         <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Mahasiswa</th>
-                        <th>Jenis Pengajuan</th>
                         <th>Judul</th>
                         <th>Status</th>
-                        <th>@if($showPklColumns) Pembimbing @else Pembimbing 1 @endif</th>
-                        <th>@if($showPklColumns) Penguji @else Pembimbing 2 @endif</th>
+                        <th>Pembimbing 1</th>
+                        <th>Pembimbing 2</th>
                         <th>Ketua Sidang</th>
-                        @if ($showTaColumns)
                         <th>Sekretaris</th>
                         <th>Anggota 1</th>
                         <th>Anggota 2</th>
-                        @endif
                         <th>Tanggal/Waktu Sidang</th>
                         <th>Ruangan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($pengajuansKaprodi as $pengajuan)
+                    @foreach ($pengajuansKaprodiTA as $pengajuan)
                         <tr>
                             <td>{{ $pengajuan->id }}</td>
                             <td>{{ $pengajuan->mahasiswa->nama_lengkap }} <br> ({{ $pengajuan->mahasiswa->nim }})</td>
-                            <td>{{ strtoupper(str_replace('_', ' ', $pengajuan->jenis_pengajuan)) }}</td>
                             <td>{{ $pengajuan->judul_pengajuan ?? 'N/A' }}</td>
                             <td>
                                 <span class="status-badge {{ str_contains($pengajuan->status, 'ditolak') ? 'tolak' : (str_contains($pengajuan->status, 'setuju') || str_contains($pengajuan->status, 'final') ? 'setuju' : 'menunggu') }}">
@@ -329,11 +308,58 @@
                             <td>{{ $pengajuan->sidang->dosenPembimbing->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->dosenPenguji1->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->ketuaSidang->nama ?? 'N/A' }}</td>
-                            @if ($pengajuan->jenis_pengajuan == 'ta')
                             <td>{{ $pengajuan->sidang->sekretarisSidang->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->anggota1Sidang->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->anggota2Sidang->nama ?? 'N/A' }}</td>
-                            @endif
+                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y, H:i') : 'N/A' }}</td>
+                            <td>{{ optional($pengajuan->sidang)->ruangan_sidang ?? 'N/A' }}</td>
+                            <td class="action-buttons">
+                                <a href="{{ route('kaprodi.pengajuan.show', $pengajuan->id) }}" class="btn btn-info">
+                                    <i class="fas fa-eye"></i> Detail & Jadwalkan
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
+
+    <h4 style="margin-top: 40px;">Pengajuan Praktik Kerja Lapangan (PKL)</h4>
+    @if ($pengajuansKaprodiPKL->isEmpty())
+        <p class="no-data">
+            <i class="fas fa-inbox"></i>
+            Tidak ada pengajuan Praktik Kerja Lapangan (PKL) yang menunggu penjadwalan atau pembaruan saat ini.
+        </p>
+    @else
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Mahasiswa</th>
+                        <th>Judul</th>
+                        <th>Status</th>
+                        <th>Pembimbing</th>
+                        <th>Penguji</th>
+                        <th>Tanggal/Waktu Sidang</th>
+                        <th>Ruangan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($pengajuansKaprodiPKL as $pengajuan)
+                        <tr>
+                            <td>{{ $pengajuan->id }}</td>
+                            <td>{{ $pengajuan->mahasiswa->nama_lengkap }} <br> ({{ $pengajuan->mahasiswa->nim }})</td>
+                            <td>{{ $pengajuan->judul_pengajuan ?? 'N/A' }}</td>
+                            <td>
+                                <span class="status-badge {{ str_contains($pengajuan->status, 'ditolak') ? 'tolak' : (str_contains($pengajuan->status, 'setuju') || str_contains($pengajuan->status, 'final') ? 'setuju' : 'menunggu') }}">
+                                    {{ ucfirst(str_replace('_', ' ', $pengajuan->status)) }}
+                                </span>
+                            </td>
+                            <td>{{ $pengajuan->sidang->dosenPembimbing->nama ?? 'N/A' }}</td>
+                            <td>{{ $pengajuan->sidang->dosenPenguji1->nama ?? 'N/A' }}</td>
                             <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y, H:i') : 'N/A' }}</td>
                             <td>{{ optional($pengajuan->sidang)->ruangan_sidang ?? 'N/A' }}</td>
                             <td class="action-buttons">
@@ -351,10 +377,12 @@
     <hr>
 
     <h3><i class="fas fa-check-circle"></i> Pengajuan Selesai Diproses</h3>
-    @if ($pengajuansSelesaiKaprodi->isEmpty())
+
+    <h4>Pengajuan Tugas Akhir (TA)</h4>
+    @if ($pengajuansSelesaiKaprodiTA->isEmpty())
         <p class="no-data">
             <i class="fas fa-clipboard-check"></i>
-            Tidak ada pengajuan yang telah selesai Anda tangani.
+            Tidak ada pengajuan Tugas Akhir (TA) yang telah selesai Anda tangani.
         </p>
     @else
         <div class="table-responsive">
@@ -363,29 +391,25 @@
                     <tr>
                         <th>ID</th>
                         <th>Mahasiswa</th>
-                        <th>Jenis Pengajuan</th>
                         <th>Judul</th>
                         <th>Status</th>
-                        <th>@if($showPklColumns) Pembimbing @else Pembimbing 1 @endif</th>
-                        <th>@if($showPklColumns) Penguji @else Pembimbing 2 @endif</th>
+                        <th>Pembimbing 1</th>
+                        <th>Pembimbing 2</th>
                         <th>Ketua Sidang</th>
-                        @if ($showTaColumns)
                         <th>Sekretaris</th>
                         <th>Anggota 1</th>
                         <th>Anggota 2</th>
-                        @endif
                         <th>Tanggal/Waktu Sidang</th>
                         <th>Ruangan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($pengajuansSelesaiKaprodi as $pengajuan)
+                    @foreach ($pengajuansSelesaiKaprodiTA as $pengajuan)
                         <tr>
                             <td>{{ $pengajuan->id }}</td>
                             <td>{{ $pengajuan->mahasiswa->nama_lengkap }} <br> ({{ $pengajuan->mahasiswa->nim }})</td>
-                            <td>{{ strtoupper(str_replace('_', ' ', $pengajuan->jenis_pengajuan)) }}</td>
-                            <td>{{ $pengajuan->judul ?? 'N/A' }}</td>
+                            <td>{{ $pengajuan->judul_pengajuan ?? 'N/A' }}</td>
                             <td>
                                 <span class="status-badge {{ str_contains($pengajuan->status, 'ditolak') ? 'tolak' : 'setuju' }}">
                                     {{ ucfirst(str_replace('_', ' ', $pengajuan->status)) }}
@@ -394,11 +418,58 @@
                             <td>{{ $pengajuan->sidang->dosenPembimbing->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->dosenPenguji1->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->ketuaSidang->nama ?? 'N/A' }}</td>
-                            @if ($pengajuan->jenis_pengajuan == 'ta')
                             <td>{{ $pengajuan->sidang->sekretarisSidang->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->anggota1Sidang->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->anggota2Sidang->nama ?? 'N/A' }}</td>
-                            @endif
+                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y, H:i') : 'N/A' }}</td>
+                            <td>{{ optional($pengajuan->sidang)->ruangan_sidang ?? 'N/A' }}</td>
+                            <td>
+                                <a href="{{ route('kaprodi.pengajuan.show', $pengajuan->id) }}" class="btn btn-info">
+                                    <i class="fas fa-info-circle"></i> Detail
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
+
+    <h4 style="margin-top: 40px;">Pengajuan Praktik Kerja Lapangan (PKL)</h4>
+    @if ($pengajuansSelesaiKaprodiPKL->isEmpty())
+        <p class="no-data">
+            <i class="fas fa-clipboard-check"></i>
+            Tidak ada pengajuan Praktik Kerja Lapangan (PKL) yang telah selesai Anda tangani.
+        </p>
+    @else
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Mahasiswa</th>
+                        <th>Judul</th>
+                        <th>Status</th>
+                        <th>Pembimbing</th>
+                        <th>Penguji</th>
+                        <th>Tanggal/Waktu Sidang</th>
+                        <th>Ruangan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($pengajuansSelesaiKaprodiPKL as $pengajuan)
+                        <tr>
+                            <td>{{ $pengajuan->id }}</td>
+                            <td>{{ $pengajuan->mahasiswa->nama_lengkap }} <br> ({{ $pengajuan->mahasiswa->nim }})</td>
+                            <td>{{ $pengajuan->judul ?? 'N/A' }}</td>
+                            <td>
+                                <span class="status-badge {{ str_contains($pengajuan->status, 'ditolak') ? 'tolak' : 'setuju' }}">
+                                    {{ ucfirst(str_replace('_', ' ', $pengajuan->status)) }}
+                                </span>
+                            </td>
+                            <td>{{ $pengajuan->sidang->dosenPembimbing->nama ?? 'N/A' }}</td>
+                            <td>{{ $pengajuan->sidang->dosenPenguji1->nama ?? 'N/A' }}</td>
                             <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y, H:i') : 'N/A' }}</td>
                             <td>{{ optional($pengajuan->sidang)->ruangan_sidang ?? 'N/A' }}</td>
                             <td>

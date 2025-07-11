@@ -337,6 +337,28 @@
         <div class="card-section">
             <h3><i class="fas fa-cogs"></i> Aksi Kaprodi</h3>
             
+            @php
+                $existingDosenIds = [];
+                if ($pengajuan->sidang) {
+                    if ($pengajuan->sidang->dosenPembimbing) {
+                        $existingDosenIds[] = $pengajuan->sidang->dosenPembimbing->id;
+                    }
+                    if ($pengajuan->sidang->dosenPenguji1) {
+                        $existingDosenIds[] = $pengajuan->sidang->dosenPenguji1->id;
+                    }
+                    if ($pengajuan->sidang->sekretarisSidang) {
+                        $existingDosenIds[] = $pengajuan->sidang->sekretarisSidang->id;
+                    }
+                    if ($pengajuan->sidang->anggota1Sidang) {
+                        $existingDosenIds[] = $pengajuan->sidang->anggota1Sidang->id;
+                    }
+                    if ($pengajuan->sidang->anggota2Sidang) {
+                        $existingDosenIds[] = $pengajuan->sidang->anggota2Sidang->id;
+                    }
+                    $existingDosenIds = array_unique($existingDosenIds);
+                }
+            @endphp
+
             @if ($bisaDifinalisasi && ($pengajuan->status === 'menunggu_persetujuan_dosen' || $pengajuan->status === 'dosen_menyetujui'))
                 <form action="{{ route('kaprodi.pengajuan.finalkan.jadwal', $pengajuan->id) }}" method="POST">
                     @csrf
@@ -360,9 +382,14 @@
                             <select name="sekretaris_sidang_id" id="sekretaris_sidang_id" class="form-control" required>
                                 <option value="">Pilih Sekretaris Sidang</option>
                                 @foreach ($dosens as $dosen)
-                                    <option value="{{ $dosen->id }}" {{ optional($pengajuan->sidang)->sekretaris_sidang_dosen_id == $dosen->id ? 'selected' : '' }}>
-                                        {{ $dosen->nama }}
-                                    </option>
+                                    @php
+                                        $isSelected = optional($pengajuan->sidang)->sekretaris_sidang_dosen_id == $dosen->id;
+                                    @endphp
+                                    @if (!in_array($dosen->id, $existingDosenIds) || $isSelected)
+                                        <option value="{{ $dosen->id }}" {{ $isSelected ? 'selected' : '' }}>
+                                            {{ $dosen->nama }}
+                                        </option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>
@@ -371,9 +398,14 @@
                             <select name="dosen_penguji_1_id" id="dosen_penguji_1_id" class="form-control" required>
                                 <option value="">Pilih Dosen Penguji 1</option>
                                 @foreach ($dosens as $dosen)
-                                    <option value="{{ $dosen->id }}" {{ optional($pengajuan->sidang)->anggota1_sidang_dosen_id == $dosen->id ? 'selected' : '' }}>
-                                        {{ $dosen->nama }}
-                                    </option>
+                                    @php
+                                        $isSelected = optional($pengajuan->sidang)->anggota1_sidang_dosen_id == $dosen->id;
+                                    @endphp
+                                    @if (!in_array($dosen->id, $existingDosenIds) || $isSelected)
+                                        <option value="{{ $dosen->id }}" {{ $isSelected ? 'selected' : '' }}>
+                                            {{ $dosen->nama }}
+                                        </option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>
@@ -382,9 +414,14 @@
                             <select name="dosen_penguji_2_id" id="dosen_penguji_2_id" class="form-control">
                                 <option value="">Pilih Dosen Penguji 2 (opsional)</option>
                                 @foreach ($dosens as $dosen)
-                                    <option value="{{ $dosen->id }}" {{ optional($pengajuan->sidang)->anggota2_sidang_dosen_id == $dosen->id ? 'selected' : '' }}>
-                                        {{ $dosen->nama }}
-                                    </option>
+                                    @php
+                                        $isSelected = optional($pengajuan->sidang)->anggota2_sidang_dosen_id == $dosen->id;
+                                    @endphp
+                                    @if (!in_array($dosen->id, $existingDosenIds) || $isSelected)
+                                        <option value="{{ $dosen->id }}" {{ $isSelected ? 'selected' : '' }}>
+                                            {{ $dosen->nama }}
+                                        </option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>
@@ -394,9 +431,14 @@
                             <select name="dosen_penguji_id" id="dosen_penguji_id" class="form-control" required>
                                 <option value="">Pilih Dosen Penguji</option>
                                 @foreach ($dosens as $dosen)
-                                    <option value="{{ $dosen->id }}" {{ optional($pengajuan->sidang)->dosen_penguji1_id == $dosen->id ? 'selected' : '' }}>
-                                        {{ $dosen->nama }}
-                                    </option>
+                                    @php
+                                        $isSelected = optional($pengajuan->sidang)->dosen_penguji1_id == $dosen->id;
+                                    @endphp
+                                    @if (!in_array($dosen->id, $existingDosenIds) || $isSelected)
+                                        <option value="{{ $dosen->id }}" {{ $isSelected ? 'selected' : '' }}>
+                                            {{ $dosen->nama }}
+                                        </option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>
