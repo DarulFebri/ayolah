@@ -72,7 +72,7 @@
             display: flex;
             min-height: 100vh;
         }
-
+    
         .alert {
             position: relative;
             padding: 1rem 1.25rem;
@@ -84,19 +84,19 @@
             font-size: 0.95rem;
             animation: fadeIn 0.5s both;
         }
-
+    
         .alert-success {
             color: #155724;
             background-color: #d4edda;
             border-color: #c3e6cb;
         }
-
+    
         .alert-danger {
             color: #721c24;
             background-color: #f8d7da;
             border-color: #f5c6cb;
         }
-
+    
         .alert-info {
             background-color: #e0f7fa;
             color: #00796b;
@@ -110,12 +110,12 @@
             gap: 10px;
             font-size: 1rem;
         }
-
+    
         .alert-info i {
             font-size: 1.5rem;
             color: #00acc1;
         }
-
+    
         .alert .close {
             position: absolute;
             top: 0;
@@ -130,7 +130,7 @@
             opacity: 0.5;
             cursor: pointer;
         }
-
+    
         .alert .close:hover {
             opacity: 0.75;
         }
@@ -696,6 +696,113 @@
                 width: 100%;
             }
         }
+    
+        /* Notification Modal styles */
+        .notification-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+    
+        .notification-modal.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+    
+        .notification-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+    
+        .notification-confirm {
+            color: var(--warning);
+        }
+    
+        .notification-success {
+            color: var(--success);
+        }
+    
+        .notification-message {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+    
+        .modal-footer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+        }
+    
+        .btn {
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+        }
+    
+        .btn-gray {
+            background-color: #6c757d;
+            color: var(--white);
+        }
+    
+        .btn-gray:hover {
+            background-color: #5a6268;
+        }
+    
+        .btn-blue {
+            background-color: var(--primary-500);
+            color: var(--white);
+        }
+    
+        .btn-blue:hover {
+            background-color: var(--primary-600);
+        }
+    
+        .btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+    
+        /* Overlay for modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out;
+        }
+    
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
     </style>
     @yield('styles')
 </head>
@@ -842,12 +949,12 @@
                                 <span>Ubah Sandi</span>
                             </a>
                             <div class="dropdown-divider"></div>
-                            <form action="{{ route('admin.logout') }}" method="POST" style="margin: 0;">
-                                @csrf 
-                                <button type="submit" class="dropdown-item" style="width: 100%; border: none; background: none; cursor: pointer;">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    <span>Keluar</span>
-                                </button>
+                            <a href="#" class="dropdown-item" onclick="showLogoutConfirmation()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Keluar</span>
+                            </a>
+                            <form action="{{ route('admin.logout') }}" method="POST" style="display: none;" id="logout-form">
+                                @csrf
                             </form>
                         </div>
                     </div>
@@ -857,6 +964,20 @@
             @yield('content')
 
         </div>
+    </div>
+
+    <div class="notification-modal" id="logoutConfirmationModal">
+        <i class="fas fa-exclamation-triangle notification-icon notification-confirm"></i>
+        <div class="notification-message">Apakah Anda yakin ingin keluar dari sistem?</div>
+        <div class="modal-footer" style="justify-content: center; gap: 15px; margin-top: 20px;">
+            <button class="btn btn-gray" onclick="hideLogoutConfirmation()">Batal</button>
+            <button class="btn btn-blue" id="confirmLogoutBtn" onclick="performLogout()">Ya</button>
+        </div>
+    </div>
+
+    <div class="notification-modal" id="logoutSuccessModal">
+        <i class="fas fa-check-circle notification-icon notification-success"></i>
+        <div class="notification-message">Anda berhasil logout. Mengarahkan ke halaman login...</div>
     </div>
 
     <script>
@@ -928,6 +1049,34 @@
             card.addEventListener('mouseup', () => {
                 card.style.transform = 'translateY(-5px) scale(1.02)';
             });
+        });
+    
+        // Logout functionality with notification pop-ups
+        const logoutConfirmationModal = document.getElementById('logoutConfirmationModal');
+        const logoutSuccessModal = document.getElementById('logoutSuccessModal');
+        const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+        const modalOverlay = document.getElementById('modalOverlay'); // Get the overlay element
+    
+        function showLogoutConfirmation() {
+            logoutConfirmationModal.classList.add('show');
+            modalOverlay.classList.add('show'); // Show the overlay
+        }
+    
+        function hideLogoutConfirmation() {
+            logoutConfirmationModal.classList.remove('show');
+            modalOverlay.classList.remove('show'); // Hide the overlay
+        }
+    
+        function performLogout() {
+            const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+            confirmLogoutBtn.classList.add('loading');
+            confirmLogoutBtn.disabled = true;
+            document.getElementById('logout-form').submit();
+        }
+    
+        // Optional: Hide modal and overlay if clicking outside the modal
+        modalOverlay.addEventListener('click', function() {
+            hideLogoutConfirmation();
         });
     </script>
     @yield('scripts')

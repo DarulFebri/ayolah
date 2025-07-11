@@ -219,7 +219,7 @@ class AdminController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/'); // Redirect ke halaman utama atau halaman lain setelah logout
+        return redirect()->route('admin.login'); // Redirect ke halaman utama atau halaman lain setelah logout
     }
 
     // Dibawah ini untuk CRUD mahasiswa
