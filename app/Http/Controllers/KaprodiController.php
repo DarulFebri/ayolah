@@ -357,6 +357,7 @@ class KaprodiController extends Controller
         // 1. Ambil pengajuan yang sedang menunggu aksi Kaprodi
         $pengajuansKaprodi = Pengajuan::where('status', 'diverifikasi_admin')
             ->orWhere('status', 'menunggu_persetujuan_dosen')
+            ->orWhere('status', 'dosen_menyetujui')
             ->orWhere('status', 'perlu_penjadwalan_ulang')
             ->with('mahasiswa')
             ->orderBy('created_at', 'desc')
