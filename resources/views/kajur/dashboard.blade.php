@@ -1007,13 +1007,7 @@
         }
     </style>
 @endpush
-
-
-    
-
-    
-        
-        
+  
         @section('content')
     <div class="welcome-box">
             <h2 class="welcome-title">
@@ -1134,105 +1128,6 @@
                 </div>
             </a>
             
-        </div>
-
-        {{-- Daftar Pengajuan Section --}}
-        <div class="content-section">
-            <div class="section-header">
-                <h2 class="section-title">
-                    <i class="fas fa-list-alt"></i> Daftar Pengajuan
-                </h2>
-                <div class="section-actions">
-                    <button class="btn-filter">
-                        <i class="fas fa-filter"></i> Filter
-                    </button>
-                    <button class="btn-filter">
-                        <i class="fas fa-sort"></i> Urutkan
-                    </button>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Mahasiswa</th>
-                            <th>NIM</th>
-                            <th>Jenis Pengajuan</th>
-                            <th>Tanggal Pengajuan</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Alia Putri</td>
-                            <td>2211082001</td>
-                            <td>KP</td>
-                            <td>2024-05-20</td>
-                            <td><span class="status-badge pending">Pending</span></td>
-                            <td>
-                                <button class="btn-action" onclick="viewDetail()">
-                                    <i class="fas fa-eye"></i> Detail
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Budi Santoso</td>
-                            <td>2211082002</td>
-                            <td>TA</td>
-                            <td>2024-05-21</td>
-                            <td><span class="status-badge approved">Diterima</span></td>
-                            <td>
-                                <button class="btn-action" onclick="viewDetail()">
-                                    <i class="fas fa-eye"></i> Detail
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Citra Dewi</td>
-                            <td>2211082003</td>
-                            <td>KP</td>
-                            <td>2024-05-22</td>
-                            <td><span class="status-badge rejected">Ditolak</span></td>
-                            <td>
-                                <button class="btn-action" onclick="viewDetail()">
-                                    <i class="fas fa-eye"></i> Detail
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>Doni Pratama</td>
-                            <td>2211082004</td>
-                            <td>TA</td>
-                            <td>2024-05-23</td>
-                            <td><span class="status-badge completed">Selesai</span></td>
-                            <td>
-                                <button class="btn-action" onclick="viewDetail()">
-                                    <i class="fas fa-eye"></i> Detail
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>Eka Nurmala</td>
-                            <td>2211082005</td>
-                            <td>KP</td>
-                            <td>2024-05-24</td>
-                            <td><span class="status-badge pending">Pending</span></td>
-                            <td>
-                                <button class="btn-action" onclick="viewDetail()">
-                                    <i class="fas fa-eye"></i> Detail
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
 
         @endsection

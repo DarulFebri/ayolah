@@ -93,7 +93,9 @@ class KajurController extends Controller
             ->where('status', 'sidang_dijadwalkan_final')
             ->get();
 
-        return view('kajur.pengajuan.perlu_verifikasi', compact('pengajuanSiapSidang'));
+        $kajur_for_layout = Auth::user()->kajur; // Fetch Kajur data for layout
+
+        return view('kajur.pengajuan.perlu_verifikasi', compact('pengajuanSiapSidang', 'kajur_for_layout'));
     }
 
     public function daftarPengajuanTerverifikasi()
@@ -103,7 +105,9 @@ class KajurController extends Controller
             ->where('status', 'diverifikasi_kajur')
             ->get();
 
-        return view('kajur.pengajuan.sudah_verifikasi', compact('pengajuanTerverifikasi'));
+        $kajur_for_layout = Auth::user()->kajur; // Fetch Kajur data for layout
+
+        return view('kajur.pengajuan.sudah_verifikasi', compact('pengajuanTerverifikasi', 'kajur_for_layout'));
     }
 
     public function daftarPengajuan()

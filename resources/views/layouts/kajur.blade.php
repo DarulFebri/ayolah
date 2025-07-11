@@ -1169,24 +1169,6 @@
                 </div>
             </a>
 
-            {{-- Menu Dosen --}}
-            <a href="{{ route('kajur.dosen.index') }}" style="text-decoration: none; color: inherit;">
-                <div class="menu-item {{ Request::routeIs('kajur.dosen.*') ? 'active' : '' }} tooltip">
-                    <i class="fas fa-chalkboard-teacher"></i>
-                    <span>Dosen</span>
-                    <span class="tooltiptext">Dosen</span>
-                </div>
-            </a>
-
-            {{-- Menu Mahasiswa --}}
-            <a href="{{ route('kajur.mahasiswa.index') }}" style="text-decoration: none; color: inherit;">
-                <div class="menu-item {{ Request::routeIs('kajur.mahasiswa.*') ? 'active' : '' }} tooltip">
-                    <i class="fas fa-user-graduate"></i>
-                    <span>Mahasiswa</span>
-                    <span class="tooltiptext">Mahasiswa</span>
-                </div>
-            </a>
-
             {{-- Menu Pengajuan --}}
             <div class="menu-item tooltip {{ Request::routeIs('kajur.pengajuan.*') ? 'active' : '' }}" onclick="toggleSubmenu('pengajuan', event)">
                 <i class="fas fa-file-invoice"></i> {{-- Ikon untuk Pengajuan --}}
