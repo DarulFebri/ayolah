@@ -18,7 +18,7 @@
             --primary-700: #004d99;
             --sidebar-color: #1e3a8a;
             --text-color: #2d3748;
-            --light-gray: #f8fafc;
+            --light-gray: #f8fafc; 
             --white: #ffffff;
             --success: #198754;
             --warning: #ffc107;
@@ -619,7 +619,7 @@
             width: 200px;
             padding: 10px 0;
             z-index: 1000;
-            display: block; /* Changed for testing */
+            display: none;
             animation: fadeIn 0.3s ease;
         }
 
@@ -1370,20 +1370,10 @@
         }
 
         function performLogout() {
+            const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
             confirmLogoutBtn.classList.add('loading');
             confirmLogoutBtn.disabled = true;
-
             document.getElementById('logout-form').submit();
-
-            setTimeout(() => {
-                hideLogoutConfirmation();
-                logoutSuccessModal.classList.add('show');
-                setTimeout(() => {
-                    logoutSuccessModal.classList.remove('show');
-                }, 2000);
-                confirmLogoutBtn.classList.remove('loading');
-                confirmLogoutBtn.disabled = false;
-            }, 1500);
         }
 
         // Card hover effects
