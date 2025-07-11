@@ -34,7 +34,7 @@
     <!-- Tombol Aksi Utama -->
     <div class="main-card mb-4">
         <h2 class="form-title"><i class="fas fa-plus-circle"></i>Mulai Pengajuan Baru</h2>
-        <p class="text-muted mb-3">Pilih jenis pengajuan yang ingin Anda buat. Anda hanya dapat memiliki satu pengajuan aktif untuk setiap jenis.</p>
+        <p class="text-muted mb-3">Pilih pengajuan yang anda inginkan.</p>
         <div class="form-actions" style="justify-content: flex-start;">
             @if ($hasPklPengajuan)
                 <button class="btn btn-gray" disabled>
