@@ -110,6 +110,11 @@
                                     <a href="{{ route('mahasiswa.pengajuan.detail', $pengajuan->id) }}" class="btn btn-secondary"><i class="fas fa-eye"></i> Detail</a>
                                 @endif
 
+                                {{-- Tombol Status Sidang --}}
+                                @if ($pengajuan->sidang)
+                                    <a href="{{ route('mahasiswa.pengajuan.status', $pengajuan->id) }}" class="btn btn-info"><i class="fas fa-info-circle"></i> Status</a>
+                                @endif
+
                                 @if ($pengajuan->status == 'draft')
                                     <a href="{{ route('mahasiswa.pengajuan.edit', $pengajuan->id) }}" class="btn btn-primary"><i class="fas fa-edit"></i> Edit</a>
                                 @endif
@@ -166,6 +171,11 @@
                                     <a href="{{ route('mahasiswa.pengajuan.verified.detail', $pengajuan->id) }}" class="btn btn-success"><i class="fas fa-check-circle"></i> Lihat Detail Terverifikasi</a>
                                 @else
                                     <a href="{{ route('mahasiswa.pengajuan.detail', $pengajuan->id) }}" class="btn btn-secondary"><i class="fas fa-eye"></i> Detail</a>
+                                @endif
+
+                                {{-- Tombol Status Sidang --}}
+                                @if ($pengajuan->sidang)
+                                    <a href="{{ route('mahasiswa.pengajuan.status', $pengajuan->id) }}" class="btn btn-info"><i class="fas fa-info-circle"></i> Status</a>
                                 @endif
 
                                 @if ($pengajuan->status == 'draft')

@@ -186,6 +186,9 @@ Route::prefix('mahasiswa')->group(function () {
             // Menampilkan detail pengajuan
             Route::get('/{id}', [PengajuanController::class, 'show'])->name('detail');
 
+            // New route for showing sidang status details
+            Route::get('/{id}/status', [PengajuanController::class, 'showSidangStatus'])->name('status');
+
             // Menampilkan detail pengajuan yang sudah diverifikasi kajur
             Route::get('/{id}/verified', [PengajuanController::class, 'showVerified'])->name('verified.detail');
 

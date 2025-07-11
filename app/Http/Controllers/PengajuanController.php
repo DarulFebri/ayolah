@@ -70,7 +70,7 @@ class PengajuanController extends Controller
 
         // Mengambil semua pengajuan yang dimiliki oleh mahasiswa yang sedang login
         $pengajuans = Pengajuan::where('mahasiswa_id', $mahasiswaId)
-            ->with('sidang.dosenPembimbing', 'sidang.dosenPenguji1', 'sidang.dosenPenguji2')
+            ->with('sidang.dosenPembimbing', 'sidang.dosenPenguji1', 'sidang.dosenPenguji2', 'sidang.sekretarisSidang', 'sidang.anggota1Sidang', 'sidang.anggota2Sidang')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -78,6 +78,7 @@ class PengajuanController extends Controller
         $hasPklPengajuan = $pengajuans->where('jenis_pengajuan', 'pkl')->isNotEmpty();
         $hasTaPengajuan = $pengajuans->where('jenis_pengajuan', 'ta')->isNotEmpty();
 
+        // Debugging: Dump the pengajuans collection to inspect its contents
         return view('mahasiswa.pengajuan.index', compact('pengajuans', 'hasPklPengajuan', 'hasTaPengajuan', 'mahasiswa'));
     }
 
@@ -268,6 +269,37 @@ class PengajuanController extends Controller
         }
 
         return view('mahasiswa.pengajuan.verified_detail', compact('pengajuan'));
+    }
+
+    /**
+     * Menampilkan detail status sidang untuk pengajuan tertentu.
+     *
+     * @param  int  $id  ID Pengajuan
+     */
+    public function showSidangStatus($id)
+    {
+        $pengajuan = Pengajuan::with([
+            'mahasiswa',
+            'sidang.dosenPembimbing',
+            'sidang.dosenPenguji1',
+            'sidang.dosenPenguji2',
+            'sidang.ketuaSidang',
+            'sidang.sekretarisSidang',
+            'sidang.anggota1Sidang',
+            'sidang.anggota2Sidang',
+        ])->findOrFail($id);
+
+        // Pastikan mahasiswa yang melihat adalah pemilik pengajuan
+        if ($pengajuan->mahasiswa_id !== Auth::user()->mahasiswa->id) {
+            return redirect()->route('mahasiswa.pengajuan.index')->with('error', 'Anda tidak memiliki akses ke pengajuan ini.');
+        }
+
+        // Jika belum ada sidang yang dijadwalkan, mungkin redirect atau tampilkan pesan
+        if (! $pengajuan->sidang) {
+            return redirect()->route('mahasiswa.pengajuan.detail', $id)->with('error', 'Sidang untuk pengajuan ini belum dijadwalkan.');
+        }
+
+        return view('mahasiswa.pengajuan.status_detail', compact('pengajuan'));
     }
 
     /**
