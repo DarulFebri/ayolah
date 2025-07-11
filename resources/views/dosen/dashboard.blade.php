@@ -824,45 +824,29 @@
         }
     
         /* Notification Popup */
+        /* Removed .notification-modal styles as it's now an inline alert */
         .notification-modal {
-            display: none;
-            position: fixed;
+            /* Existing styles */
+            display: none; /* Add this line */
+            position: fixed; /* Or 'absolute' if you want it relative to a parent */
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            z-index: 1001; /* Ensure it's above other content */
             background-color: var(--white);
-            padding: 20px 30px;
-            border-radius: 10px;
-            width: 400px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            z-index: 3000;
+            max-width: 400px;
+            width: 90%;
             animation: fadeIn 0.3s ease;
         }
-    
+
         .notification-modal.show {
-            display: block;
+            display: block; /* This will make it visible when the 'show' class is added by JS */
         }
-    
-        .notification-icon {
-            font-size: 40px;
-            margin-bottom: 15px;
-        }
-    
-        .notification-message {
-            font-size: 18px;
-            color: var(--primary-700);
-            font-weight: 500;
-        }
-    
-        .notification-confirm {
-            color: var(--warning);
-        }
-    
-        .notification-success {
-            color: var(--success);
-        }
-    
+
         /* Custom Buttons for Notification Modal */
         /* These .btn styles are for specific modal buttons, not the general ones */
         .btn.btn-gray { /* Specificity for modal buttons */
@@ -951,7 +935,7 @@
         }
     
         .form-group {
-            /margin-bottom: 0; /* Managed by grid gap */
+            /*margin-bottom: 0; /* Managed by grid gap */
         }
     
         /* Label styling - combined from previous and data-mahasiswa.html */
@@ -993,18 +977,28 @@
             border-radius: 8px;
             margin-bottom: 20px;
             font-size: 0.95rem;
+            display: flex; /* Added for icon and text alignment */
+            align-items: center; /* Added for vertical alignment */
+            border-left: 4px solid; /* Added for a distinct left border */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Subtle shadow */
         }
     
         .alert-success {
             background-color: rgba(40, 167, 69, 0.15);
             color: var(--success);
-            border: 1px solid var(--success);
+            border-color: var(--success);
         }
     
         .alert-danger {
             background-color: rgba(220, 53, 69, 0.15);
             color: var(--danger);
-            border: 1px solid var(--danger);
+            border-color: var(--danger);
+        }
+
+        .alert-info {
+            background-color: rgba(13, 202, 240, 0.15);
+            color: var(--info);
+            border-color: var(--info);
         }
     
         .invalid-feedback {
@@ -1246,48 +1240,40 @@
         <div class="loading-spinner"></div>
     </div>
 
-    <div class="notification-popup" id="notificationPopup">
-        <i id="notificationIcon" class="notification-icon"></i>
-        <div class="notification-content">
-            <div id="notificationTitle" class="notification-title"></div>
-            <div id="notificationMessage" class="notification-message"></div>
-        </div>
-        <button class="notification-close" id="closeNotification">&times;</button>
-    </div>
-
     <div class="sidebar" id="sidebar">
-            <div class="logo-container">
-                <img src="{{ asset('assets/images/sipraktawhite2.png') }}" alt="Logo SIPRAKTA" class="logo-img">
+        <div class="logo-container">
+            <img src="{{ asset('assets/images/sipraktawhite2.png') }}" alt="Logo SIPRAKTA" class="logo-img">
+        </div>
+
+        <div class="menu-title">Menu Utama</div>
+        <a href="{{ route('dosen.dashboard') }}" style="text-decoration: none; color: inherit;">
+            <div class="menu-item {{ Request::routeIs('dosen.dashboard') ? 'active' : '' }} tooltip">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
             </div>
+        </a>
 
-            <div class="menu-title">Menu Utama</div>
-            <a href="{{ route('dosen.dashboard') }}" style="text-decoration: none; color: inherit;">
-                <div class="menu-item {{ Request::routeIs('mahasiswa.dashboard') ? 'active' : '' }} tooltip">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                </div>
-            </a>
+        {{-- These menu items likely belong to a submenu or should be dynamically added based on actual notifications/data --}}
+        <a href="{{ route('dosen.dashboard') }}" style="text-decoration: none; color: inherit;">
+            <div class="menu-item tooltip">
+                <i class="fas fa-bell"></i>
+                <span>Notifikasi terbaru</span>
+            </div>
+        </a>
 
-            <a href="{{ route('dosen.dashboard') }}" style="text-decoration: none; color: inherit;">
-                <div class="menu-item {{ Request::routeIs('mahasiswa.dashboard') ? 'active' : '' }} tooltip">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Notifikasi terbaru</span>
-                </div>
-            </a>
+        <a href="{{ route('dosen.dashboard') }}" style="text-decoration: none; color: inherit;">
+            <div class="menu-item tooltip">
+                <i class="fas fa-file-import"></i>
+                <span>Pengajuan Terbaru Menunggu Persetujuan Anda</span>
+            </div>
+        </a>
 
-            <a href="{{ route('dosen.dashboard') }}" style="text-decoration: none; color: inherit;">
-                <div class="menu-item {{ Request::routeIs('mahasiswa.dashboard') ? 'active' : '' }} tooltip">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Pengajuan Terbaru Menunggu Persetujuan Anda</span>
-                </div>
-            </a>
-
-            <a href="{{ route('dosen.dashboard') }}" style="text-decoration: none; color: inherit;">
-                <div class="menu-item {{ Request::routeIs('mahasiswa.dashboard') ? 'active' : '' }} tooltip">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Jadwal Sidang terbaru</span>
-                </div>
-            </a>
+        <a href="{{ route('dosen.dashboard') }}" style="text-decoration: none; color: inherit;">
+            <div class="menu-item tooltip">
+                <i class="fas fa-calendar-check"></i>
+                <span>Jadwal Sidang terbaru</span>
+            </div>
+        </a>
     </div>
 
     <div class="main-content" id="mainContent">
@@ -1326,6 +1312,8 @@
             </div>
             <p>Selamat datang di Dashboard Dosen SIPRAKTA. Di sini Anda dapat mengelola pengajuan, melihat jadwal sidang, dan lainnya.</p>
         </div>
+
+        <div id="notificationContainer"></div>
     
         <div class="card-container">
             <div class="card clickable-card small" onclick="location.href='{{ route('dosen.pengajuan.index') }}'"> {{-- Adjusted for Pengajuan --}}
@@ -1623,11 +1611,7 @@
         const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
         const pengajuanMenu = document.getElementById('pengajuanMenu');
         const submenuPengajuan = document.getElementById('submenuPengajuan');
-        const notificationPopup = document.getElementById('notificationPopup');
-        const notificationTitle = document.getElementById('notificationTitle');
-        const notificationMessage = document.getElementById('notificationMessage');
-        const notificationIcon = document.getElementById('notificationIcon');
-        const closeNotification = document.getElementById('closeNotification');
+        const notificationContainer = document.getElementById('notificationContainer'); // New: Get the container
 
         // Sidebar Toggle
         toggleSidebarBtn.addEventListener('click', () => {
@@ -1672,25 +1656,50 @@
         }
 
         function showNotification(title, message, type = 'info') {
-            notificationTitle.textContent = title;
-            notificationMessage.textContent = message;
+            // Clear existing notifications
+            notificationContainer.innerHTML = '';
 
-            notificationPopup.className = 'notification-popup'; // Reset classes
+            const alertDiv = document.createElement('div');
+            alertDiv.classList.add('alert', `alert-${type}`);
+            alertDiv.style.opacity = '0'; // Start hidden for fade-in
+
+            let iconClass = '';
             if (type === 'success') {
-                notificationPopup.classList.add('success');
-                notificationIcon.className = 'fas fa-check-circle notification-icon';
+                iconClass = 'fas fa-check-circle';
             } else if (type === 'error') {
-                notificationPopup.classList.add('error');
-                notificationIcon.className = 'fas fa-exclamation-circle notification-icon';
+                iconClass = 'fas fa-exclamation-circle';
             } else { // info
-                notificationPopup.classList.add('info');
-                notificationIcon.className = 'fas fa-info-circle notification-icon';
+                iconClass = 'fas fa-info-circle';
             }
 
-            notificationPopup.classList.add('show');
+            alertDiv.innerHTML = `
+                <i class="${iconClass}" style="margin-right: 10px;"></i>
+                <div>
+                    <div style="font-weight: 600;">${title}</div>
+                    <div>${message}</div>
+                </div>
+                <button class="close-alert" style="margin-left: auto; background: none; border: none; font-size: 20px; cursor: pointer; color: inherit;">&times;</button>
+            `;
+
+            notificationContainer.appendChild(alertDiv);
+
+            // Fade in
             setTimeout(() => {
-                notificationPopup.classList.remove('show');
-            }, 5000); // Auto hide after 5 seconds
+                alertDiv.style.opacity = '1';
+                alertDiv.style.transition = 'opacity 0.5s ease-in-out';
+            }, 100);
+
+            // Auto hide
+            setTimeout(() => {
+                alertDiv.style.opacity = '0';
+                alertDiv.addEventListener('transitionend', () => alertDiv.remove());
+            }, 5000);
+
+            // Close button functionality
+            alertDiv.querySelector('.close-alert').addEventListener('click', () => {
+                alertDiv.style.opacity = '0';
+                alertDiv.addEventListener('transitionend', () => alertDiv.remove());
+            });
         }
 
         function performLogout() {
@@ -1720,11 +1729,18 @@
             confirmLogoutBtn.addEventListener('click', performLogout);
         }
 
-        if (closeNotification) {
-            closeNotification.addEventListener('click', () => {
-                notificationPopup.classList.remove('show');
-            });
-        }
+        // Display session flash messages
+        @if(session('success'))
+            showNotification('Berhasil!', '{{ session('success') }}', 'success');
+        @endif
+
+        @if(session('error'))
+            showNotification('Error!', '{{ session('error') }}', 'error');
+        @endif
+
+        @if(session('info'))
+            showNotification('Informasi!', '{{ session('info') }}', 'info');
+        @endif
     </script>
 </body>
 </html>
