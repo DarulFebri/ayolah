@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Hash; // Untuk validasi unique
 // Pastikan ini di-import
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Notifications\SidangDijadwalkanFinalNotification; // Add this import
+use App\Models\User; // Add this import
 
 class KaprodiController extends Controller
 {
@@ -199,6 +201,12 @@ class KaprodiController extends Controller
             $newStatus = 'sidang_dijadwalkan_final';
             $pengajuan->update(['status' => $newStatus]);
             $this->logPengajuanStatusChange($pengajuan, $oldStatus, $newStatus, 'Jadwal sidang difinalisasi oleh Kaprodi.');
+
+            // Find the Kajur user and send notification
+            $kajurUser = User::where('role', 'kajur')->first();
+            if ($kajurUser) {
+                $kajurUser->notify(new SidangDijadwalkanFinalNotification($pengajuan));
+            }
 
             return redirect()->route('kaprodi.pengajuan.show', $pengajuan->id)->with('success', 'Jadwal sidang berhasil difinalisasi.');
         } else {

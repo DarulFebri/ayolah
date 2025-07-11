@@ -1196,8 +1196,8 @@
                 </div>
             </a>
 
-            <a href="{{ route('kajur.notifications.index') }}" style="text-decoration: none; color: inherit;">
-                <div class="menu-item {{ Request::routeIs('kajur.notifications') ? 'active' : '' }} tooltip">
+            <a href="{{ route('kajur.notifications.finalizedSidang') }}" style="text-decoration: none; color: inherit;">
+                <div class="menu-item {{ Request::routeIs('kajur.notifications.finalizedSidang') ? 'active' : '' }} tooltip">
                     <i class="fas fa-bell"></i>
                     <span>Notifikasi</span>
                     <span class="tooltiptext">Notifikasi</span>

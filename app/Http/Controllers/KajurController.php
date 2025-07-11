@@ -296,4 +296,32 @@ class KajurController extends Controller
 
         return back()->with('success', 'Semua notifikasi ditandai sudah dibaca.');
     }
+
+    public function showFinalizedSidangNotifications()
+    {
+        // Get pengajuan with 'sidang_dijadwalkan_final' status
+        $pengajuanFinalized = Pengajuan::where('status', 'sidang_dijadwalkan_final')->get();
+
+        // Get notifications related to these pengajuan
+        // This assumes you have a way to link notifications to pengajuan,
+        // e.g., through a notifiable type or data in the notification.
+        // For simplicity, let's assume notifications are directly related to PengajuanStatusHistory
+        // or that the notification data contains pengajuan_id.
+        // If notifications are generic, we might need to filter them based on type or data.
+
+        // For now, let's fetch all notifications and filter them in the view or here if possible.
+        // A more robust solution would involve custom notification types or a specific notification table.
+        $user = Auth::user();
+        $notifications = $user->notifications()
+                            ->where('type', 'App\Notifications\SidangDijadwalkanFinalNotification') // Assuming this is the notification type
+                            ->paginate(10);
+
+        // If the above filtering is not precise enough, you might need to iterate
+        // $pengajuanFinalized and find related notifications.
+        // For now, let's assume the notification data contains the status.
+
+        $kajur_for_layout = Auth::user()->kajur; // Fetch Kajur data for layout
+
+        return view('kajur.notifications.finalized_sidang', compact('notifications', 'kajur_for_layout'));
+    }
 }

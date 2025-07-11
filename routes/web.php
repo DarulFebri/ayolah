@@ -336,11 +336,13 @@ Route::prefix('kajur')->group(function () {
         Route::get('/notifications', [KajurController::class, 'showNotifications'])->name('kajur.notifications.index');
         Route::post('/notifications/{id}/mark-as-read', [KajurController::class, 'markNotificationAsRead'])->name('kajur.notifications.markAsRead');
         Route::post('/notifications/mark-all-as-read', [KajurController::class, 'markAllNotificationsAsRead'])->name('kajur.notifications.markAllAsRead');
+        Route::get('/notifications/finalized-sidang', [KajurController::class, 'showFinalizedSidangNotifications'])->name('kajur.notifications.finalizedSidang');
 
         // Rute untuk daftar pengajuan
         Route::get('/pengajuan', [KajurController::class, 'daftarPengajuan'])->name('kajur.pengajuan.index');
         Route::get('/pengajuan/perlu-verifikasi', [KajurController::class, 'daftarPengajuanVerifikasi'])->name('kajur.pengajuan.perlu_verifikasi');
         Route::get('/pengajuan/sudah-verifikasi', [KajurController::class, 'daftarPengajuanTerverifikasi'])->name('kajur.pengajuan.sudah_verifikasi');
+        Route::get('/pengajuan/{pengajuan}', [KajurController::class, 'showPengajuanDetail'])->name('kajur.pengajuan.show');
 
         // Rute untuk Verifikasi Pengajuan
         // Gunakan satu set rute saja untuk verifikasi, yang dengan '/form' lebih jelas
