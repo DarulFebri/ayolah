@@ -3,8 +3,7 @@
 @section('title', 'Dashboard Kajur')
 
 @push('styles')
-    
-        /* Salin semua CSS dari dashboard-admin.html di sini */
+    <style>
         :root {
             --primary-100: #e6f2ff;
             --primary-200: #b3d7ff;
