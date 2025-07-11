@@ -96,7 +96,7 @@
         <!-- Informasi Utama -->
         <div class="info-grid">
             <div class="info-item">
-                <p class="label">Judul Pengajuan</p>
+                <p class="label">Judul Laporan PKL</p>
                 <p class="value">{{ $pengajuan->judul_pengajuan ?? '-' }}</p>
             </div>
             <div class="info-item">
@@ -110,7 +110,7 @@
         <h3 class="form-title mt-4"><i class="fas fa-user-tie"></i> Informasi Dosen</h3>
         <div class="info-grid">
             <div class="info-item">
-                <p class="label">Dosen Pembimbing 1</p>
+                <p class="label">Dosen Pembimbing</p>
                 <p class="value">{{ $pengajuan->sidang->dosenPembimbing->nama ?? '-' }}</p>
             </div>
             @if ($pengajuan->jenis_pengajuan == 'ta')
