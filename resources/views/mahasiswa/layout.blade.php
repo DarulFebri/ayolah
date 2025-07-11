@@ -1530,6 +1530,7 @@
         });
 
     </script>
+    @stack('modals') {{-- Allows child views to push modal HTML --}}
     @stack('scripts') {{-- Allows child views to push additional scripts --}}
     <script>
         // Dosen Select Modal Functions

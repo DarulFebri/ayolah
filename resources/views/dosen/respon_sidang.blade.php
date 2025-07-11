@@ -254,7 +254,8 @@
         <div class="card-section">
             <h3>Detail Sidang</h3>
             <div class="detail-info">
-                <p><strong>Mahasiswa:</strong> {{ $sidang->pengajuan->mahasiswa->nama_lengkap }} (NIM: {{ $sidang->pengajuan->mahasiswa->nim }})</p>
+                <p><strong>Mahasiswa:</strong> {{ $sidang->pengajuan->mahasiswa->nama_lengkap }} <a href="#" id="lihatDetailMahasiswa" style="margin-left: 10px; color: #3b82f6; text-decoration: none; font-weight: 500;">(lihat detail mahasiswa)</a></p>
+                <p><strong>NIM:</strong> {{ $sidang->pengajuan->mahasiswa->nim }}</p>
                 <p><strong>Jenis Sidang:</strong> {{ strtoupper(str_replace('_', ' ', $sidang->pengajuan->jenis_pengajuan)) }}</p>
                 <p><strong>Tanggal & Waktu:</strong> {{ \Carbon\Carbon::parse($sidang->tanggal_waktu_sidang)->translatedFormat('l, d F Y H:i') }} WIB</p>
                 <p><strong>Ruangan:</strong> {{ $sidang->ruangan_sidang }}</p>
@@ -323,5 +324,103 @@
             </form>
         </div>
     </div>
+    <!-- Modal Structure -->
+    <div id="mahasiswaDetailModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); justify-content: center; align-items: center;">
+        <div style="background-color: #fefefe; margin: auto; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-width: 500px; width: 90%; position: relative;">
+            <span style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;" id="closeModalBtn">&times;</span>
+            <h3 style="color: #1e3a8a; margin-top: 0; margin-bottom: 25px; font-size: 1.8em; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">Detail Mahasiswa</h3>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img id="modalFotoProfil" src="" alt="Foto Profil" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #3b82f6;">
+            </div>
+            <div style="line-height: 1.8;">
+                <p><strong>Nama:</strong> <span id="modalNama"></span></p>
+                <p><strong>NIM:</strong> <span id="modalNIM"></span></p>
+                <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+                <p><strong>Nomor HP:</strong> <span id="modalNomorHp"></span></p>
+                <p><strong>Prodi:</strong> <span id="modalProdi"></span></p>
+                <p><strong>Kelas:</strong> <span id="modalKelas"></span></p>
+                <p><strong>Jenis Kelamin:</strong> <span id="modalJenisKelamin"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enlarged Image Modal -->
+    <div id="enlargedImageModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center;">
+        <span style="position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer;" id="closeEnlargedModalBtn">&times;</span>
+        <img id="enlargedImage" style="max-width: 90%; max-height: 90%; object-fit: contain;" src="">
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const lihatDetailLink = document.getElementById('lihatDetailMahasiswa');
+            const detailModal = document.getElementById('mahasiswaDetailModal');
+            const closeDetailModalBtn = document.getElementById('closeModalBtn');
+
+            const modalNama = document.getElementById('modalNama');
+            const modalNIM = document.getElementById('modalNIM');
+            const modalEmail = document.getElementById('modalEmail');
+            const modalNomorHp = document.getElementById('modalNomorHp');
+            const modalProdi = document.getElementById('modalProdi');
+            const modalKelas = document.getElementById('modalKelas');
+            const modalJenisKelamin = document.getElementById('modalJenisKelamin');
+            const modalFotoProfil = document.getElementById('modalFotoProfil');
+
+            const enlargedImageModal = document.getElementById('enlargedImageModal');
+            const closeEnlargedModalBtn = document.getElementById('closeEnlargedModalBtn');
+            const enlargedImage = document.getElementById('enlargedImage');
+
+            lihatDetailLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                const mahasiswa = @json($sidang->pengajuan->mahasiswa);
+                modalNama.textContent = mahasiswa.nama_lengkap;
+                modalNIM.textContent = mahasiswa.nim;
+                modalNomorHp.textContent = mahasiswa.nomor_hp || 'Tidak Tersedia';
+                modalJenisKelamin.textContent = mahasiswa.jenis_kelamin || 'Tidak Tersedia';
+
+                const fotoProfilPath = mahasiswa.foto_profil ? '/storage/' + mahasiswa.foto_profil : '/images/default-profile.png';
+                modalFotoProfil.src = fotoProfilPath;
+
+                const prodi = mahasiswa.prodi;
+                modalProdi.textContent = prodi ? prodi.nama_prodi : 'Tidak Tersedia';
+
+                const kelas = mahasiswa.kelas;
+                modalKelas.textContent = kelas ? kelas.nama_kelas : 'Tidak Tersedia';
+
+                const user = mahasiswa.user;
+                modalEmail.textContent = user ? user.email : 'Tidak Tersedia';
+
+                detailModal.style.display = 'flex';
+            });
+
+            closeDetailModalBtn.addEventListener('click', function() {
+                detailModal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target == detailModal) {
+                    detailModal.style.display = 'none';
+                }
+            });
+
+            // Handle click on profile picture to enlarge it
+            modalFotoProfil.addEventListener('click', function() {
+                enlargedImage.src = modalFotoProfil.src;
+                enlargedImageModal.style.display = 'flex';
+                console.log('Enlarged Modal Dimensions:', enlargedImageModal.offsetWidth, 'x', enlargedImageModal.offsetHeight);
+                console.log('Enlarged Image Dimensions:', enlargedImage.offsetWidth, 'x', enlargedImage.offsetHeight);
+            });
+
+            // Close enlarged image modal
+            closeEnlargedModalBtn.addEventListener('click', function() {
+                enlargedImageModal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target == enlargedImageModal) {
+                    enlargedImageModal.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

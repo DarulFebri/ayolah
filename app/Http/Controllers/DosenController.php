@@ -418,7 +418,7 @@ class DosenController extends Controller
         }
 
         if ($isPending) {
-            $sidang->load('pengajuan.mahasiswa', 'ketuaSidang', 'sekretarisSidang', 'anggota1Sidang', 'anggota2Sidang', 'dosenPembimbing', 'dosenPenguji1');
+            $sidang->load('pengajuan.mahasiswa.prodi', 'pengajuan.mahasiswa.kelas', 'pengajuan.mahasiswa.user', 'ketuaSidang', 'sekretarisSidang', 'anggota1Sidang', 'anggota2Sidang', 'dosenPembimbing', 'dosenPenguji1');
 
             return view('dosen.respon_sidang', compact('sidang', 'dosen'));
         }
