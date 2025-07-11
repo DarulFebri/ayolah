@@ -282,7 +282,7 @@
             <div class="alert alert-info">Pengajuan ini sudah diverifikasi dan tidak dapat diubah lagi oleh Admin.</div>
         @endif
 
-        <a href="{{ route('admin.pengajuan.sidang.ta') }}" class="back-link">Kembali ke Daftar Pengajuan</a>
+        <a href="{{ url('admin/pengajuan-sidang/' . strtolower($pengajuan->jenis_pengajuan)) }}" class="back-link">Kembali ke Daftar Pengajuan</a>
     </div>
 
     <script>
