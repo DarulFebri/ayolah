@@ -12,7 +12,7 @@
             --primary-100: #e6f2ff;
             --primary-200: #b3d7ff;
             --primary-300: #80bdff;
-            --primary-400: #4da3ff;
+            --primary-400: #4da3ff; 
             --primary-500: #1a88ff;
             --primary-600: #0066cc;
             --primary-700: #004d99;

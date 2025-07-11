@@ -1696,17 +1696,7 @@
         function performLogout() {
             confirmLogoutBtn.classList.add('loading');
             confirmLogoutBtn.disabled = true;
-
-            // Simulate API call for logout
-            setTimeout(() => {
-                hideLogoutConfirmation();
-                showNotification('Simulasi Logout', 'Anda telah berhasil mencoba logout (fitur ini memerlukan konfigurasi rute backend).', 'success');
-                setTimeout(() => {
-                    // window.location.href = 'login.html'; // uncomment ini jika ingin redirect
-                }, 2000);
-                confirmLogoutBtn.classList.remove('loading');
-                confirmLogoutBtn.disabled = false;
-            }, 1500); // Simulated loading delay
+            document.getElementById('logout-form').submit();
         }
 
         // logoutSidebarBtn mungkin tidak lagi relevan jika dihapus dari DOM

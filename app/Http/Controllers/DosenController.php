@@ -166,7 +166,7 @@ class DosenController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('dosen.login');
     }
 
     public function daftarPengajuan()
