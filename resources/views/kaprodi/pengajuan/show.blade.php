@@ -308,9 +308,10 @@
                         @endif
                     </p>
                     <p><strong>Ruangan Sidang:</strong> {{ $pengajuan->sidang->ruangan_sidang ?? 'N/A' }}</p>
-                    <p><strong>Tanggal & Waktu Sidang:</strong> {{ $pengajuan->sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->format('d F Y, H:i') : 'N/A' }}</p>
+                    <p><strong>Tanggal Sidang:</strong> {{ $pengajuan->sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->format('d F Y') : 'N/A' }}</p>
+                    <p><strong>Waktu Sidang:</strong> {{ $pengajuan->sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->format('H:i') : 'N/A' }}</p>
                 @elseif ($pengajuan->jenis_pengajuan === 'pkl')
-                    <p><strong>Dosen Pembimbing 1:</strong> {{ $pengajuan->sidang->dosenPembimbing ? $pengajuan->sidang->dosenPembimbing->nama : 'N/A' }}
+                    <p><strong>Dosen Pembimbing:</strong> {{ $pengajuan->sidang->dosenPembimbing ? $pengajuan->sidang->dosenPembimbing->nama : 'N/A' }}
                         @if($pengajuan->sidang->dosenPembimbing)
                             <span class="status-badge {{ $pengajuan->sidang->persetujuan_dosen_pembimbing === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_dosen_pembimbing === 'tolak' ? 'tolak' : 'menunggu') }}">
                                 {{ ucfirst($pengajuan->sidang->persetujuan_dosen_pembimbing) }}
@@ -325,7 +326,8 @@
                         @endif
                     </p>
                     <p><strong>Ruangan Sidang:</strong> {{ $pengajuan->sidang->ruangan_sidang ?? 'N/A' }}</p>
-                    <p><strong>Tanggal & Waktu Sidang:</strong> {{ $pengajuan->sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->format('d F Y, H:i') : 'N/A' }}</p>
+                    <p><strong>Tanggal Sidang:</strong> {{ $pengajuan->sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->format('d F Y') : 'N/A' }}</p>
+                    <p><strong>Waktu Sidang:</strong> {{ $pengajuan->sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->format('H:i') : 'N/A' }}</p>
                 @endif
             @else
                 <p>Informasi sidang belum tersedia.</p>
