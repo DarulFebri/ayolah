@@ -1,48 +1,72 @@
-@extends('layouts.kaprodi')
+@extends('layouts.kaprodi') {{-- Menghubungkan ke layout utama --}}
 
-@section('title', 'Dashboard Kaprodi')
+@section('title', 'Dashboard Kaprodi - SIPRAKTA') {{-- Mengatur judul halaman --}}
+
+@section('header_title', 'Dashboard Kaprodi') {{-- Mengatur judul di header --}}
 
 @section('content')
     <div class="welcome-box">
         <h2 class="welcome-title">
-            <i class="fas fa-user-tie"></i>
+            <i class="fas fa-user-tie" style="margin-right: 10px;"></i>
             Selamat Datang, {{ Auth::user()->name }}
         </h2>
         <p>Sistem Informasi Praktek Kerja Lapangan dan Tugas Akhir - Politeknik Negeri Padang</p>
     </div>
-
+    
     <div class="stats-grid">
-        <div class="stat-card dosen">
-            <p>Jumlah Dosen</p>
-            <div class="number">{{ $jumlahDosen }}</div>
+        <div class="stats-card" style="animation-delay: 0.1s;">
+            <div class="stats-icon icon-blue">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <div class="stats-content">
+                <h3>{{ $jumlahDosen }}</h3>
+                <p>Total Dosen</p>
+            </div>
         </div>
-        <div class="stat-card pengajuan">
-            <p>Jumlah Pengajuan Baru</p>
-            <div class="number">{{ $jumlahPengajuan }}</div>
+        
+        <div class="stats-card" style="animation-delay: 0.2s;">
+            <div class="stats-icon icon-green">
+                <i class="fas fa-file-contract"></i>
+            </div>
+            <div class="stats-content">
+                <h3>{{ $jumlahPengajuan }}</h3>
+                <p>Total Pengajuan Baru</p>
+            </div>
         </div>
     </div>
-
-    <h3>Pengajuan Terbaru (Menunggu Aksi Anda)</h3>
-    <div class="latest-submissions">
-        @if ($pengajuanBaru->count() > 0)
-            <ul>
-                @foreach ($pengajuanBaru as $pengajuan)
-                    <a href="{{ route('kaprodi.pengajuan.show', $pengajuan->id) }}" style="text-decoration: none; color: inherit;">
-                        <li>
-                            <span>{{ $pengajuan->mahasiswa->nama_lengkap }}</span>
-                            <span style="font-weight: 600; color: var(--primary-500);">
-                                {{ strtoupper(str_replace('_', ' ', $pengajuan->jenis_pengajuan)) }}
-                            </span>
-                        </li>
-                    </a>
-                @endforeach
-            </ul>
-        @else
-            <p class="no-submissions">Tidak ada pengajuan baru yang perlu ditindaklanjuti saat ini.</p>
-        @endif
-    </div>
-
-    <div class="dashboard-nav" style="margin-top: 30px; text-align: center;">
-        <a href="{{ route('kaprodi.pengajuan.index') }}" class="btn btn-blue" style="display: inline-block; text-decoration: none;">Ke Menu Manajemen Pengajuan Sidang</a>
+    
+    <div class="card-container">
+        <a href="{{ route('kaprodi.pengajuan.index') }}" class="card-link">
+            <div class="card clickable-card medium">
+                <div class="card-icon">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <h3 class="card-title">
+                    Manajemen Pengajuan Sidang
+                </h3>
+            </div>
+        </a>
+        
+        <a href="{{ route('kaprodi.dosen.index') }}" class="card-link">
+            <div class="card clickable-card medium">
+                <div class="card-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h3 class="card-title">
+                    Manajemen Dosen
+                </h3>
+            </div>
+        </a>
+        
+        <a href="{{ route('kaprodi.notifications.index') }}" class="card-link">
+            <div class="card clickable-card medium">
+                <div class="card-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <h3 class="card-title">
+                    Notifikasi
+                </h3>
+            </div>
+        </a>
     </div>
 @endsection
