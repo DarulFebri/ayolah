@@ -428,16 +428,7 @@
                 </form>
 
                 
-                <form action="{{ route('kaprodi.pengajuan.tolak.pengajuan', $pengajuan->id) }}" method="POST" style="margin-top: 20px;">
-                    @csrf
-                    <div class="form-group">
-                        <label for="alasan_penolakan">Alasan Penolakan (jika ingin menolak):</label>
-                        <textarea name="alasan_penolakan" id="alasan_penolakan" class="form-control" placeholder="Berikan alasan jika menolak pengajuan ini."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-times-circle"></i> Tolak Pengajuan
-                    </button>
-                </form>
+            
             @else
                 <p class="info-message">Tidak ada aksi yang tersedia untuk status pengajuan ini ({{ str_replace('_', ' ', ucfirst($pengajuan->status)) }}).</p>
             @endif
