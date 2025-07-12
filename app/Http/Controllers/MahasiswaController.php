@@ -218,15 +218,13 @@ class MahasiswaController extends Controller
             ])->withInput($request->only('email'));
         }
 
-        $mahasiswa = $user->mahasiswa;
-
         // Generate OTP baru (6 digit random string)
         $otp = Str::random(6);
         // Set waktu kadaluarsa OTP (misalnya 5 menit dari sekarang)
         $otpExpiresAt = Carbon::now()->addMinutes(5);
 
-        // Simpan OTP dan waktu kadaluarsa ke tabel `mahasiswas`
-        $mahasiswa->update([
+        // Simpan OTP dan waktu kadaluarsa ke tabel `users`
+        $user->update([
             'otp' => $otp,
             'otp_expires_at' => $otpExpiresAt,
         ]);
@@ -279,23 +277,15 @@ class MahasiswaController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (! $user || ! $user->mahasiswa) {
+        if (! $user) {
             return back()->withErrors(['otp' => 'Email tidak ditemukan atau tidak terhubung ke akun pengguna.'])->withInput($request->only('email', 'otp'));
         }
 
-        $mahasiswa = $user->mahasiswa;
-
-        if ($mahasiswa->otp === $request->otp && Carbon::now()->lessThan($mahasiswa->otp_expires_at)) {
-            $mahasiswa->update([
+        if ($user->otp === $request->otp && Carbon::now()->lessThan($user->otp_expires_at)) {
+            $user->update([
                 'otp' => null,
                 'otp_expires_at' => null,
             ]);
-
-            $user = $mahasiswa->user;
-
-            if (! $user) {
-                return back()->withErrors(['otp' => 'Akun pengguna tidak ditemukan terkait dengan mahasiswa ini.'])->withInput($request->only('email', 'otp'));
-            }
 
             $resetToken = Str::random(60);
             $user->forceFill([
@@ -329,18 +319,16 @@ class MahasiswaController extends Controller
         // Cari mahasiswa berdasarkan email
         $user = User::where('email', $request->email)->first();
 
-        if (! $user || ! $user->mahasiswa) {
+        if (! $user) {
             return back()->withErrors(['email' => 'Email mahasiswa tidak ditemukan atau tidak terhubung ke akun pengguna.'])->withInput($request->only('email'));
         }
-
-        $mahasiswa = $user->mahasiswa;
 
         // Generate OTP baru dan waktu kadaluarsa
         $otp = Str::random(6);
         $otpExpiresAt = Carbon::now()->addMinutes(5);
 
-        // Update OTP di tabel `mahasiswas`
-        $mahasiswa->update([
+        // Update OTP di tabel `users`
+        $user->update([
             'otp' => $otp,
             'otp_expires_at' => $otpExpiresAt,
         ]);

@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Models\Pengajuan; // Import the Pengajuan model
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -41,7 +40,7 @@ class SidangDijadwalkanFinalNotification extends Notification
         // but keeping it as a placeholder or for future mail notifications.
         return (new MailMessage)
             ->line('Jadwal sidang Anda telah difinalisasi.')
-            ->action('Lihat Detail Pengajuan', url('/kajur/pengajuan/' . $this->pengajuan->id))
+            ->action('Lihat Detail Pengajuan', url('/kajur/pengajuan/'.$this->pengajuan->id))
             ->line('Terima kasih telah menggunakan aplikasi kami!');
     }
 
@@ -57,7 +56,7 @@ class SidangDijadwalkanFinalNotification extends Notification
             'mahasiswa_name' => $this->pengajuan->mahasiswa->nama, // Assuming mahasiswa relationship exists
             'judul_pengajuan' => $this->pengajuan->judul_pengajuan,
             'status' => $this->pengajuan->status, // Store the actual status
-            'message' => 'Jadwal sidang untuk pengajuan "' . $this->pengajuan->judul_pengajuan . '" oleh ' . $this->pengajuan->mahasiswa->nama . ' telah difinalisasi.',
+            'message' => 'Jadwal sidang untuk pengajuan "'.$this->pengajuan->judul_pengajuan.'" oleh '.$this->pengajuan->mahasiswa->nama.' telah difinalisasi.',
             'url' => route('kajur.pengajuan.show', $this->pengajuan->id), // Link to the pengajuan detail
         ];
     }

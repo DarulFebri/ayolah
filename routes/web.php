@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\Admin\PengajuanAdminController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Auth\AdminAuthController as AuthAdminAuthController;
+use App\Http\Controllers\Auth\DosenAuthController as AuthDosenAuthController;
+use App\Http\Controllers\Auth\KajurAuthController as AuthKajurAuthController;
+use App\Http\Controllers\Auth\KaprodiAuthController as AuthKaprodiAuthController;
 use App\Http\Controllers\DokumenController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\KajurController;
@@ -21,9 +25,21 @@ Route::get('/', function () {
 // Admin Routes
 Route::prefix('admin')->group(function () {
     // Public routes (no middleware)
-    Route::get('/login', [AdminController::class, 'loginForm'])->name('admin.login');
-    Route::post('/login', [AdminController::class, 'login']);
-    Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
+    Route::get('/login', [AuthAdminAuthController::class, 'loginForm'])->name('admin.login');
+    Route::post('/login', [AuthAdminAuthController::class, 'login']);
+
+    // --- Rute untuk Lupa Sandi / Reset Password dengan OTP ---
+    Route::get('/forgot-password', [AuthAdminAuthController::class, 'forgotPasswordForm'])->name('admin.forgot.password.form');
+    Route::post('/forgot-password', [AuthAdminAuthController::class, 'sendResetOtp'])->name('admin.send.reset.otp');
+    Route::get('/otp/verify', [AuthAdminAuthController::class, 'showOtpVerifyForm'])->name('admin.otp.verify.form');
+    Route::post('/otp/verify', [AuthAdminAuthController::class, 'verifyOtp'])->name('admin.otp.verify');
+    Route::post('/otp/resend', [AuthAdminAuthController::class, 'resendOtp'])->name('admin.otp.resend');
+    Route::get('/reset-password/{token}', [AuthAdminAuthController::class, 'showResetPasswordForm'])->name('admin.password.reset.form');
+    Route::post('/reset-password', [AuthAdminAuthController::class, 'resetPassword'])->name('admin.password.reset');
+    Route::get('/password-reset-success', [AuthAdminAuthController::class, 'passwordResetSuccess'])->name('admin.password.reset.success');
+    // --- Akhir rute OTP ---
+
+    Route::post('/logout', [AuthAdminAuthController::class, 'logout'])->name('admin.logout');
 
     // Protected routes
     Route::middleware(['auth', 'admin'])->group(function () {
@@ -226,9 +242,21 @@ Route::post('/dosen/notifications/{notification}/mark-as-read', function (\Illum
 })->name('dosen.notifications.markAsRead')->middleware(['auth', 'dosen']);
 Route::prefix('dosen')->group(function () {
     // Public routes
-    Route::get('/login', [DosenController::class, 'loginForm'])->name('dosen.login');
-    Route::post('/login', [DosenController::class, 'login']);
-    Route::post('/logout', [DosenController::class, 'logout'])->name('dosen.logout');
+    Route::get('/login', [AuthDosenAuthController::class, 'loginForm'])->name('dosen.login');
+    Route::post('/login', [AuthDosenAuthController::class, 'login']);
+
+    // --- Rute untuk Lupa Sandi / Reset Password dengan OTP ---
+    Route::get('/forgot-password', [AuthDosenAuthController::class, 'forgotPasswordForm'])->name('dosen.forgot.password.form');
+    Route::post('/forgot-password', [AuthDosenAuthController::class, 'sendResetOtp'])->name('dosen.send.reset.otp');
+    Route::get('/otp/verify', [AuthDosenAuthController::class, 'showOtpVerifyForm'])->name('dosen.otp.verify.form');
+    Route::post('/otp/verify', [AuthDosenAuthController::class, 'verifyOtp'])->name('dosen.otp.verify');
+    Route::post('/otp/resend', [AuthDosenAuthController::class, 'resendOtp'])->name('dosen.otp.resend');
+    Route::get('/reset-password/{token}', [AuthDosenAuthController::class, 'showResetPasswordForm'])->name('dosen.password.reset.form');
+    Route::post('/reset-password', [AuthDosenAuthController::class, 'resetPassword'])->name('dosen.password.reset');
+    Route::get('/password-reset-success', [AuthDosenAuthController::class, 'passwordResetSuccess'])->name('dosen.password.reset.success');
+    // --- Akhir rute OTP ---
+
+    Route::post('/logout', [AuthDosenAuthController::class, 'logout'])->name('dosen.logout');
 
     // Protected routes
     Route::middleware(['auth', 'dosen'])->group(function () {
@@ -281,9 +309,21 @@ Route::prefix('dosen')->group(function () {
 // Kaprodi Routes
 Route::prefix('kaprodi')->group(function () {
     // Public routes (Login/Logout Kaprodi)
-    Route::get('/login', [KaprodiController::class, 'loginForm'])->name('kaprodi.login');
-    Route::post('/login', [KaprodiController::class, 'login']);
-    Route::post('/logout', [KaprodiController::class, 'logout'])->name('kaprodi.logout');
+    Route::get('/login', [AuthKaprodiAuthController::class, 'loginForm'])->name('kaprodi.login');
+    Route::post('/login', [AuthKaprodiAuthController::class, 'login']);
+
+    // --- Rute untuk Lupa Sandi / Reset Password dengan OTP ---
+    Route::get('/forgot-password', [AuthKaprodiAuthController::class, 'forgotPasswordForm'])->name('kaprodi.forgot.password.form');
+    Route::post('/forgot-password', [AuthKaprodiAuthController::class, 'sendResetOtp'])->name('kaprodi.send.reset.otp');
+    Route::get('/otp/verify', [AuthKaprodiAuthController::class, 'showOtpVerifyForm'])->name('kaprodi.otp.verify.form');
+    Route::post('/otp/verify', [AuthKaprodiAuthController::class, 'verifyOtp'])->name('kaprodi.otp.verify');
+    Route::post('/otp/resend', [AuthKaprodiAuthController::class, 'resendOtp'])->name('kaprodi.otp.resend');
+    Route::get('/reset-password/{token}', [AuthKaprodiAuthController::class, 'showResetPasswordForm'])->name('kaprodi.password.reset.form');
+    Route::post('/reset-password', [AuthKaprodiAuthController::class, 'resetPassword'])->name('kaprodi.password.reset');
+    Route::get('/password-reset-success', [AuthKaprodiAuthController::class, 'passwordResetSuccess'])->name('kaprodi.password.reset.success');
+    // --- Akhir rute OTP ---
+
+    Route::post('/logout', [AuthKaprodiAuthController::class, 'logout'])->name('kaprodi.logout');
 
     // Protected routes for Kaprodi dashboard and general lists
     Route::middleware(['auth', 'kaprodi'])->group(function () {
@@ -335,9 +375,21 @@ Route::prefix('kaprodi')->group(function () {
 // Kajur Routes
 Route::prefix('kajur')->group(function () {
     // Public routes
-    Route::get('/login', [KajurController::class, 'loginForm'])->name('kajur.login');
-    Route::post('/login', [KajurController::class, 'login']);
-    Route::post('/logout', [KajurController::class, 'logout'])->name('kajur.logout');
+    Route::get('/login', [AuthKajurAuthController::class, 'loginForm'])->name('kajur.login');
+    Route::post('/login', [AuthKajurAuthController::class, 'login']);
+
+    // --- Rute untuk Lupa Sandi / Reset Password dengan OTP ---
+    Route::get('/forgot-password', [AuthKajurAuthController::class, 'forgotPasswordForm'])->name('kajur.forgot.password.form');
+    Route::post('/forgot-password', [AuthKajurAuthController::class, 'sendResetOtp'])->name('kajur.send.reset.otp');
+    Route::get('/otp/verify', [AuthKajurAuthController::class, 'showOtpVerifyForm'])->name('kajur.otp.verify.form');
+    Route::post('/otp/verify', [AuthKajurAuthController::class, 'verifyOtp'])->name('kajur.otp.verify');
+    Route::post('/otp/resend', [AuthKajurAuthController::class, 'resendOtp'])->name('kajur.otp.resend');
+    Route::get('/reset-password/{token}', [AuthKajurAuthController::class, 'showResetPasswordForm'])->name('kajur.password.reset.form');
+    Route::post('/reset-password', [AuthKajurAuthController::class, 'resetPassword'])->name('kajur.password.reset');
+    Route::get('/password-reset-success', [AuthKajurAuthController::class, 'passwordResetSuccess'])->name('kajur.password.reset.success');
+    // --- Akhir rute OTP ---
+
+    Route::post('/logout', [AuthKajurAuthController::class, 'logout'])->name('kajur.logout');
 
     // Protected routes
     Route::middleware(['auth', 'kajur'])->group(function () {

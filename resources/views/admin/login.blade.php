@@ -58,6 +58,12 @@
             {{-- Mengubah button menjadi class login-button agar sesuai dengan auth_styles.css --}}
             <button type="submit" class="login-button">Login</button>
         </form>
+
+        <br>
+
+        <div class="forgot-password-link">
+            <a href="{{ route('admin.forgot.password.form') }}">Lupa Kata Sandi?</a>
+        </div>
     </div>
 
     {{-- Script JavaScript untuk modal atau fungsionalitas umum jika diperlukan --}}

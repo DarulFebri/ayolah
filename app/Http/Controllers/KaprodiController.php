@@ -6,15 +6,15 @@ use App\Models\Dosen;
 use App\Models\Pengajuan;
 use App\Models\PengajuanStatusHistory; // Pastikan model Sidang di-import
 use App\Models\Sidang; // Import the new model
+use App\Models\User;
+use App\Notifications\SidangDijadwalkanFinalNotification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash; // Untuk validasi unique
+use Illuminate\Support\Facades\Auth; // Untuk validasi unique
 // Pastikan ini di-import
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use App\Notifications\SidangDijadwalkanFinalNotification; // Add this import
-use App\Models\User; // Add this import
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator; // Add this import
+use Illuminate\Validation\Rule; // Add this import
 
 class KaprodiController extends Controller
 {
@@ -50,7 +50,7 @@ class KaprodiController extends Controller
                 'anggota2_sidang_dosen_id' => null,
             ]);
             // For PKL, Dosen Pembimbing 1 is always Ketua Sidang and auto-approved on initialization
-            
+
             $sidang->save();
             $pengajuan->load('sidang');
         }
@@ -135,7 +135,7 @@ class KaprodiController extends Controller
             }
 
             // Fill common validated data
-            $sidang->tanggal_waktu_sidang = $validatedData['tanggal_sidang'] . ' ' . $validatedData['waktu_sidang'];
+            $sidang->tanggal_waktu_sidang = $validatedData['tanggal_sidang'].' '.$validatedData['waktu_sidang'];
             $sidang->ruangan_sidang = $validatedData['ruangan_sidang'];
 
             if (! $isPkl) { // Only for TA
@@ -289,7 +289,7 @@ class KaprodiController extends Controller
                 'sekretaris_sidang_dosen_id' => null,
                 'anggota1_sidang_dosen_id' => null,
                 'anggota2_sidang_dosen_id' => null,
-                
+
                 'persetujuan_sekretaris_sidang' => 'pending',
                 'persetujuan_anggota1_sidang' => 'pending',
                 'persetujuan_anggota2_sidang' => 'pending',
@@ -302,11 +302,11 @@ class KaprodiController extends Controller
 
         if ($ketuaSidangId) {
             $sidang->ketua_sidang_dosen_id = $ketuaSidangId;
-            
+
             $sidang->save();
         } else {
             // Jika ketua sidang tidak dapat ditentukan, pastikan status persetujuan ketua sidang direset
-            
+
             $sidang->save();
         }
 
@@ -406,7 +406,7 @@ class KaprodiController extends Controller
                 'perlu_penjadwalan_ulang',
             ])->orWhereHas('sidang', function ($query) {
                 $query->where('persetujuan_dosen_pembimbing', 'tolak')
-                      ->orWhere('persetujuan_dosen_penguji1', 'tolak');
+                    ->orWhere('persetujuan_dosen_penguji1', 'tolak');
             });
         })
             ->with('mahasiswa')
@@ -491,7 +491,6 @@ class KaprodiController extends Controller
                 $bisaDifinalisasi = true;
             }
         }
-
 
         // Ambil daftar dosen untuk dropdown di form penjadwalan
         $dosens = Dosen::orderBy('nama')->get();

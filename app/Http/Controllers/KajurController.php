@@ -293,8 +293,8 @@ class KajurController extends Controller
         // A more robust solution would involve custom notification types or a specific notification table.
         $user = Auth::user();
         $notifications = $user->notifications()
-                            ->where('type', 'App\Notifications\SidangDijadwalkanFinalNotification') // Assuming this is the notification type
-                            ->paginate(10);
+            ->where('type', 'App\Notifications\SidangDijadwalkanFinalNotification') // Assuming this is the notification type
+            ->paginate(10);
 
         // If the above filtering is not precise enough, you might need to iterate
         // $pengajuanFinalized and find related notifications.

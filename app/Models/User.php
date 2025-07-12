@@ -23,6 +23,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'otp',
+        'otp_expires_at',
     ];
 
     /**
@@ -69,5 +71,4 @@ class User extends Authenticatable
     {
         return $this->hasOne(Kaprodi::class, 'user_id');
     }
-
-    }
+}

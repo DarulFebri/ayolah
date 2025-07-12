@@ -21,7 +21,7 @@ class Sidang extends Model
         'ruangan_sidang',
         'dosen_pembimbing_id',
         'dosen_penguji1_id', // Ini untuk pembimbing 2
-        
+
         'persetujuan_sekretaris_sidang',
         'persetujuan_anggota1_sidang',
         'persetujuan_anggota2_sidang',

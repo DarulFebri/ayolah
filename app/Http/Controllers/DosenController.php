@@ -111,7 +111,7 @@ class DosenController extends Controller
             ->get();
 
         foreach ($sidangInvitations as $sidangInvitation) {
-            Log::info('Sidang Invitation Pengajuan Status: ' . $sidangInvitation->pengajuan->status . ' for Pengajuan ID: ' . $sidangInvitation->pengajuan->id);
+            Log::info('Sidang Invitation Pengajuan Status: '.$sidangInvitation->pengajuan->status.' for Pengajuan ID: '.$sidangInvitation->pengajuan->id);
         }
 
         // --- CORRECTED QUERIES FOR APPROVED AND REJECTED SIDANGS ---
@@ -221,9 +221,10 @@ class DosenController extends Controller
     public function editProfileForm()
     {
         $dosen = Auth::user()->dosen; // Assuming 'dosen' relationship exists on User model
-        if (!$dosen) {
+        if (! $dosen) {
             return redirect()->route('dosen.dashboard')->with('error', 'Profil dosen tidak ditemukan.');
         }
+
         return view('dosen.profile.edit', compact('dosen'));
     }
 
@@ -232,14 +233,14 @@ class DosenController extends Controller
         $user = Auth::user();
         $dosen = $user->dosen;
 
-        if (!$dosen) {
+        if (! $dosen) {
             return redirect()->route('dosen.dashboard')->with('error', 'Profil dosen tidak ditemukan.');
         }
 
         $request->validate([
             'nama_lengkap' => 'required|string|max:255',
-            'nidn' => 'nullable|string|max:255|unique:dosens,nidn,' . $dosen->id,
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id, // Added email validation
+            'nidn' => 'nullable|string|max:255|unique:dosens,nidn,'.$dosen->id,
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id, // Added email validation
             'nomor_hp' => 'nullable|string|max:20',
             'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
         ]);
@@ -263,7 +264,7 @@ class DosenController extends Controller
             $dosen->foto_profil = str_replace('public/', '', $path);
         }
 
-        //$dosen->profile_edited_at = now(); // Update timestamp
+        // $dosen->profile_edited_at = now(); // Update timestamp
         $dosen->save();
 
         // Update user's name if it's different
@@ -536,7 +537,7 @@ class DosenController extends Controller
 
         // Determine if the logged-in dosen is involved and still has a pending response
         $isPending = false;
-        
+
         if ($sidang->sekretaris_sidang_dosen_id === $dosenLoginId && $sidang->persetujuan_sekretaris_sidang === 'pending') {
             $isPending = true;
         }
@@ -599,7 +600,7 @@ class DosenController extends Controller
             // For PKL, Dosen Pembimbing 1 is also Ketua Sidang, but we only need one approval for 'dosen_pembimbing'
             $sidang->persetujuan_dosen_pembimbing = $respon;
             $peranDosen = 'Dosen Pembimbing 1 (Ketua Sidang)';
-        
+
         } elseif ($sidang->sekretaris_sidang_dosen_id === $dosen->id && $sidang->persetujuan_sekretaris_sidang === 'pending') {
             $sidang->persetujuan_sekretaris_sidang = $respon;
             $peranDosen = 'Sekretaris Sidang';
