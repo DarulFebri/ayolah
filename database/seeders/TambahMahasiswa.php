@@ -71,7 +71,7 @@ class TambahMahasiswa extends Seeder
 
         $mahasiswaUser = User::create([
             'name' => 'ayel', // Tambahkan nama
-            'email' => 'ayel@gmail.com',
+            'email' => 'zhafiraulayya666@gmail.com',
             'password' => Hash::make('12345678'),
             'role' => 'mahasiswa',
         ]);

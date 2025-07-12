@@ -48,7 +48,7 @@ class MahasiswaSeeder extends Seeder
             ],
             [
                 'name' => 'ayel',
-                'email' => 'ayel@gmail.com',
+                'email' => 'zhafiraulayya666@gmail.com',
                 'nim' => '2311082054',
                 'nama_lengkap' => 'ayel',
 
