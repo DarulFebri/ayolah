@@ -896,6 +896,7 @@
                 align-items: center;
                 gap: 5px;
                 font-size: 14px;
+                justify-content: center;
             }
             
             .action-btn:hover {
