@@ -106,7 +106,7 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>ID Pengajuan</th>
+                        <th>No</th>
                         <th>Nama Mahasiswa</th>
                         <th>Jenis Pengajuan</th>
                         <th>Tanggal Pengajuan</th>
@@ -117,7 +117,7 @@
                 <tbody>
                     @foreach ($pengajuanTerverifikasi as $pengajuan)
                     <tr>
-                        <td>{{ $pengajuan->id }}</td>
+                        <td>{{ $loop->iteration }}</td>
                         <td>{{ $pengajuan->mahasiswa->nama_lengkap }}</td>
                         <td>{{ $pengajuan->jenis_pengajuan }}</td>
                         <td>{{ $pengajuan->created_at->format('d M Y') }}</td>

@@ -457,9 +457,15 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="tanggal_waktu_sidang">Tanggal dan Waktu Sidang:</label>
-                        <input type="datetime-local" name="tanggal_waktu_sidang" id="tanggal_waktu_sidang" class="form-control"
-                               value="{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse(optional($pengajuan->sidang)->tanggal_waktu_sidang)->format('Y-m-d\TH:i') : '' }}" required>
+                        <label for="tanggal_sidang">Tanggal Sidang:</label>
+                        <input type="date" name="tanggal_sidang" id="tanggal_sidang" class="form-control"
+                               value="{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse(optional($pengajuan->sidang)->tanggal_waktu_sidang)->format('Y-m-d') : '' }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="waktu_sidang">Waktu Sidang:</label>
+                        <input type="time" name="waktu_sidang" id="waktu_sidang" class="form-control"
+                               value="{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse(optional($pengajuan->sidang)->tanggal_waktu_sidang)->format('H:i') : '' }}" required>
                     </div>
 
                     <div class="buttons">

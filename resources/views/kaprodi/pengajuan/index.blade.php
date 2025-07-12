@@ -246,7 +246,8 @@
             td:nth-of-type(8):before { content: "Sekretaris:"; }
             td:nth-of-type(9):before { content: "Anggota 1:"; }
             td:nth-of-type(10):before { content: "Anggota 2:"; }
-            td:nth-of-type(11):before { content: "Tgl/Waktu Sidang:"; }
+            td:nth-of-type(11):before { content: "Tanggal Sidang:"; }
+            td:nth-of-type(12):before { content: "Waktu Sidang:"; }
             td:nth-of-type(12):before { content: "Ruangan:"; }
             td:nth-of-type(13):before { content: "Aksi:"; }
         }
@@ -289,7 +290,8 @@
                         <th>Sekretaris</th>
                         <th>Anggota 1</th>
                         <th>Anggota 2</th>
-                        <th>Tanggal/Waktu Sidang</th>
+                        <th>Tanggal Sidang</th>
+                        <th>Waktu Sidang</th>
                         <th>Ruangan</th>
                         <th>Aksi</th>
                     </tr>
@@ -311,7 +313,8 @@
                             <td>{{ $pengajuan->sidang->sekretarisSidang->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->anggota1Sidang->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->anggota2Sidang->nama ?? 'N/A' }}</td>
-                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y, H:i') : 'N/A' }}</td>
+                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y') : 'N/A' }}</td>
+                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('H:i') : 'N/A' }}</td>
                             <td>{{ optional($pengajuan->sidang)->ruangan_sidang ?? 'N/A' }}</td>
                             <td class="action-buttons">
                                 <a href="{{ route('kaprodi.pengajuan.show', $pengajuan->id) }}" class="btn btn-info">
@@ -342,7 +345,8 @@
                         <th>Status</th>
                         <th>Pembimbing</th>
                         <th>Penguji</th>
-                        <th>Tanggal/Waktu Sidang</th>
+                        <th>Tanggal Sidang</th>
+                        <th>Waktu Sidang</th>
                         <th>Ruangan</th>
                         <th>Aksi</th>
                     </tr>
@@ -360,7 +364,8 @@
                             </td>
                             <td>{{ $pengajuan->sidang->dosenPembimbing->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->dosenPenguji1->nama ?? 'N/A' }}</td>
-                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y, H:i') : 'N/A' }}</td>
+                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y') : 'N/A' }}</td>
+                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('H:i') : 'N/A' }}</td>
                             <td>{{ optional($pengajuan->sidang)->ruangan_sidang ?? 'N/A' }}</td>
                             <td class="action-buttons">
                                 <a href="{{ route('kaprodi.pengajuan.show', $pengajuan->id) }}" class="btn btn-info">
@@ -399,7 +404,8 @@
                         <th>Sekretaris</th>
                         <th>Anggota 1</th>
                         <th>Anggota 2</th>
-                        <th>Tanggal/Waktu Sidang</th>
+                        <th>Tanggal Sidang</th>
+                        <th>Waktu Sidang</th>
                         <th>Ruangan</th>
                         <th>Aksi</th>
                     </tr>
@@ -421,7 +427,8 @@
                             <td>{{ $pengajuan->sidang->sekretarisSidang->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->anggota1Sidang->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->anggota2Sidang->nama ?? 'N/A' }}</td>
-                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y, H:i') : 'N/A' }}</td>
+                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y') : 'N/A' }}</td>
+                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('H:i') : 'N/A' }}</td>
                             <td>{{ optional($pengajuan->sidang)->ruangan_sidang ?? 'N/A' }}</td>
                             <td>
                                 <a href="{{ route('kaprodi.pengajuan.show', $pengajuan->id) }}" class="btn btn-info">
@@ -452,7 +459,8 @@
                         <th>Status</th>
                         <th>Pembimbing</th>
                         <th>Penguji</th>
-                        <th>Tanggal/Waktu Sidang</th>
+                        <th>Tanggal Sidang</th>
+                        <th>Waktu Sidang</th>
                         <th>Ruangan</th>
                         <th>Aksi</th>
                     </tr>
@@ -470,7 +478,8 @@
                             </td>
                             <td>{{ $pengajuan->sidang->dosenPembimbing->nama ?? 'N/A' }}</td>
                             <td>{{ $pengajuan->sidang->dosenPenguji1->nama ?? 'N/A' }}</td>
-                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y, H:i') : 'N/A' }}</td>
+                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('d M Y') : 'N/A' }}</td>
+                            <td>{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('H:i') : 'N/A' }}</td>
                             <td>{{ optional($pengajuan->sidang)->ruangan_sidang ?? 'N/A' }}</td>
                             <td>
                                 <a href="{{ route('kaprodi.pengajuan.show', $pengajuan->id) }}" class="btn btn-info">

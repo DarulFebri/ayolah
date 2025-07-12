@@ -62,7 +62,8 @@ class KaprodiController extends Controller
 
         // Validation Rules
         $rules = [
-            'tanggal_waktu_sidang' => 'required|date|after_or_equal:now',
+            'tanggal_sidang' => 'required|date|after_or_equal:now',
+            'waktu_sidang' => 'required|date_format:H:i',
             'ruangan_sidang' => 'required|string|max:255',
         ];
 
@@ -100,7 +101,7 @@ class KaprodiController extends Controller
             }
 
             // Fill common validated data
-            $sidang->tanggal_waktu_sidang = $validatedData['tanggal_waktu_sidang'];
+            $sidang->tanggal_waktu_sidang = $validatedData['tanggal_sidang'] . ' ' . $validatedData['waktu_sidang'];
             $sidang->ruangan_sidang = $validatedData['ruangan_sidang'];
 
             if (! $isPkl) { // Only for TA
@@ -374,7 +375,8 @@ class KaprodiController extends Controller
         // 2. Ambil pengajuan yang telah selesai ditangani oleh Kaprodi
         // Status 'sidang_dijadwalkan_final' berarti sudah difinalisasi Kaprodi.
         // Status 'ditolak_kaprodi' berarti sudah ditolak Kaprodi.
-        $pengajuansSelesaiKaprodi = Pengajuan::whereIn('status', ['sidang_dijadwalkan_final', 'ditolak_kaprodi'])
+        // Status 'diverifikasi_kajur' berarti sudah diverifikasi oleh Kajur.
+        $pengajuansSelesaiKaprodi = Pengajuan::whereIn('status', ['sidang_dijadwalkan_final', 'ditolak_kaprodi', 'diverifikasi_kajur'])
             ->with('mahasiswa') // Eager load relasi mahasiswa
             ->orderBy('updated_at', 'desc') // Urutkan berdasarkan update terakhir
             ->get(); // Atau gunakan paginate(10) jika Anda ingin pagination di bagian ini juga

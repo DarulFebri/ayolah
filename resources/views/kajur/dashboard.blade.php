@@ -1040,7 +1040,9 @@
                 </div>
             </div>
             
-            <div class="stat-card card-2" style="animation-delay: 0.2s;"> {{-- Added card-2 class --}}
+            <div class="stat-card card-2" style
+            
+            ="animation-delay: 0.2s;"> {{-- Added card-2 class --}}
                 <div class="stat-icon">
                     <i class="fas fa-calendar-check"></i>
                 </div>
@@ -1091,39 +1093,6 @@
                     </div>
                     <h3 class="card-title">
                         Pengajuan Terverifikasi
-                    </h3>
-                </div>
-            </a>
-            
-            <a href="{{ route('kajur.sidang.sedang') }}" class="card-link">
-                <div class="card clickable-card medium">
-                    <div class="card-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <h3 class="card-title">
-                        Sidang Hari Ini
-                    </h3>
-                </div>
-            </a>
-
-            <a href="{{ route('kajur.sidang.telah') }}" class="card-link">
-                <div class="card clickable-card medium">
-                    <div class="card-icon">
-                        <i class="fas fa-history"></i>
-                    </div>
-                    <h3 class="card-title">
-                        Sidang Telah Berlanggang
-                    </h3>
-                </div>
-            </a>
-
-            <a href="{{ route('kajur.sidang.akan') }}" class="card-link">
-                <div class="card clickable-card medium">
-                    <div class="card-icon">
-                        <i class="fas fa-forward"></i>
-                    </div>
-                    <h3 class="card-title">
-                        Sidang Akan Datang
                     </h3>
                 </div>
             </a>
