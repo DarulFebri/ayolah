@@ -225,6 +225,13 @@ Route::prefix('dosen')->group(function () {
     // Protected routes
     Route::middleware(['auth', 'dosen'])->group(function () {
         Route::get('/dashboard', [DosenController::class, 'dashboard'])->name('dosen.dashboard');
+
+        Route::get('/profile/edit', [DosenController::class, 'editProfileForm'])->name('dosen.profile.edit');
+        Route::post('/profile/update', [DosenController::class, 'updateProfile'])->name('dosen.profile.update');
+
+        Route::get('/password/change', [DosenController::class, 'changePasswordForm'])->name('dosen.password.change.form');
+        Route::post('/password/change', [DosenController::class, 'changePassword'])->name('dosen.password.change');
+
         Route::get('/pengajuan-saya', [DosenController::class, 'pengajuanSaya'])->name('dosen.pengajuan.saya');
 
         // Pengajuan routes

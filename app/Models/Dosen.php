@@ -12,7 +12,8 @@ class Dosen extends Model
         'nama', // Ini adalah kolom 'nama' di DB yang akan diisi dari 'nama_lengkap' Excel
         'prodi_id',
         'jenis_kelamin',
-        'nomor_hp', // Added nomor_hp to fillable
+        'nomor_hp',
+        'foto_profil', // Added foto_profil to fillable
     ];
 
     public function user()

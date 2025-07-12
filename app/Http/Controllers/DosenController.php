@@ -158,6 +158,77 @@ class DosenController extends Controller
         return view('dosen.dashboard', compact('unreadNotifications', 'sidangInvitations', 'approvedSidangs', 'rejectedSidangs'));
     }
 
+    public function editProfileForm()
+    {
+        $dosen = Auth::user()->dosen; // Assuming 'dosen' relationship exists on User model
+        if (!$dosen) {
+            return redirect()->route('dosen.dashboard')->with('error', 'Profil dosen tidak ditemukan.');
+        }
+        return view('dosen.profile.edit', compact('dosen'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        $dosen = $user->dosen;
+
+        if (!$dosen) {
+            return redirect()->route('dosen.dashboard')->with('error', 'Profil dosen tidak ditemukan.');
+        }
+
+        $request->validate([
+            'nama_lengkap' => 'required|string|max:255',
+            'nip' => 'required|string|max:255|unique:dosens,nip,' . $dosen->id,
+            'nidn' => 'nullable|string|max:255|unique:dosens,nidn,' . $dosen->id,
+            'nomor_hp' => 'nullable|string|max:20',
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
+        ]);
+
+        $dosen->nama_lengkap = $request->nama_lengkap;
+        $dosen->nip = $request->nip;
+        $dosen->nidn = $request->nidn;
+        $dosen->nomor_hp = $request->nomor_hp;
+
+        if ($request->hasFile('foto_profil')) {
+            // Delete old profile picture if exists
+            if ($dosen->foto_profil && Storage::exists($dosen->foto_profil)) {
+                Storage::delete($dosen->foto_profil);
+            }
+            $path = $request->file('foto_profil')->store('public/profile_photos/dosen');
+            $dosen->foto_profil = str_replace('public/', '', $path);
+        }
+
+        $dosen->profile_edited_at = now(); // Update timestamp
+        $dosen->save();
+
+        // Update user's name if it's different
+        if ($user->name !== $request->nama_lengkap) {
+            $user->name = $request->nama_lengkap;
+            $user->save();
+        }
+
+        return redirect()->route('dosen.profile.edit')->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    public function changePasswordForm()
+    {
+        return view('dosen.profile.change_password');
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|current_password',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = Auth::user();
+        $user->password = bcrypt($request->new_password);
+        $user->save();
+
+        return redirect()->route('dosen.profile.edit')->with('success', 'Kata sandi berhasil diubah.');
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();
