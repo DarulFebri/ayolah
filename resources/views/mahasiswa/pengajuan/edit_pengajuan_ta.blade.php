@@ -144,7 +144,7 @@
                                     @else
                                         <label for="{{ $docName }}" class="btn btn-primary"><i class="fas fa-folder-open"></i> Choose File</label>
                                     @endif
-                                    <input type="file" name="{{ $docName }}" id="{{ $docName }}" class="d-none" style="display: none;">
+                                    <input type="file" name="{{ $docName }}" id="{{ $docName }}" class="d-none" style="display: none;" accept=".pdf">
                                 </div>
                             </div>
                         @endforeach

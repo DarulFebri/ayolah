@@ -127,13 +127,24 @@ class PengajuanController extends Controller
     public function store(Request $request)
     {
         // Validasi dasar
-        $request->validate([
+        $rules = [
             'jenis_pengajuan' => 'required|in:pkl,ta',
             'judul_pengajuan' => 'required|string|max:255',
             'dosen_pembimbing_id' => 'required|exists:dosens,id',
             'dosen_penguji1_id' => 'nullable|exists:dosens,id', // Hanya untuk TA (Dosen Pembimbing 2)
             'status_action' => 'required|in:draft,finalisasi', // Menentukan apakah disimpan sebagai draft atau final
-        ]);
+        ];
+
+        // Menentukan daftar dokumen yang diharapkan
+        $expectedDocuments = ($request->jenis_pengajuan == 'pkl') ? $this->dokumenPkl : $this->dokumenTa;
+
+        // Tambahkan aturan validasi untuk setiap dokumen yang diharapkan
+        foreach ($expectedDocuments as $docName) {
+            // Dokumen bersifat opsional jika statusnya draft, wajib jika finalisasi
+            $rules[$docName] = ($request->status_action == 'draft') ? 'nullable|file|mimes:pdf|max:10240' : 'required|file|mimes:pdf|max:10240';
+        }
+
+        $request->validate($rules);
 
         $mahasiswaId = Auth::user()->mahasiswa->id;
         $jenisPengajuan = $request->jenis_pengajuan;
@@ -350,12 +361,24 @@ class PengajuanController extends Controller
         }
 
         // Validasi dasar
-        $request->validate([
+        $rules = [
             'judul_pengajuan' => 'required|string|max:255',
             'dosen_pembimbing_id' => 'required|exists:dosens,id',
             'dosen_penguji1_id' => 'nullable|exists:dosens,id', // Hanya untuk TA (Dosen Pembimbing 2)
             'status_action' => 'required|in:draft,finalisasi',
-        ]);
+        ];
+
+        // Menentukan daftar dokumen yang diharapkan
+        $expectedDocuments = ($pengajuan->jenis_pengajuan == 'pkl') ? $this->dokumenPkl : $this->dokumenTa;
+
+        // Tambahkan aturan validasi untuk setiap dokumen yang diharapkan
+        foreach ($expectedDocuments as $docName) {
+            // Dokumen bersifat opsional jika statusnya draft, wajib jika finalisasi
+            // Jika dokumen sudah ada, tidak perlu required lagi kecuali diupload ulang
+            $rules[$docName] = 'nullable|file|mimes:pdf|max:10240'; // Always nullable for update, as existing files might not be re-uploaded
+        }
+
+        $request->validate($rules);
 
         $jenisPengajuan = $pengajuan->jenis_pengajuan;
         $statusAction = $request->status_action;

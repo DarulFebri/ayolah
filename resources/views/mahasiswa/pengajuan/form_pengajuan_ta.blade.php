@@ -107,7 +107,7 @@
                     <div class="col-md-6">
                         <div class="document-upload-card">
                             <label for="{{ $docName }}" class="form-label">{{ ucwords(str_replace('_', ' ', $docName)) }}</label>
-                            <input type="file" name="{{ $docName }}" id="{{ $docName }}" class="form-control">
+                            <input type="file" name="{{ $docName }}" id="{{ $docName }}" class="form-control" accept=".pdf">
                             @error($docName)
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
