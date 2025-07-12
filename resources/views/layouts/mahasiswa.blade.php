@@ -423,6 +423,17 @@
             color: var(--primary-200);
         }
 
+        .submenu-item.active {
+            background-color: var(--primary-500);
+            color: var(--white);
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(26, 136, 255, 0.4);
+        }
+
+        .submenu-item.active i {
+            color: var(--white);
+        }
+
         /* Main Content */
         .main-content {
             flex: 1;
@@ -1314,39 +1325,45 @@
         });
 
         // Toggle submenu
-        function toggleSubmenu(menu, event) {
-            event.preventDefault(); // Prevent default link behavior
-            const submenu = document.getElementById(`${menu}-submenu`);
-            const menuItem = event.currentTarget;
+        function toggleSubmenu(menuId, event) {
+            const targetSubmenu = document.getElementById(`${menuId}-submenu`);
+            const clickedMenuItem = event.currentTarget;
 
-            // Toggle current submenu
-            submenu.classList.toggle('show');
+            if (!targetSubmenu) return; // Exit if submenu not found
 
-            // Close other submenus
-            document.querySelectorAll('.submenu').forEach(item => {
-                if (item.id !== `${menu}-submenu`) {
-                    item.classList.remove('show');
-                }
+            // Toggle the target submenu
+            targetSubmenu.classList.toggle('show');
+
+            // Remove active from all menu items and submenu items first
+            document.querySelectorAll('.menu-item, .submenu-item').forEach(item => {
+                item.classList.remove('active');
             });
 
-            // Update active state of the parent menu item
-            document.querySelectorAll('.menu-item').forEach(item => {
-                // Keep Dashboard active if it's the current route
-                if (item.querySelector('.fa-tachometer-alt') && "{{ Request::routeIs('mahasiswa.dashboard') }}" === "1") {
-                    item.classList.add('active');
-                } else if (item === menuItem) { // If it's the clicked menu item
-                    if (submenu.classList.contains('show')) {
-                        item.classList.add('active');
-                    } else {
-                        item.classList.remove('active');
-                    }
-                } else { // For other menu items
-                    // Remove active from other parent menu items that are not 'Dashboard'
-                    if (!item.querySelector('.fa-tachometer-alt') && item.classList.contains('active')) {
-                         item.classList.remove('active');
-                    }
+            // Add active to the clicked menu item/submenu item if its corresponding submenu is open
+            if (targetSubmenu.classList.contains('show')) {
+                clickedMenuItem.classList.add('active');
+            }
+
+            // Ensure parent 'Pengajuan' menu item remains active if any of its children are active
+            const pengajuanSubmenu = document.getElementById('pengajuan-submenu');
+            const pengajuanMenuItem = document.querySelector('.menu-item.tooltip[onclick*="toggleSubmenu(\'pengajuan\', event)"]');
+
+            if (pengajuanSubmenu && pengajuanMenuItem) {
+                // Check if pengajuanSubmenu or any of its children are currently 'show'
+                const isPengajuanActive = pengajuanSubmenu.classList.contains('show') ||
+                                         pengajuanSubmenu.querySelector('.submenu.show');
+                if (isPengajuanActive) {
+                    pengajuanMenuItem.classList.add('active');
+                } else {
+                    pengajuanMenuItem.classList.remove('active');
                 }
-            });
+            }
+
+            // Keep Dashboard active if it's the current route
+            const dashboardMenuItem = document.querySelector('.menu-item .fa-tachometer-alt');
+            if (dashboardMenuItem && "{{ Request::routeIs('mahasiswa.dashboard') }}" === "1") {
+                dashboardMenuItem.closest('.menu-item').classList.add('active');
+            }
         }
 
 
