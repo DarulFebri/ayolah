@@ -825,7 +825,7 @@
 
             <a href="{{ route('kaprodi.pengajuan.index') }}" style="text-decoration: none; color: inherit;">
                 <div class="menu-item {{ request()->routeIs('kaprodi.pengajuan.index') ? 'active' : '' }} tooltip">
-                    <i class="fas fa-tachometer-alt"></i>
+                    <i class="fas fa-file-contract"></i>
                     <span>Pengajuan</span>
                     <span class="tooltiptext">Pengajuan</span>
                 </div>
@@ -845,9 +845,9 @@
                         </h1>
                     </div>
                     <div class="user-profile" id="userProfile">
-                        <img src="https://ui-avatars.com/api/?name=Admin&background=1a88ff&color=fff" 
+                        <img src="https://ui-avatars.com/api/?name=Kaprodi&background=1a88ff&color=fff" 
                              style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
-                        <span style="font-weight: 500;">Admin</span>
+                        <span style="font-weight: 500;">Kaprodi</span>
                         <i class="fas fa-chevron-down" style="margin-left: 8px; font-size: 12px;"></i>
                         
                         <div class="profile-dropdown" id="profileDropdown">
@@ -860,7 +860,7 @@
                                 <i class="fas fa-sign-out-alt"></i>
                                 <span>Keluar</span>
                             </a>
-                            <form action="{{ route('admin.logout') }}" method="POST" style="display: none;" id="logout-form">
+                            <form action="{{ route('kaprodi.logout') }}" method="POST" style="display: none;" id="logout-form">
                                 @csrf
                             </form>
                         </div>
