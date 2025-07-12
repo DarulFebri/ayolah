@@ -171,13 +171,13 @@
     </div>
 
     <div class="section-header">
-        <h3 class="section-title"><i class="fas fa-file-import"></i> Pengajuan Terbaru Menunggu Persetujuan Anda</h3>
+        <h3 class="section-title"><i class="fas fa-file-import"></i> Pengajuan Dimana Anda Pernah Terlibat</h3>
         <div class="section-actions">
-            <a href="{{ route('dosen.pengajuan.index', ['status' => 'pending']) }}" class="btn btn-blue">Lihat Semua Pengajuan Pending <i class="fas fa-arrow-right"></i></a> {{-- Link to pengajuan index with pending filter --}}
+            <a href="{{ route('dosen.pengajuan.index') }}" class="btn btn-blue">Lihat Semua Pengajuan <i class="fas fa-arrow-right"></i></a>
         </div>
     </div>
     <div class="table-container">
-        @if (!empty($pengajuanMenunggu) && $pengajuanMenunggu->count() > 0)
+        @if (!empty($pengajuansInvolved) && $pengajuansInvolved->count() > 0)
             <table class="data-table">
                 <thead>
                     <tr>
@@ -189,12 +189,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($pengajuanMenunggu as $pengajuan)
+                    @foreach ($pengajuansInvolved as $pengajuan)
                         <tr>
                             <td>{{ $pengajuan->mahasiswa->nama_lengkap ?? 'N/A' }} ({{ $pengajuan->mahasiswa->nim ?? 'N/A' }})</td>
                             <td>{{ strtoupper(str_replace('_', ' ', $pengajuan->jenis_pengajuan ?? 'N/A')) }}</td>
                             <td>{{ \Carbon\Carbon::parse($pengajuan->created_at)->translatedFormat('d F Y') }}</td>
-                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td><span class="status-badge status-{{ $pengajuan->status }}">{{ ucfirst(str_replace('_', ' ', $pengajuan->status)) }}</span></td>
                             <td class="action-cell">
                                 <a href="{{ route('dosen.pengajuan.show', $pengajuan->id) }}" class="action-icon view-icon" title="Detail">
                                     <i class="fas fa-info-circle"></i>
@@ -207,7 +207,7 @@
         @else
             <div class="alertpkl alert-infopkl">
                 <i class="fas fa-info-circle" style="margin-right: 10px;"></i>
-                Tidak ada pengajuan yang menunggu persetujuan Anda saat ini.
+                Tidak ada pengajuan dimana Anda pernah terlibat saat ini.
             </div>
         @endif
     </div>

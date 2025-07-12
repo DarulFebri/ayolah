@@ -191,7 +191,30 @@ class DosenController extends Controller
             ->get();
         // --- END CORRECTED QUERIES ---
 
-        return view('dosen.dashboard', compact('unreadNotifications', 'sidangInvitations', 'approvedSidangs', 'rejectedSidangs', 'upcomingSidangs'));
+        // Ambil pengajuan di mana dosen ini terlibat (sebagai pembimbing, penguji, ketua, sekretaris, anggota sidang)
+        $pengajuansInvolved = Pengajuan::whereHas('sidang', function ($query) use ($dosenLoginId) {
+            $query->where('dosen_pembimbing_id', $dosenLoginId)
+                ->orWhere('dosen_penguji1_id', $dosenLoginId)
+                ->orWhere('dosen_penguji2_id', $dosenLoginId)
+                ->orWhere('ketua_sidang_dosen_id', $dosenLoginId)
+                ->orWhere('sekretaris_sidang_dosen_id', $dosenLoginId)
+                ->orWhere('anggota1_sidang_dosen_id', $dosenLoginId)
+                ->orWhere('anggota2_sidang_dosen_id', $dosenLoginId);
+        })
+            ->with([
+                'mahasiswa',
+                'sidang.dosenPembimbing',
+                'sidang.dosenPenguji1',
+                'sidang.dosenPenguji2',
+                'sidang.ketuaSidang',
+                'sidang.sekretarisSidang',
+                'sidang.anggota1Sidang',
+                'sidang.anggota2Sidang',
+            ])
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        return view('dosen.dashboard', compact('unreadNotifications', 'sidangInvitations', 'approvedSidangs', 'rejectedSidangs', 'upcomingSidangs', 'pengajuansInvolved'));
     }
 
     public function editProfileForm()
