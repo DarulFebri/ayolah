@@ -77,13 +77,15 @@
           <div class="row">
             <div class="col-md-6">
               @if($pengajuan->mahasiswa)
-                <p><strong>Mahasiswa:</strong> {{ $pengajuan->mahasiswa->nama_lengkap }} ({{ $pengajuan->mahasiswa->nim }})</p>
+                <p><strong>Mahasiswa:</strong> {{ $pengajuan->mahasiswa->nama_lengkap }}</p>
+                <p><strong>NIM:</strong> {{ $pengajuan->mahasiswa->nim }}</p>
                 <p><strong>Jenis Pengajuan:</strong> {{ Str::replace('_',' ',Str::title($pengajuan->jenis_pengajuan)) }}</p>
               @else
                 <p class="text-muted">Informasi mahasiswa tidak tersedia.</p>
               @endif
-              <p><strong>Judul:</strong> {{ $pengajuan->judul_pengajuan ?? 'Belum ada judul' }}</p>
-              <p><strong>Waktu Sidang:</strong> {{ $pengajuan->sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('l, d F Y H:i') : 'Belum Dijadwalkan' }}</p>
+              <p><strong>Judul Laporan:</strong> {{ $pengajuan->judul_pengajuan ?? 'Belum ada judul' }}</p>
+              <p><strong>Tanggal Sidang:</strong> {{ $pengajuan->sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('l, d F Y') : 'Belum Dijadwalkan' }}</p>
+              <p><strong>Waktu Sidang:</strong> {{ $pengajuan->sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('H:i') : 'Belum Dijadwalkan' }}</p>
               <p><strong>Ruangan:</strong> {{ $pengajuan->sidang->ruangan_sidang ?? 'Belum Ditentukan' }}</p>
             </div>
             <div class="col-md-6">

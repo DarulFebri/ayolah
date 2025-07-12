@@ -50,8 +50,12 @@
         @if ($pengajuan->sidang)
         <div class="form-grid">
             <div class="form-group">
-                <label><i class="fas fa-clock"></i> Tanggal & Waktu Sidang:</label>
-                <p class="form-input-static">{{ \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('l, d F Y H:i') }} WIB</p>
+                <label><i class="fas fa-calendar-alt"></i> Tanggal Sidang:</label>
+                <p class="form-input-static">{{ \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('l, d F Y') }}</p>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-clock"></i> Waktu Sidang:</label>
+                <p class="form-input-static">{{ \Carbon\Carbon::parse($pengajuan->sidang->tanggal_waktu_sidang)->translatedFormat('H:i') }} WIB</p>
             </div>
             <div class="form-group">
                 <label><i class="fas fa-map-marker-alt"></i> Ruangan Sidang:</label>
