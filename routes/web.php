@@ -84,6 +84,10 @@ Route::prefix('admin')->group(function () {
         // Activities Log
         Route::get('/activities', [AdminController::class, 'showActivities'])->name('admin.activities.index');
 
+        // Admin Profile Management
+        Route::get('/profile/change-password', [App\Http\Controllers\Admin\ProfileController::class, 'showChangePasswordForm'])->name('admin.profile.change-password.form');
+        Route::post('/profile/change-password', [App\Http\Controllers\Admin\ProfileController::class, 'changePassword'])->name('admin.profile.change-password');
+
         // Program Studi Management
         Route::get('/prodi', [AdminController::class, 'indexProdi'])->name('admin.prodi.index');
         Route::get('/prodi/create', [AdminController::class, 'createProdi'])->name('admin.prodi.create');
