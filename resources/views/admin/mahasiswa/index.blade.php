@@ -424,8 +424,9 @@
     <div class="main-card">
         {{-- Pesan sukses --}}
         @if (session('success'))
-            <div class="alert-success-custom">
+            <div class="alert alert-success">
                 <i class="fas fa-check-circle"></i>
+                &nbsp;
                 {{ session('success') }}
             </div>
         @endif
