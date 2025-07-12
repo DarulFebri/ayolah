@@ -371,7 +371,7 @@
                         <i class="fas fa-check-circle"></i> Finalkan Jadwal Sidang
                     </button>
                 </form>
-            @elseif (in_array($pengajuan->status, ['diverifikasi_admin', 'perlu_penjadwalan_ulang', 'menunggu_persetujuan_dosen']))
+            @elseif (in_array($pengajuan->status, ['diverifikasi_admin', 'perlu_penjadwalan_ulang', 'menunggu_persetujuan_dosen', 'dosen_menolak_jadwal']))
                 <h4>Form Penjadwalan Sidang</h4>
                 <form action="{{ route('kaprodi.pengajuan.jadwalkan.storeUpdate', $pengajuan->id) }}" method="POST">
                     @csrf

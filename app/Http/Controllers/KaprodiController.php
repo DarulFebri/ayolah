@@ -364,10 +364,17 @@ class KaprodiController extends Controller
     {
         $kaprodi_for_layout = Auth::user()->kaprodi;
         // 1. Ambil pengajuan yang sedang menunggu aksi Kaprodi
-        $pengajuansKaprodi = Pengajuan::where('status', 'diverifikasi_admin')
-            ->orWhere('status', 'menunggu_persetujuan_dosen')
-            ->orWhere('status', 'dosen_menyetujui')
-            ->orWhere('status', 'perlu_penjadwalan_ulang')
+        $pengajuansKaprodi = Pengajuan::where(function ($query) {
+            $query->whereIn('status', [
+                'diverifikasi_admin',
+                'menunggu_persetujuan_dosen',
+                'dosen_menyetujui',
+                'perlu_penjadwalan_ulang',
+            ])->orWhereHas('sidang', function ($query) {
+                $query->where('persetujuan_dosen_pembimbing', 'tolak')
+                      ->orWhere('persetujuan_dosen_penguji1', 'tolak');
+            });
+        })
             ->with('mahasiswa')
             ->orderBy('created_at', 'desc')
             ->paginate(10); // Atau gunakan get() jika tidak ada pagination di bagian ini
