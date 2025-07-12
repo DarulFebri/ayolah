@@ -256,7 +256,8 @@
 
         <div class="card-section">
             <h3><i class="fas fa-user-graduate"></i> Detail Mahasiswa & Pengajuan</h3>
-            <p><strong>Mahasiswa:</strong> {{ $pengajuan->mahasiswa->nama_lengkap }} ({{ $pengajuan->mahasiswa->nim }})</p>
+            <p><strong>Mahasiswa:</strong> {{ $pengajuan->mahasiswa->nama_lengkap }}</p>
+            <p><strong>NIM:</strong>{{ $pengajuan->mahasiswa->nim }}</p>
             <p><strong>Jenis Pengajuan:</strong> {{ strtoupper(str_replace('_', ' ', $pengajuan->jenis_pengajuan)) }}</p>
             <p><strong>Judul:</strong> {{ $pengajuan->judul_pengajuan }}</p>
             <p>
