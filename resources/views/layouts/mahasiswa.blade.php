@@ -1210,7 +1210,7 @@
                 </div>
 
                 {{-- Submenu Sidang TA --}}
-                <div class="submenu-item {{ Request::routeIs('mahasiswa.pengajuan.create', 'ta') || Request::routeIs('mahasiswa.jadwal.ta') ? 'active' : '' }}" onclick="toggleSubmenu('sidang-ta', event)">
+                <div class="submenu-item" onclick="toggleSubmenu('sidang-ta', event)">
                     <i class="fas fa-graduation-cap"></i>
                     <span>Sidang TA</span>
                 </div>
