@@ -1163,40 +1163,11 @@
                 </div>
             </a>
 
-            <a href="{{ route('kajur.profile.edit') }}" style="text-decoration: none; color: inherit;">
-                <div class="menu-item {{ Request::routeIs('kajur.profile.edit') ? 'active' : '' }} tooltip">
-                    <i class="fas fa-user"></i>
-                    <span>Profil</span>
-                    <span class="tooltiptext">Profil</span>
-                </div>
-            </a>
+            
 
-            {{-- Menu Pengajuan --}}
-            <div class="menu-item tooltip {{ Request::routeIs('kajur.pengajuan.*') ? 'active' : '' }}" onclick="toggleSubmenu('pengajuan', event)">
-                <i class="fas fa-file-invoice"></i> {{-- Ikon untuk Pengajuan --}}
-                <span>Pengajuan</span>
-                <span class="tooltiptext">Pengajuan</span>
-            </div>
-            <div class="submenu {{ Request::routeIs('kajur.pengajuan.*') ? 'show' : '' }}" id="pengajuan-submenu">
-                <a href="{{ route('kajur.pengajuan.index') }}" style="text-decoration: none; color: inherit;">
-                    <div class="submenu-item tooltip {{ Request::routeIs('kajur.pengajuan.index') ? 'active' : '' }}">
-                        <i class="fas fa-chevron-right"></i>
-                        <span>Daftar Pengajuan</span>
-                        <span class="tooltiptext">Daftar Pengajuan</span>
-                    </div>
-                </a>
-                
-            </div>
-            {{-- Akhir Menu Pengajuan --}}
+            
 
-            {{-- Menu Sidang --}}
-            <a href="{{ route('kajur.sidang.index') }}" style="text-decoration: none; color: inherit;">
-                <div class="menu-item {{ Request::routeIs('kajur.sidang.*') ? 'active' : '' }} tooltip">
-                    <i class="fas fa-gavel"></i>
-                    <span>Sidang</span>
-                    <span class="tooltiptext">Sidang</span>
-                </div>
-            </a>
+            
 
             <a href="{{ route('kajur.notifications.finalizedSidang') }}" style="text-decoration: none; color: inherit;">
                 <div class="menu-item {{ Request::routeIs('kajur.notifications.finalizedSidang') ? 'active' : '' }} tooltip">
@@ -1226,10 +1197,7 @@
                     <i class="fas fa-chevron-down" style="margin-left: 8px; font-size: 12px;"></i>
 
                     <div class="profile-dropdown" id="profileDropdown">
-                        <a href="{{ route('kajur.profile.edit') }}" class="dropdown-item">
-                            <i class="fas fa-user"></i>
-                            <span>Profil Saya</span>
-                        </a>
+                        
                         <a href="{{ route('kajur.password.change.form') }}" class="dropdown-item">
                             <i class="fas fa-key"></i>
                             <span>Ubah Sandi</span>
