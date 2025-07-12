@@ -328,8 +328,8 @@ class PengajuanController extends Controller
             'sidang.dosenPenguji2',
         ])->findOrFail($id);
 
-        // Pastikan mahasiswa yang mengedit adalah pemilik pengajuan dan statusnya masih draft
-        if ($pengajuan->mahasiswa_id !== Auth::user()->mahasiswa->id || $pengajuan->status !== 'draft') {
+        // Pastikan mahasiswa yang mengedit adalah pemilik pengajuan dan statusnya masih draft atau ditolak_admin
+        if ($pengajuan->mahasiswa_id !== Auth::user()->mahasiswa->id || ($pengajuan->status !== 'draft' && $pengajuan->status !== 'ditolak_admin')) {
             return redirect()->route('mahasiswa.pengajuan.detail', $id)->with('error', 'Pengajuan ini tidak dapat diedit.');
         }
 
@@ -355,8 +355,8 @@ class PengajuanController extends Controller
     {
         $pengajuan = Pengajuan::with('sidang')->findOrFail($id);
 
-        // Pastikan mahasiswa yang mengupdate adalah pemilik pengajuan dan statusnya masih draft
-        if ($pengajuan->mahasiswa_id !== Auth::user()->mahasiswa->id || $pengajuan->status !== 'draft') {
+        // Pastikan mahasiswa yang mengupdate adalah pemilik pengajuan dan statusnya masih draft atau ditolak_admin
+        if ($pengajuan->mahasiswa_id !== Auth::user()->mahasiswa->id || ($pengajuan->status !== 'draft' && $pengajuan->status !== 'ditolak_admin')) {
             return redirect()->route('mahasiswa.pengajuan.detail', $id)->with('error', 'Pengajuan ini tidak dapat diupdate.');
         }
 
@@ -493,8 +493,8 @@ class PengajuanController extends Controller
             return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk menghapus dokumen ini.');
         }
 
-        // Hanya izinkan penghapusan jika pengajuan masih dalam status 'draft'
-        if ($pengajuan->status !== 'draft') {
+        // Hanya izinkan penghapusan jika pengajuan masih dalam status 'draft' atau 'ditolak_admin'
+        if ($pengajuan->status !== 'draft' && $pengajuan->status !== 'ditolak_admin') {
             return redirect()->back()->with('error', 'Dokumen tidak dapat dihapus karena pengajuan sudah difinalisasi atau diproses.');
         }
 

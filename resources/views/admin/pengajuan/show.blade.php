@@ -231,7 +231,7 @@
         </div>
         <div class="info-group">
             <label>Status Saat Ini:</label>
-            <p>{{ $pengajuan->status }} @if($pengajuan->alasan_penolakan_admin) (Alasan: {{ $pengajuan->alasan_penolakan_admin }}) @endif</p>
+            <p>{{ $pengajuan->status }} @if($pengajuan->catatan_admin) (Alasan: {{ $pengajuan->catatan_admin }}) @endif</p>
         </div>
 
         <h3>Dokumen Terlampir:</h3>
@@ -270,10 +270,10 @@
                     </div>
                 </div>
 
-                <div class="form-group" id="alasan_tolak_admin_group" style="display: {{ old('verifikasi_status') == 'tolak' ? 'block' : 'none' }};">
-                    <label for="alasan_penolakan_admin">Alasan Penolakan:</label>
-                    <textarea name="alasan_penolakan_admin" id="alasan_penolakan_admin" placeholder="Sebutkan alasan penolakan, contoh: 'Dokumen transkrip nilai belum terlampir.'">{{ old('alasan_penolakan_admin') }}</textarea>
-                    @error('alasan_penolakan_admin')
+                <div class="form-group" id="catatan_admin_group" style="display: {{ old('verifikasi_status') == 'tolak' ? 'block' : 'none' }};">
+                    <label for="catatan_admin">Alasan Penolakan:</label>
+                    <textarea name="catatan_admin" id="catatan_admin" placeholder="Sebutkan alasan penolakan, contoh: 'Dokumen transkrip nilai belum terlampir.'">{{ old('catatan_admin') }}</textarea>
+                    @error('catatan_admin')
                         <span class="error-message">{{ $message }}</span>
                     @enderror
                 </div>
@@ -293,8 +293,8 @@
         // Script JavaScript tetap sama
         const statusSetuju = document.getElementById('status_setuju');
         const statusTolak = document.getElementById('status_tolak');
-        const alasanTolakAdminGroup = document.getElementById('alasan_tolak_admin_group');
-        const alasanAdminTextarea = document.getElementById('alasan_penolakan_admin');
+        const alasanTolakAdminGroup = document.getElementById('catatan_admin_group');
+        const alasanAdminTextarea = document.getElementById('catatan_admin');
 
         function toggleAlasanAdminField() {
             if (statusTolak.checked) {

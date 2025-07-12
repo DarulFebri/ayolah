@@ -143,9 +143,6 @@
                     </dl>
                 @endif
 
-                
-                
-                
 
                 <dl class="row mb-3">
                     <dt class="col-md-4">Status Sidang:</dt>
@@ -160,6 +157,24 @@
             </div>
         </div>
     </div>
+
+    @if ($pengajuan->status == 'ditolak_admin')
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 class="card-title">Status Pengajuan</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-3">
+                <dt class="col-md-4">Status:</dt>
+                <dd class="col-md-8"><span class="badge badge-danger">Ditolak Admin</span></dd>
+            </dl>
+            <dl class="row mb-3">
+                <dt class="col-md-4">Catatan Admin:</dt>
+                <dd class="col-md-8">{{ $pengajuan->catatan_admin ?? 'Tidak ada catatan.' }}</dd>
+            </dl>
+        </div>
+    </div>
+    @endif
 </div>
 @endsection
 

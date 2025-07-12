@@ -1203,8 +1203,8 @@
                     <a href="{{ route('mahasiswa.jadwal.pkl') }}" style="text-decoration: none; color: inherit;">
                         <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.jadwal.pkl') ? 'active' : '' }}">
                             <i class="fas fa-calendar-alt"></i>
-                            <span>Jadwal</span>
-                            <span class="tooltiptext">Jadwal PKL</span>
+                            <span>Status</span>
+                            <span class="tooltiptext">Status PKL</span>
                         </div>
                     </a>
                 </div>
@@ -1225,8 +1225,8 @@
                     <a href="{{ route('mahasiswa.jadwal.ta') }}" style="text-decoration: none; color: inherit;">
                         <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.jadwal.ta') ? 'active' : '' }}">
                             <i class="fas fa-calendar-alt"></i>
-                            <span>Jadwal</span>
-                            <span class="tooltiptext">Jadwal TA</span>
+                            <span>Status</span>
+                            <span class="tooltiptext">Pengajuan TA</span>
                         </div>
                     </a>
                 </div>

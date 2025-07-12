@@ -72,7 +72,7 @@ class PengajuanAdminController extends Controller
     }
 
     // Aksi: Memverifikasi dokumen pengajuan
-    public function verify(Pengajuan $pengajuan)
+    public function verify(Request $request, Pengajuan $pengajuan)
     {
         // Pastikan hanya pengajuan berstatus 'diajukan' atau 'ditolak_admin' yang bisa diverifikasi
         if ($pengajuan->status !== 'diajukan_mahasiswa' && $pengajuan->status !== 'ditolak_admin') {
@@ -80,14 +80,38 @@ class PengajuanAdminController extends Controller
                 ->with('error', 'Pengajuan tidak dapat diverifikasi pada status saat ini.');
         }
 
+        $request->validate([
+            'verifikasi_status' => 'required|in:setuju,tolak',
+            'catatan_admin' => 'required_if:verifikasi_status,tolak|string|max:500|nullable',
+        ]);
+
         $oldStatus = $pengajuan->status;
-        $newStatus = 'diverifikasi_admin';
-        $pengajuan->update(['status' => $newStatus]);
-        $this->logPengajuanStatusChange($pengajuan, $oldStatus, $newStatus, 'Pengajuan diverifikasi oleh Admin.');
+        $newStatus = '';
+        $notes = '';
+
+        if ($request->verifikasi_status == 'setuju') {
+            $newStatus = 'diverifikasi_admin';
+            $notes = 'Pengajuan diverifikasi oleh Admin.';
+            $pengajuan->update([
+                'status' => $newStatus,
+                'catatan_admin' => null, // Clear previous rejection reason if approved
+            ]);
+            $message = 'Pengajuan berhasil diverifikasi dan menunggu aksi Kaprodi.';
+        } else { // 'tolak'
+            $newStatus = 'ditolak_admin';
+            $notes = 'Pengajuan ditolak oleh Admin. Alasan: '.$request->catatan_admin;
+            $pengajuan->update([
+                'status' => $newStatus,
+                'catatan_admin' => $request->catatan_admin,
+            ]);
+            $message = 'Pengajuan berhasil ditolak.';
+        }
+
+        $this->logPengajuanStatusChange($pengajuan, $oldStatus, $newStatus, $notes);
 
         // Redirect kembali ke halaman daftar pengajuan verifikasi admin
-        return redirect()->route('admin.pengajuan.verifikasi.index') // <--- PASTIkan ini
-            ->with('success', 'Pengajuan berhasil diverifikasi dan menunggu aksi Kaprodi.');
+        return redirect()->route('admin.pengajuan.verifikasi.index')
+            ->with('success', $message);
     }
 
     // Aksi: Menolak pengajuan

@@ -159,7 +159,7 @@
             <a href="{{ route('mahasiswa.pengajuan.index') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
-            @if ($pengajuan->status == 'draft')
+            @if ($pengajuan->status == 'draft' || $pengajuan->status == 'ditolak_admin')
                 <a href="{{ route('mahasiswa.pengajuan.edit', $pengajuan->id) }}" class="btn btn-primary">
                     <i class="fas fa-edit"></i> Edit Pengajuan
                 </a>

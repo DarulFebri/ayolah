@@ -1,7 +1,7 @@
 @extends('layouts.mahasiswa')
 
-@section('title', 'Jadwal Sidang TA')
-@section('page_title', 'Jadwal Sidang TA')
+@section('title', 'Status Sidang TA')
+@section('page_title', 'Status Sidang TA')
 
 @push('styles')
     <style>

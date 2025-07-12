@@ -14,7 +14,7 @@ class Pengajuan extends Model
         'jenis_pengajuan',
         'judul_pengajuan', // Tambahkan jika ada kolom ini di tabel pengajuan
         'status',
-        'alasan_penolakan_asdmin',
+        'catatan_admin',
         'alasan_penolakan_kaprodi',
         'perlu_penjadwalan_ulang',
     ];
