@@ -1,7 +1,7 @@
 @extends('mahasiswa.layout')
 
 @section('title', 'Detail Pengajuan')
-@section('page_title', 'Destail Pengajuan')
+@section('page_title', 'Detail Pengajuan')
 
 @push('styles')
 <style>

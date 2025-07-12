@@ -76,6 +76,40 @@ class KaprodiController extends Controller
         }
 
         $validator = Validator::make($request->all(), $rules);
+
+        // Add custom validation for unique dosen roles
+        $validator->after(function ($validator) use ($request, $pengajuan, $isPkl) {
+            $dosenIds = [];
+
+            // Dosen Pembimbing 1 (always present and acts as Ketua Sidang)
+            $dosenIds[] = $pengajuan->mahasiswa->pembimbing1_id;
+
+            if ($isPkl) {
+                // For PKL, only Dosen Penguji is additional
+                if ($request->has('dosen_penguji_id')) {
+                    $dosenIds[] = $request->input('dosen_penguji_id');
+                }
+            } else { // TA
+                if ($request->has('sekretaris_sidang_id')) {
+                    $dosenIds[] = $request->input('sekretaris_sidang_id');
+                }
+                if ($request->has('dosen_penguji_1_id')) {
+                    $dosenIds[] = $request->input('dosen_penguji_1_id');
+                }
+                if ($request->has('dosen_penguji_2_id') && $request->input('dosen_penguji_2_id')) {
+                    $dosenIds[] = $request->input('dosen_penguji_2_id');
+                }
+            }
+
+            // Filter out nulls and ensure unique IDs
+            $dosenIds = array_filter($dosenIds);
+            $uniqueDosenIds = array_unique($dosenIds);
+
+            if (count($dosenIds) !== count($uniqueDosenIds)) {
+                $validator->errors()->add('dosen_roles', 'Seorang dosen tidak dapat memiliki lebih dari satu peran dalam sidang yang sama.');
+            }
+        });
+
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }

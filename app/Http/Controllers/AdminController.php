@@ -130,6 +130,7 @@ class AdminController extends Controller
     {
         $pengajuans = Pengajuan::with('mahasiswa')
             ->where('jenis_pengajuan', 'ta')
+            ->where('status', '!=', 'draft')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
