@@ -66,7 +66,7 @@
 
             {{-- Informasi Utama --}}
             <div class="form-group mb-4">
-                <label for="judul_pengajuan" class="form-label form-label-emphasized"><i class="fas fa-heading me-2"></i>Judul Pengajuan</label>
+                <label for="judul_pengajuan" class="form-label form-label-emphasized"><i class="fas fa-heading me-2"></i>Judul Laporan</label>
                 <input type="text" name="judul_pengajuan" id="judul_pengajuan" class="form-control form-input" value="{{ old('judul_pengajuan') }}" required placeholder="Masukkan judul proposal Tugas Akhir Anda">
             </div>
 
