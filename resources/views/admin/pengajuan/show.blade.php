@@ -218,7 +218,7 @@
             <p>{{ strtoupper($pengajuan->jenis_pengajuan) }}</p>
         </div>
         <div class="info-group">
-            <label>Judul Pengajuan:</label>
+            <label>Judul Laporan:</label>
             <p>{{ $pengajuan->judul_pengajuan }}</p>
         </div>
         <div class="info-group">
