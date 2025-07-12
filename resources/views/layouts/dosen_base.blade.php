@@ -1488,7 +1488,8 @@
             }
         }
     </style>
-    @yield('styles')
+    <link rel="stylesheet" href="{{ asset('css/dosen_jadwal_show.css') }}">
+    @stack('styles')
 </head>
 <body>
     <div class="loading-overlay" id="loadingOverlay">
@@ -1520,46 +1521,6 @@
                 </a>
             </div>
 
-            <div class="menu-item has-submenu tooltip" onclick="toggleSubmenu('pengajuan', event)" aria-expanded="false" aria-controls="pengajuan-submenu">
-                <a href="#" class="menu-link"> <i class="fas fa-file-alt"></i>
-                    <span>Manajemen Pengajuan</span>
-                    <span class="tooltiptext">Manajemen Pengajuan</span>
-                    <i class="fas fa-chevron-down dropdown-arrow" style="margin-left: auto;"></i>
-                </a>
-            </div>
-            <div class="submenu" id="pengajuan-submenu">
-                <div class="submenu-item tooltip {{ request()->routeIs('dosen.pengajuan.index') ? 'active' : '' }}">
-                    <a href="{{ route('dosen.pengajuan.index') }}" class="menu-link" aria-label="Daftar Pengajuan">
-                        <i class="fas fa-list-alt"></i>
-                        <span>Daftar Pengajuan</span>
-                        <span class="tooltiptext">Daftar Pengajuan</span>
-                    </a>
-                </div>
-                <div class="submenu-item tooltip {{ request()->routeIs('dosen.pengajuan.saya') ? 'active' : '' }}">
-                    <a href="{{ route('dosen.pengajuan.saya') }}" class="menu-link" aria-label="Pengajuan Saya">
-                        <i class="fas fa-user-check"></i>
-                        <span>Pengajuan Saya</span>
-                        <span class="tooltiptext">Pengajuan Saya</span>
-                    </a>
-                </div>
-            </div>
-
-            <div class="menu-item {{ request()->routeIs('dosen.import.form') ? 'active' : '' }} tooltip">
-                <a href="{{ route('dosen.import.form') }}" class="menu-link" aria-label="Import Data">
-                    <i class="fas fa-upload"></i>
-                    <span>Import Data</span>
-                    <span class="tooltiptext">Import Data</span>
-                </a>
-            </div>
-
-            {{-- Tambahkan menu Notifikasi, asumsikan ada route dosen.notifications.index --}}
-            <div class="menu-item tooltip">
-                <a href="#" class="menu-link" aria-label="Notifikasi">
-                    <i class="fas fa-bell"></i>
-                    <span>Notifikasi</span>
-                    <span class="tooltiptext">Notifikasi</span>
-                </a>
-            </div>
         </div>
 
         <div class="main-content" id="mainContent">

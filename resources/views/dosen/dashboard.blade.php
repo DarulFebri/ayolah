@@ -37,7 +37,7 @@
                 <i class="fas fa-calendar-alt"></i>
             </div>
             <div class="card-title">
-                <div class="stat-number">{{ $totalSidangUpcoming ?? 0 }}</div>
+                <div class="stat-number">{{ $upcomingSidangs->count() }}</div>
                 <div class="stat-title">Sidang Mendatang</div>
             </div>
         </div>
@@ -53,66 +53,6 @@
     </div>
 
     <div class="section-header">
-        <h3 class="section-title"><i class="fas fa-bell"></i> Notifikasi Terbaru</h3>
-        <div class="section-actions">
-            <a href="{{ route('dosen.dashboard') }}" class="btn btn-blue">Lihat Semua <i class="fas fa-arrow-right"></i></a> {{-- No specific route for all notifications, linking to dashboard --}}
-        </div>
-    </div>
-    <div class="table-container">
-        @if (!empty($notifications) && $notifications->count() > 0)
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Tipe</th>
-                        <th>Pesan</th>
-                        <th>Waktu</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($notifications as $notification)
-                        <tr>
-                            <td>
-                                @if ($notification->type == 'new_submission')
-                                    <span class="status-badge status-pending">Pengajuan Baru</span>
-                                @elseif ($notification->type == 'sidang_scheduled')
-                                    <span class="status-badge status-active">Jadwal Sidang</span>
-                                @elseif ($notification->type == 'submission_status_update')
-                                    <span class="status-badge status-inactive">Update Status</span>
-                                @endif
-                            </td>
-                            <td>{{ $notification->message }}</td>
-                            <td>{{ \Carbon\Carbon::parse($notification->created_at)->diffForHumans() }}</td>
-                            <td class="action-cell">
-                                @if ($notification->type == 'new_submission' && isset($notification->data['pengajuan_id']))
-                                    <a href="{{ route('dosen.pengajuan.show', $notification->data['pengajuan_id']) }}" class="action-icon view-icon" title="Lihat">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                @elseif ($notification->type == 'sidang_scheduled' && isset($notification->data['sidang_id']))
-                                    <a href="{{ route('dosen.jadwal.show', $notification->data['sidang_id']) }}" class="action-icon view-icon" title="Lihat Sidang">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                @elseif ($notification->type == 'submission_status_update' && isset($notification->data['pengajuan_id']))
-                                    <a href="{{ route('dosen.pengajuan.show', $notification->data['pengajuan_id']) }}" class="action-icon view-icon" title="Lihat Pengajuan">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                @else
-                                    -
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @else
-            <div class="alertpkl alert-infopkl">
-                <i class="fas fa-info-circle" style="margin-right: 10px;"></i>
-                Tidak ada notifikasi baru.
-            </div>
-        @endif
-    </div>
-
-    <div class="section-header">
         <h3 class="section-title"><i class="fas fa-calendar-check"></i> Jadwal Sidang Saya</h3>
         <div class="section-actions">
             {{-- Assuming a route for "all schedules" --}}
@@ -120,7 +60,7 @@
         </div>
     </div>
     <div class="table-container">
-        @if (!empty($jadwalSidang) && $jadwalSidang->count() > 0)
+        @if (!empty($upcomingSidangs) && $upcomingSidangs->count() > 0)
             <table class="data-table">
                 <thead>
                     <tr>
@@ -134,7 +74,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($jadwalSidang as $sidang)
+                    @foreach ($upcomingSidangs as $sidang)
                         <tr>
                             <td>{{ $sidang->pengajuan->mahasiswa->nama_lengkap ?? 'N/A' }} ({{ $sidang->pengajuan->mahasiswa->nim ?? 'N/A' }})</td>
                             <td>{{ strtoupper(str_replace('_', ' ', $sidang->pengajuan->jenis_pengajuan ?? 'N/A')) }}</td>
@@ -142,24 +82,20 @@
                             <td>{{ $sidang->ruangan_sidang ?? 'N/A' }}</td>
                             <td>
                                 @php
-                                    $dosenLoginId = Auth::id();
+                                    $dosenLoginId = Auth::user()->dosen->id; // Use dosen->id for comparison
                                     $roleDisplayed = '';
-                                    if (isset($sidang->dosen_pembimbing_id) && $sidang->dosen_pembimbing_id == $dosenLoginId) $roleDisplayed = 'Pembimbing';
-                                    elseif (isset($sidang->dosen_penguji1_id) && $sidang->dosen_penguji1_id == $dosenLoginId) $roleDisplayed = 'Penguji 1';
-                                    elseif (isset($sidang->dosen_penguji2_id) && $sidang->dosen_penguji2_id == $dosenLoginId) $roleDisplayed = 'Penguji 2';
+                                    if ($sidang->ketua_sidang_dosen_id == $dosenLoginId) $roleDisplayed = 'Ketua Sidang';
+                                    elseif ($sidang->sekretaris_sidang_dosen_id == $dosenLoginId) $roleDisplayed = 'Sekretaris Sidang';
+                                    elseif ($sidang->anggota1_sidang_dosen_id == $dosenLoginId) $roleDisplayed = 'Anggota Sidang 1';
+                                    elseif ($sidang->anggota2_sidang_dosen_id == $dosenLoginId) $roleDisplayed = 'Anggota Sidang 2';
+                                    elseif ($sidang->dosen_pembimbing_id == $dosenLoginId) $roleDisplayed = 'Dosen Pembimbing';
+                                    elseif ($sidang->dosen_penguji1_id == $dosenLoginId) $roleDisplayed = 'Dosen Penguji';
+                                    // Add other roles if necessary, e.g., dosen_penguji2_id
                                     echo $roleDisplayed ?: 'N/A';
                                 @endphp
                             </td>
                             <td>
-                                @if (($sidang->status_sidang ?? 'pending') == 'pending')
-                                    <span class="status-badge status-pending">Menunggu</span>
-                                @elseif (($sidang->status_sidang ?? 'pending') == 'approved')
-                                    <span class="status-badge status-active">Disetujui</span>
-                                @elseif (($sidang->status_sidang ?? 'pending') == 'rejected')
-                                    <span class="status-badge status-inactive">Ditolak</span>
-                                @else
-                                    <span class="status-badge">{{ ucfirst($sidang->status_sidang ?? 'N/A') }}</span>
-                                @endif
+                                <span class="status-badge status-active">Disetujui</span>
                             </td>
                             <td class="action-cell">
                                 <a href="{{ route('dosen.jadwal.show', $sidang->id) }}" class="action-icon view-icon" title="Detail">

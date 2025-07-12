@@ -153,9 +153,45 @@ class DosenController extends Controller
 
         $approvedSidangs = $getSidangsByResponse('setuju');
         $rejectedSidangs = $getSidangsByResponse('tolak');
+
+        // Ambil sidang yang sudah disetujui dan akan datang
+        $upcomingSidangs = Sidang::where(function ($query) use ($dosenLoginId) {
+            $query->where(function ($q) use ($dosenLoginId) {
+                $q->where('sekretaris_sidang_dosen_id', $dosenLoginId)
+                    ->where('persetujuan_sekretaris_sidang', 'setuju');
+            })
+                ->orWhere(function ($q) use ($dosenLoginId) {
+                    $q->where('anggota1_sidang_dosen_id', $dosenLoginId)
+                        ->where('persetujuan_anggota1_sidang', 'setuju');
+                })
+                ->orWhere(function ($q) use ($dosenLoginId) {
+                    $q->where('anggota2_sidang_dosen_id', $dosenLoginId)
+                        ->where('persetujuan_anggota2_sidang', 'setuju');
+                })
+                ->orWhere(function ($q) use ($dosenLoginId) {
+                    $q->where('dosen_pembimbing_id', $dosenLoginId)
+                        ->where('persetujuan_dosen_pembimbing', 'setuju');
+                })
+                ->orWhere(function ($q) use ($dosenLoginId) {
+                    $q->where('dosen_penguji1_id', $dosenLoginId)
+                        ->where('persetujuan_dosen_penguji1', 'setuju');
+                });
+        })
+            ->where('tanggal_waktu_sidang', '>=', now()) // Filter for future dates
+            ->with([
+                'pengajuan.mahasiswa',
+                'ketuaSidang',
+                'sekretarisSidang',
+                'anggota1Sidang',
+                'anggota2Sidang',
+                'dosenPembimbing',
+                'dosenPenguji1',
+            ])
+            ->orderBy('tanggal_waktu_sidang', 'asc') // Order by date
+            ->get();
         // --- END CORRECTED QUERIES ---
 
-        return view('dosen.dashboard', compact('unreadNotifications', 'sidangInvitations', 'approvedSidangs', 'rejectedSidangs'));
+        return view('dosen.dashboard', compact('unreadNotifications', 'sidangInvitations', 'approvedSidangs', 'rejectedSidangs', 'upcomingSidangs'));
     }
 
     public function editProfileForm()
