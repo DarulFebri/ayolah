@@ -257,6 +257,9 @@ Route::prefix('dosen')->group(function () {
         // Import routes
         Route::get('/import/form', [DosenController::class, 'importForm'])->name('dosen.import.form');
         Route::post('/import', [DosenController::class, 'import'])->name('dosen.import');
+
+        // Rute untuk dosen melihat dokumen
+        Route::get('/dokumen/{dokumen}/lihat', [DokumenController::class, 'lihatDokumenAdmin'])->name('dosen.dokumen.lihat');
     });
 });
 

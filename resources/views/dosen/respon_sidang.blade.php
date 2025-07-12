@@ -276,6 +276,24 @@
         </div>
 
         <div class="card-section">
+            <h3>Dokumen Dilampirkan</h3>
+            <div class="detail-info">
+                @if ($sidang->pengajuan->dokumens->isNotEmpty())
+                    @foreach ($sidang->pengajuan->dokumens as $dokumen)
+                        <p>
+                            <strong>{{ $dokumen->nama_file }}:</strong>
+                            <a href="{{ route('dosen.dokumen.lihat', $dokumen->id) }}" target="_blank" style="color: #3b82f6; text-decoration: none; font-weight: 500;">
+                                Lihat Dokumen
+                            </a>
+                        </p>
+                    @endforeach
+                @else
+                    <p>Tidak ada dokumen yang dilampirkan.</p>
+                @endif
+            </div>
+        </div>
+
+        <div class="card-section">
             <h3>Respon Anda</h3>
             <p>Anda berperan sebagai: <strong style="color: #3b82f6;">
                 @php

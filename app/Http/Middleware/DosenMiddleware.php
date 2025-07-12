@@ -14,7 +14,7 @@ class DosenMiddleware
             return redirect()->route('dosen.login');
         }
 
-        if (Auth::user()->role !== 'dosen') {
+        if (strtolower(Auth::user()->role) !== 'dosen') {
             abort(403, 'Unauthorized action.');
         }
 
