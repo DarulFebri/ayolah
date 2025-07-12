@@ -12,5 +12,11 @@ class Kajur extends Model
     protected $fillable = [
         'nama',
         'email',
+        'user_id', // Add user_id to fillable
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

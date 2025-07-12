@@ -66,14 +66,11 @@ class KajurController extends Controller
             ->where('status', 'sidang_dijadwalkan_final')
             ->get();
 
-        $kajur_for_layout = Auth::user()->kajur; // Fetch Kajur data for layout
-
         return view('kajur.dashboard', compact(
             'jumlahSidangSedang',
             'jumlahSidangTelah',
             'jumlahSidangAkan',
-            'pengajuanSiapSidang', // PASTIKAN ini ada di compact!
-            'kajur_for_layout' // Pass the kajur data to the layout
+            'pengajuanSiapSidang' // PASTIKAN ini ada di compact!
         ));
     }
 
@@ -93,9 +90,7 @@ class KajurController extends Controller
             ->where('status', 'sidang_dijadwalkan_final')
             ->get();
 
-        $kajur_for_layout = Auth::user()->kajur; // Fetch Kajur data for layout
-
-        return view('kajur.pengajuan.perlu_verifikasi', compact('pengajuanSiapSidang', 'kajur_for_layout'));
+        return view('kajur.pengajuan.perlu_verifikasi', compact('pengajuanSiapSidang'));
     }
 
     public function daftarPengajuanTerverifikasi()
@@ -105,9 +100,7 @@ class KajurController extends Controller
             ->where('status', 'diverifikasi_kajur')
             ->get();
 
-        $kajur_for_layout = Auth::user()->kajur; // Fetch Kajur data for layout
-
-        return view('kajur.pengajuan.sudah_verifikasi', compact('pengajuanTerverifikasi', 'kajur_for_layout'));
+        return view('kajur.pengajuan.sudah_verifikasi', compact('pengajuanTerverifikasi'));
     }
 
     public function daftarPengajuan()
@@ -194,8 +187,7 @@ class KajurController extends Controller
     {
         $pengajuan->load(['mahasiswa', 'sidang.dosenPembimbing', 'sidang.dosenPenguji1']); // Load through sidang relationship
 
-        $kajur_for_layout = Auth::user()->kajur; // Fetch Kajur data for layout
-        return view('kajur.pengajuan.show', compact('pengajuan', 'kajur_for_layout'));
+        return view('kajur.pengajuan.show', compact('pengajuan'));
     }
 
     public function daftarDosen()
@@ -214,37 +206,24 @@ class KajurController extends Controller
 
     public function editProfileForm()
     {
-        $kajur = Auth::user()->kajur; // Assuming Kajur model is related to User model
+        $user = Auth::user(); // Get the authenticated user directly
 
-        return view('kajur.profile.edit', compact('kajur'));
+        return view('kajur.profile.edit', compact('user'));
     }
 
     public function updateProfile(Request $request)
     {
-        $kajur = Auth::user()->kajur;
+        $user = Auth::user(); // Get the authenticated user directly
 
         $request->validate([
             'nama' => 'required|string|max:255',
-            'nip' => ['required', 'string', 'max:255', Rule::unique('kajurs')->ignore($kajur->id)],
-            'nomor_hp' => ['nullable', 'string', 'max:15'],
-            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
         ]);
 
-        $kajur->nama = $request->nama;
-        $kajur->nip = $request->nip;
-        $kajur->nomor_hp = $request->nomor_hp;
+        $user->name = $request->nama; // Assuming 'nama' maps to 'name' on User model
+        $user->email = $request->email;
 
-        if ($request->hasFile('foto_profil')) {
-            // Delete old profile photo if exists
-            if ($kajur->foto_profil && file_exists(public_path('images/profile/'.$kajur->foto_profil))) {
-                unlink(public_path('images/profile/'.$kajur->foto_profil));
-            }
-            $imageName = time().'.'.$request->foto_profil->extension();
-            $request->foto_profil->move(public_path('images/profile'), $imageName);
-            $kajur->foto_profil = $imageName;
-        }
-
-        $kajur->save();
+        $user->save();
 
         return redirect()->route('kajur.profile.edit')->with('success', 'Profil berhasil diperbarui.');
     }
@@ -321,8 +300,6 @@ class KajurController extends Controller
         // $pengajuanFinalized and find related notifications.
         // For now, let's assume the notification data contains the status.
 
-        $kajur_for_layout = Auth::user()->kajur; // Fetch Kajur data for layout
-
-        return view('kajur.notifications.finalized_sidang', compact('notifications', 'kajur_for_layout'));
+        return view('kajur.notifications.finalized_sidang', compact('notifications'));
     }
 }

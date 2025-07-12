@@ -924,6 +924,8 @@
             border: 1px solid rgba(0, 0, 0, 0.05);
             border-top: 3px solid var(--primary-500); /* Added from data-mahasiswa.html */
             transition: var(--transition);
+            width: 100%;
+            height: max-content;
         }
 
         .main-card:hover {
@@ -1218,7 +1220,7 @@
                     </h1>
                 </div>
                 <div class="user-profile" id="userProfile">
-                    <img src="{{ $kajur_for_layout && $kajur_for_layout->foto_profil ? asset('storage/' . $kajur_for_layout->foto_profil) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::guard('kajur')->user()->name ?? 'Kajur') . '&background=1a88ff&color=fff' }}"
+                    <img src="{{ 'https://ui-avatars.com/api/?name=' . urlencode(Auth::guard('kajur')->user()->name ?? 'Kajur') . '&background=1a88ff&color=fff' }}"
                          style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover;">
                     <span style="font-weight: 500;">{{ Auth::guard('kajur')->user()->name ?? 'Kajur' }}</span>
                     <i class="fas fa-chevron-down" style="margin-left: 8px; font-size: 12px;"></i>
@@ -1244,6 +1246,18 @@
                 </div>
             </div>
         </div>
+
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
 
         @yield('content') {{-- This is where the specific page content will be injected --}}
 
