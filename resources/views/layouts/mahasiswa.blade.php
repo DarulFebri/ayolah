@@ -1210,7 +1210,7 @@
                 </div>
 
                 {{-- Submenu Sidang TA --}}
-                <div class="submenu-item" onclick="toggleSubmenu('sidang-ta', event)">
+                <div class="submenu-item {{ Request::routeIs('mahasiswa.pengajuan.create', 'ta') || Request::routeIs('mahasiswa.jadwal.ta') ? 'active' : '' }}" onclick="toggleSubmenu('sidang-ta', event)">
                     <i class="fas fa-graduation-cap"></i>
                     <span>Sidang TA</span>
                 </div>
@@ -1226,7 +1226,7 @@
                         <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.jadwal.ta') ? 'active' : '' }}">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Status</span>
-                            <span class="tooltiptext">Pengajuan TA</span>
+                            <span class="tooltiptext">Status TA</span>
                         </div>
                     </a>
                 </div>
@@ -1327,43 +1327,60 @@
         // Toggle submenu
         function toggleSubmenu(menuId, event) {
             const targetSubmenu = document.getElementById(`${menuId}-submenu`);
-            const clickedMenuItem = event.currentTarget;
+            const clickedMenuItem = event.currentTarget; // This is the div with onclick
 
-            if (!targetSubmenu) return; // Exit if submenu not found
+            if (!targetSubmenu) return;
 
-            // Toggle the target submenu
-            targetSubmenu.classList.toggle('show');
+            // Toggle the visibility of the clicked submenu
+            const isShowing = targetSubmenu.classList.toggle('show');
 
-            // Remove active from all menu items and submenu items first
-            document.querySelectorAll('.menu-item, .submenu-item').forEach(item => {
-                item.classList.remove('active');
-            });
-
-            // Add active to the clicked menu item/submenu item if its corresponding submenu is open
-            if (targetSubmenu.classList.contains('show')) {
-                clickedMenuItem.classList.add('active');
+            // Handle 'active' class for the clicked parent submenu-item (Sidang PKL / Sidang TA)
+            // Remove 'active' from the other parent submenu-item
+            if (menuId === 'sidang-pkl') {
+                const sidangTaParentItem = document.querySelector('.submenu-item[onclick*="toggleSubmenu(\'sidang-ta\', event)"]');
+                if (sidangTaParentItem) {
+                    sidangTaParentItem.classList.remove('active');
+                    // Also close the other submenu if it's open
+                    const sidangTaSubmenu = document.getElementById('sidang-ta-submenu');
+                    if (sidangTaSubmenu) sidangTaSubmenu.classList.remove('show');
+                }
+            } else if (menuId === 'sidang-ta') {
+                const sidangPklParentItem = document.querySelector('.submenu-item[onclick*="toggleSubmenu(\'sidang-pkl\', event)"]');
+                if (sidangPklParentItem) {
+                    sidangPklParentItem.classList.remove('active');
+                    // Also close the other submenu if it's open
+                    const sidangPklSubmenu = document.getElementById('sidang-pkl-submenu');
+                    if (sidangPklSubmenu) sidangPklSubmenu.classList.remove('show');
+                }
             }
 
-            // Ensure parent 'Pengajuan' menu item remains active if any of its children are active
-            const pengajuanSubmenu = document.getElementById('pengajuan-submenu');
-            const pengajuanMenuItem = document.querySelector('.menu-item.tooltip[onclick*="toggleSubmenu(\'pengajuan\', event)"]');
+            // Add 'active' to the clicked parent submenu-item if its submenu is now open
+            if (isShowing) {
+                clickedMenuItem.classList.add('active');
+            } else {
+                clickedMenuItem.classList.remove('active');
+            }
 
-            if (pengajuanSubmenu && pengajuanMenuItem) {
-                // Check if pengajuanSubmenu or any of its children are currently 'show'
-                const isPengajuanActive = pengajuanSubmenu.classList.contains('show') ||
-                                         pengajuanSubmenu.querySelector('.submenu.show');
-                if (isPengajuanActive) {
+            // Ensure the main 'Pengajuan' menu item is active if any of its submenus are open
+            const pengajuanMenuItem = document.querySelector('.menu-item.tooltip[onclick*="toggleSubmenu(\'pengajuan\', event)"]');
+            const pengajuanSubmenu = document.getElementById('pengajuan-submenu');
+            const sidangPklSubmenu = document.getElementById('sidang-pkl-submenu');
+            const sidangTaSubmenu = document.getElementById('sidang-ta-submenu');
+
+            if (pengajuanMenuItem && pengajuanSubmenu) {
+                const isAnyPengajuanChildSubmenuOpen = (sidangPklSubmenu && sidangPklSubmenu.classList.contains('show')) ||
+                                                       (sidangTaSubmenu && sidangTaSubmenu.classList.contains('show'));
+
+                if (isAnyPengajuanChildSubmenuOpen || pengajuanSubmenu.classList.contains('show')) {
                     pengajuanMenuItem.classList.add('active');
                 } else {
                     pengajuanMenuItem.classList.remove('active');
                 }
             }
 
-            // Keep Dashboard active if it's the current route
-            const dashboardMenuItem = document.querySelector('.menu-item .fa-tachometer-alt');
-            if (dashboardMenuItem && "{{ Request::routeIs('mahasiswa.dashboard') }}" === "1") {
-                dashboardMenuItem.closest('.menu-item').classList.add('active');
-            }
+            // The active state for the deepest level items (Pengajuan PKL/TA, Status PKL/TA)
+            // is already handled by Request::routeIs in Blade, which is correct.
+            // No need to re-manage them here in JS.
         }
 
 

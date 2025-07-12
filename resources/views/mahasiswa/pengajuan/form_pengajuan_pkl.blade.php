@@ -1,4 +1,4 @@
-@extends('mahasiswa.layout')
+@extends('layouts.mahasiswa')
 
 @section('title', 'Form Pengajuan PKL')
 @section('page_title', 'Form Pengajuan PKL')
