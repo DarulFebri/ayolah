@@ -283,10 +283,10 @@ class KajurController extends Controller
         if ($notification) {
             $notification->markAsRead();
 
-            return back()->with('success', 'Notifikasi ditandai sudah dibaca.');
+            return response()->json(['success' => true, 'message' => 'Notifikasi ditandai sudah dibaca.']);
         }
 
-        return back()->with('error', 'Notifikasi tidak ditemukan.');
+        return response()->json(['success' => false, 'message' => 'Notifikasi tidak ditemukan.'], 404);
     }
 
     public function markAllNotificationsAsRead()

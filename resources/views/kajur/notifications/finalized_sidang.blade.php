@@ -53,9 +53,12 @@
                         </td>
                         <td class="action-cell">
                             @if (!$notification->read_at)
-                                <form action="{{ route('kajur.notifications.markAsRead', $notification->id) }}" method="POST" style="display: inline;" onsubmit="event.preventDefault(); this.submit(); window.location.href = '{{ route('kajur.verifikasi.form', $notification->data['pengajuan_id']) }}';">
+                                <form class="mark-as-read-form" style="display: inline;">
                                     @csrf
-                                    <button type="submit" class="action-icon view-icon" title="Lihat Detail dan Tandai Sudah Dibaca">
+                                    <button type="button" class="action-icon view-icon mark-as-read-btn"
+                                            data-notification-id="{{ $notification->id }}"
+                                            data-redirect-url="{{ route('kajur.verifikasi.form', $notification->data['pengajuan_id']) }}"
+                                            title="Lihat Detail dan Tandai Sudah Dibaca">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </form>
@@ -79,3 +82,43 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.mark-as-read-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const notificationId = this.dataset.notificationId;
+                const redirectUrl = this.dataset.redirectUrl;
+                const form = this.closest('.mark-as-read-form');
+                const csrfToken = form.querySelector('input[name="_token"]').value;
+
+                axios.post(`/kajur/notifications/${notificationId}/mark-as-read`, {
+                    _token: csrfToken
+                })
+                .then(response => {
+                    // Update UI: change status badge
+                    const statusCell = this.closest('tr').querySelector('td:nth-child(4)');
+                    if (statusCell) {
+                        statusCell.innerHTML = '<span class="status-badge status-active">Sudah Dibaca</span>';
+                    }
+                    // Disable the button and update its appearance
+                    this.disabled = true;
+                    this.style.cursor = 'not-allowed';
+                    this.title = 'Sudah Dibaca';
+                    this.innerHTML = '<i class="fas fa-check-circle"></i>'; // Change icon to a checkmark
+
+                    // Redirect after successful update
+                    window.location.href = redirectUrl;
+                })
+                .catch(error => {
+                    console.error('Error marking notification as read:', error);
+                    alert('Gagal menandai notifikasi sudah dibaca. Silakan coba lagi.');
+                    // Still redirect even on error, as the primary action is viewing detail
+                    window.location.href = redirectUrl;
+                });
+            });
+        });
+    });
+</script>
+@endpush

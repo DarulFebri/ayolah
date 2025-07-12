@@ -1393,6 +1393,7 @@
             }
         }
     </script>
+    @vite('resources/js/app.js') {{-- Load Vite assets, including Axios --}}
     @stack('scripts') {{-- Allows child views to push additional scripts --}}
 </body>
 </html>
