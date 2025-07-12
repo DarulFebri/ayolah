@@ -172,6 +172,10 @@ Route::prefix('mahasiswa')->group(function () {
         Route::get('/password/change', [MahasiswaController::class, 'changePasswordForm'])->name('mahasiswa.password.change.form');
         Route::post('/password/change', [MahasiswaController::class, 'changePassword'])->name('mahasiswa.password.change');
 
+        // Jadwal routes
+        Route::get('/jadwal/pkl', [PengajuanController::class, 'jadwalPkl'])->name('mahasiswa.jadwal.pkl');
+        Route::get('/jadwal/ta', [PengajuanController::class, 'jadwalTa'])->name('mahasiswa.jadwal.ta');
+
         // Pengajuan routes
         Route::prefix('pengajuan')->name('mahasiswa.pengajuan.')->group(function () {
             // Halaman utama pengajuan (menampilkan daftar pengajuan dan pilihan buat baru)

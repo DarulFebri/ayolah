@@ -499,54 +499,28 @@ class PengajuanController extends Controller
         }
     }
 
-    // Metode yang sudah ada sebelumnya (tidak dihapus)
-    public function jadwalSidangPkl()
+    public function jadwalPkl()
     {
-        // Eager load related data: pengajuan and all associated dosens
-        $sidangsPkl = Sidang::with([
-            'pengajuan',
-            'ketuaSidangDosen',
-            'sekretarisSidangDosen',
-            'anggota1SidangDosen',
-            'anggota2SidangDosen',
-            'dosenPembimbing',
-            'dosenPenguji1',
-            'dosenPenguji2',
-        ])
-            ->whereHas('pengajuan', function ($query) {
-                $query->where('jenis_pengajuan', 'Sidang PKL'); // Assuming 'jenis_pengajuan' exists in 'pengajuans' table
-            })
-            ->orderBy('tanggal_waktu_sidang', 'desc')
+        $mahasiswa = Auth::user()->mahasiswa;
+        $pengajuans = Pengajuan::where('mahasiswa_id', $mahasiswa->id)
+            ->where('jenis_pengajuan', 'pkl')
+            ->with('sidang.dosenPembimbing', 'sidang.dosenPenguji1', 'sidang.dosenPenguji2', 'sidang.sekretarisSidang', 'sidang.anggota1Sidang', 'sidang.anggota2Sidang')
+            ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('mahasiswa.jadwal_pkl', compact('sidangsPkl'));
+        return view('mahasiswa.jadwal_pkl', compact('pengajuans', 'mahasiswa'));
     }
 
-    /**
-     * Display a listing of Sidang TA schedules.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function jadwalSidangTa()
+    public function jadwalTa()
     {
-        // Eager load related data: pengajuan and all associated dosens
-        $sidangsTa = Sidang::with([
-            'pengajuan',
-            'ketuaSidangDosen',
-            'sekretarisSidangDosen',
-            'anggota1SidangDosen',
-            'anggota2SidangDosen',
-            'dosenPembimbing',
-            'dosenPenguji1',
-            'dosenPenguji2',
-        ])
-            ->whereHas('pengajuan', function ($query) {
-                $query->where('jenis_pengajuan', 'Sidang TA'); // Assuming 'jenis_pengajuan' exists in 'pengajuans' table
-            })
-            ->orderBy('tanggal_waktu_sidang', 'desc')
+        $mahasiswa = Auth::user()->mahasiswa;
+        $pengajuans = Pengajuan::where('mahasiswa_id', $mahasiswa->id)
+            ->where('jenis_pengajuan', 'ta')
+            ->with('sidang.dosenPembimbing', 'sidang.dosenPenguji1', 'sidang.dosenPenguji2', 'sidang.sekretarisSidang', 'sidang.anggota1Sidang', 'sidang.anggota2Sidang')
+            ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('mahasiswa.jadwal_ta', compact('sidangsTa'));
+        return view('mahasiswa.jadwal_ta', compact('pengajuans', 'mahasiswa'));
     }
 
     // You might also want a method to view a single sidang detail

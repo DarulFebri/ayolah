@@ -1170,26 +1170,55 @@
             </a>
 
             {{-- Menu Pengajuan --}}
-            <div class="menu-item tooltip {{ Request::routeIs('mahasiswa.pengajuan.*') ? 'active' : '' }}" onclick="toggleSubmenu('pengajuan', event)">
-                <i class="fas fa-file-invoice"></i> {{-- Ikon untuk Pengajuan --}}
+            <div class="menu-item tooltip {{ Request::routeIs('mahasiswa.pengajuan.*') || Request::routeIs('mahasiswa.jadwal.*') ? 'active' : '' }}" onclick="toggleSubmenu('pengajuan', event)">
+                <i class="fas fa-file-invoice"></i>
                 <span>Pengajuan</span>
                 <span class="tooltiptext">Pengajuan</span>
             </div>
-            <div class="submenu {{ Request::routeIs('mahasiswa.pengajuan.*') ? 'show' : '' }}" id="pengajuan-submenu">
-                <a href="{{ route('mahasiswa.pengajuan.index') }}" style="text-decoration: none; color: inherit;">
-                    <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.pengajuan.index') ? 'active' : '' }}">
-                        <i class="fas fa-chevron-right"></i>
-                        <span>Daftar Pengajuan</span>
-                        <span class="tooltiptext">Daftar Pengajuan</span>
-                    </div>
-                </a>
-                <a href="{{ route('mahasiswa.pengajuan.index') }}" style="text-decoration: none; color: inherit;">
-                    <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.pengajuan.create') || Request::routeIs('mahasiswa.pengajuan.detail') ? 'active' : '' }}">
-                        <i class="fas fa-chevron-right"></i>
-                        <span>Buat Pengajuan</span>
-                        <span class="tooltiptext">Buat Pengajuan</span>
-                    </div>
-                </a>
+            <div class="submenu {{ Request::routeIs('mahasiswa.pengajuan.*') || Request::routeIs('mahasiswa.jadwal.*') ? 'show' : '' }}" id="pengajuan-submenu">
+                {{-- Submenu Sidang PKL --}}
+                <div class="submenu-item" onclick="toggleSubmenu('sidang-pkl', event)">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Sidang PKL</span>
+                </div>
+                <div class="submenu {{ Request::routeIs('mahasiswa.pengajuan.create','pkl') || Request::routeIs('mahasiswa.jadwal.pkl') ? 'show' : '' }}" id="sidang-pkl-submenu" style="padding-left: 20px;">
+                    <a href="{{ route('mahasiswa.pengajuan.create', 'pkl') }}" style="text-decoration: none; color: inherit;">
+                        <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.pengajuan.create', 'pkl') ? 'active' : '' }}">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Pengajuan</span>
+                            <span class="tooltiptext">Pengajuan PKL</span>
+                        </div>
+                    </a>
+                    <a href="{{ route('mahasiswa.jadwal.pkl') }}" style="text-decoration: none; color: inherit;">
+                        <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.jadwal.pkl') ? 'active' : '' }}">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Jadwal</span>
+                            <span class="tooltiptext">Jadwal PKL</span>
+                        </div>
+                    </a>
+                </div>
+
+                {{-- Submenu Sidang TA --}}
+                <div class="submenu-item" onclick="toggleSubmenu('sidang-ta', event)">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Sidang TA</span>
+                </div>
+                <div class="submenu {{ Request::routeIs('mahasiswa.pengajuan.create','ta') || Request::routeIs('mahasiswa.jadwal.ta') ? 'show' : '' }}" id="sidang-ta-submenu" style="padding-left: 20px;">
+                    <a href="{{ route('mahasiswa.pengajuan.create', 'ta') }}" style="text-decoration: none; color: inherit;">
+                        <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.pengajuan.create', 'ta') ? 'active' : '' }}">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Pengajuan</span>
+                            <span class="tooltiptext">Pengajuan TA</span>
+                        </div>
+                    </a>
+                    <a href="{{ route('mahasiswa.jadwal.ta') }}" style="text-decoration: none; color: inherit;">
+                        <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.jadwal.ta') ? 'active' : '' }}">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Jadwal</span>
+                            <span class="tooltiptext">Jadwal TA</span>
+                        </div>
+                    </a>
+                </div>
             </div>
             {{-- Akhir Menu Pengajuan --}}
 

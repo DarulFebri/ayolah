@@ -1,49 +1,79 @@
-@extends('layouts.app') {{-- Assuming you have a layout --}}
+@extends('layouts.mahasiswa')
+
+@section('title', 'Jadwal Sidang PKL')
+@section('page_title', 'Jadwal Sidang PKL')
+
+@push('styles')
+    <style>
+        .action-buttons .btn {
+            margin-right: 8px;
+        }
+        .action-buttons .btn:last-child {
+            margin-right: 0;
+        }
+        .table-container {
+            margin-bottom: 30px; /* Add space between tables */
+        }
+    </style>
+@endpush
 
 @section('content')
-    <div class="container">
-        <h1>Jadwal Sidang PKL</h1>
-
-        @if ($sidangsPkl->isEmpty())
-            <p>Tidak ada jadwal Sidang PKL yang tersedia.</p>
+<div class="container-fluid">
+    <!-- Daftar Pengajuan PKL -->
+    <div class="table-container">
+        <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-briefcase"></i>Riwayat Pengajuan PKL</h2>
+        </div>
+        @if ($pengajuans->isEmpty())
+            <div class="text-center py-5">
+                <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                <h3 class="text-muted">Belum Ada Pengajuan PKL</h3>
+            </div>
         @else
-            <table class="table table-bordered">
+            <table class="data-table">
                 <thead>
                     <tr>
-                        <th>ID Sidang</th>
-                        <th>Judul Pengajuan</th>
-                        <th>Jenis Pengajuan</th>
-                        <th>Status Sidang</th>
-                        <th>Tanggal & Waktu</th>
-                        <th>Ruangan</th>
-                        <th>Ketua Sidang</th>
-                        <th>Sekretaris Sidang</th>
-                        <th>Anggota 1</th>
-                        <th>Anggota 2</th>
+                        <th>Judul</th>
+                        <th>Status</th>
                         <th>Dosen Pembimbing</th>
-                        <th>Dosen Penguji 1</th>
-                        <th>Dosen Penguji 2</th>
-                        <th>Aksi</th>
+                        <th>Tanggal Dibuat</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($sidangsPkl as $sidang)
+                    @foreach ($pengajuans as $pengajuan)
                         <tr>
-                            <td>{{ $sidang->id }}</td>
-                            <td>{{ $sidang->pengajuan->judul_pengajuan ?? 'N/A' }}</td>
-                            <td>{{ $sidang->pengajuan->jenis_pengajuan ?? 'N/A' }}</td>
-                            <td>{{ $sidang->status }}</td>
-                            <td>{{ $sidang->tanggal_waktu_sidang ? \Carbon\Carbon::parse($sidang->tanggal_waktu_sidang)->format('d M Y H:i') : 'Belum Dijadwalkan' }}</td>
-                            <td>{{ $sidang->ruangan_sidang ?? 'N/A' }}</td>
-                            <td>{{ $sidang->ketuaSidangDosen->nama ?? 'N/A' }}</td>
-                            <td>{{ $sidang->sekretarisSidangDosen->nama ?? 'N/A' }} (P: {{ $sidang->persetujuan_sekretaris_sidang }})</td>
-                            <td>{{ $sidang->anggota1SidangDosen->nama ?? 'N/A' }} (P: {{ $sidang->persetujuan_anggota1_sidang }})</td>
-                            <td>{{ $sidang->anggota2SidangDosen->nama ?? 'N/A' }} (P: {{ $sidang->persetujuan_anggota2_sidang }})</td>
-                            <td>{{ $sidang->dosenPembimbing->nama ?? 'N/A' }} (P: {{ $sidang->persetujuan_dosen_pembimbing }})</td>
-                            <td>{{ $sidang->dosenPenguji1->nama ?? 'N/A' }} (P: {{ $sidang->persetujuan_dosen_penguji1 }})</td>
-                            <td>{{ $sidang->dosenPenguji2->nama ?? 'N/A' }} (P: {{ $sidang->persetujuan_dosen_penguji2 }})</td>
+                            <td>{{ $pengajuan->judul_pengajuan ?? 'Judul Belum Diisi' }}</td>
                             <td>
-                                <a href="{{ route('sidang.show', $sidang->id) }}" class="btn btn-info btn-sm">Detail</a>
+                                @php
+                                    $statusClass = '';
+                                    $statusText = ucfirst(str_replace('_', ' ', $pengajuan->status));
+                                    switch ($pengajuan->status) {
+                                        case 'draft': $statusClass = 'bg-warning text-dark'; break;
+                                        case 'diajukan': $statusClass = 'bg-primary text-white'; break;
+                                        case 'disetujui': $statusClass = 'bg-success text-white'; break;
+                                        default: $statusClass = 'bg-danger text-white';
+                                    }
+                                @endphp
+                                <span class="status-badge {{ $statusClass }}">{{ $statusText }}</span>
+                            </td>
+                            <td>{{ $pengajuan->sidang->dosenPembimbing->nama ?? 'Belum Ditentukan' }}</td>
+                            <td>{{ $pengajuan->created_at->format('d F Y, H:i') }}</td>
+                            <td class="text-center action-buttons">
+                                @if ($pengajuan->status === 'diverifikasi_kajur')
+                                    <a href="{{ route('mahasiswa.pengajuan.verified.detail', $pengajuan->id) }}" class="btn btn-success"><i class="fas fa-check-circle"></i> Lihat Detail Terverifikasi</a>
+                                @else
+                                    <a href="{{ route('mahasiswa.pengajuan.detail', $pengajuan->id) }}" class="btn btn-secondary"><i class="fas fa-eye"></i> Detail</a>
+                                @endif
+
+                                {{-- Tombol Status Sidang --}}
+                                @if ($pengajuan->sidang)
+                                    <a href="{{ route('mahasiswa.pengajuan.status', $pengajuan->id) }}" class="btn btn-info"><i class="fas fa-info-circle"></i> Status</a>
+                                @endif
+
+                                @if ($pengajuan->status == 'draft')
+                                    <a href="{{ route('mahasiswa.pengajuan.edit', $pengajuan->id) }}" class="btn btn-primary"><i class="fas fa-edit"></i> Edit</a>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
@@ -51,4 +81,5 @@
             </table>
         @endif
     </div>
+</div>
 @endsection

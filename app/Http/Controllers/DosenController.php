@@ -178,27 +178,32 @@ class DosenController extends Controller
 
         $request->validate([
             'nama_lengkap' => 'required|string|max:255',
-            'nip' => 'required|string|max:255|unique:dosens,nip,' . $dosen->id,
             'nidn' => 'nullable|string|max:255|unique:dosens,nidn,' . $dosen->id,
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id, // Added email validation
             'nomor_hp' => 'nullable|string|max:20',
             'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
         ]);
 
-        $dosen->nama_lengkap = $request->nama_lengkap;
-        $dosen->nip = $request->nip;
+        $dosen->nama = $request->nama_lengkap;
         $dosen->nidn = $request->nidn;
         $dosen->nomor_hp = $request->nomor_hp;
+
+        // Update user's email
+        if ($user->email !== $request->email) {
+            $user->email = $request->email;
+            $user->save();
+        }
 
         if ($request->hasFile('foto_profil')) {
             // Delete old profile picture if exists
             if ($dosen->foto_profil && Storage::exists($dosen->foto_profil)) {
                 Storage::delete($dosen->foto_profil);
             }
-            $path = $request->file('foto_profil')->store('public/profile_photos/dosen');
+            $path = $request->file('foto_profil')->store('profile_photos/dosen', 'public');
             $dosen->foto_profil = str_replace('public/', '', $path);
         }
 
-        $dosen->profile_edited_at = now(); // Update timestamp
+        //$dosen->profile_edited_at = now(); // Update timestamp
         $dosen->save();
 
         // Update user's name if it's different

@@ -41,9 +41,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="nidn"><i class="fas fa-id-badge"></i> Email</label>
-                    <input type="text" id="nidn" name="nidn" class="form-input @error('nidn') is-invalid @enderror" value="{{ old('nidn', $dosen->user->email) }}">
-                    @error('nidn')
+                    <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="email" name="email" class="form-input @error('email') is-invalid @enderror" value="{{ old('email', $dosen->user->email) }}" required>
+                    @error('email')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
