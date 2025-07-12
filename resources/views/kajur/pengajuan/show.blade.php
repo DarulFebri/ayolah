@@ -29,6 +29,10 @@
                 <p class="form-input-static">{{ $pengajuan->mahasiswa->nama_lengkap }} (NIM: {{ $pengajuan->mahasiswa->nim }})</p>
             </div>
             <div class="form-group">
+                <label><i class="fas fa-user"></i> NIM:</label>
+                <p class="form-input-static">{{ $pengajuan->mahasiswa->nim }}</p>
+            </div>
+            <div class="form-group">
                 <label><i class="fas fa-tag"></i> Jenis Pengajuan:</label>
                 <p class="form-input-static">{{ strtoupper($pengajuan->jenis_pengajuan) }}</p>
             </div>
