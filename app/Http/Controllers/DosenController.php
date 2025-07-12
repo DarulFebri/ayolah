@@ -191,8 +191,8 @@ class DosenController extends Controller
             ->get();
         // --- END CORRECTED QUERIES ---
 
-        // Ambil pengajuan di mana dosen ini terlibat (sebagai pembimbing, penguji, ketua, sekretaris, anggota sidang)
-        $pengajuansInvolved = Pengajuan::whereHas('sidang', function ($query) use ($dosenLoginId) {
+        // Ambil sidang di mana dosen ini terlibat dan sudah berlalu
+        $pastSidangs = Sidang::where(function ($query) use ($dosenLoginId) {
             $query->where('dosen_pembimbing_id', $dosenLoginId)
                 ->orWhere('dosen_penguji1_id', $dosenLoginId)
                 ->orWhere('dosen_penguji2_id', $dosenLoginId)
@@ -201,20 +201,21 @@ class DosenController extends Controller
                 ->orWhere('anggota1_sidang_dosen_id', $dosenLoginId)
                 ->orWhere('anggota2_sidang_dosen_id', $dosenLoginId);
         })
+            ->where('tanggal_waktu_sidang', '<', now()) // Filter for past dates
             ->with([
-                'mahasiswa',
-                'sidang.dosenPembimbing',
-                'sidang.dosenPenguji1',
-                'sidang.dosenPenguji2',
-                'sidang.ketuaSidang',
-                'sidang.sekretarisSidang',
-                'sidang.anggota1Sidang',
-                'sidang.anggota2Sidang',
+                'pengajuan.mahasiswa',
+                'ketuaSidang',
+                'sekretarisSidang',
+                'anggota1Sidang',
+                'anggota2Sidang',
+                'dosenPembimbing',
+                'dosenPenguji1',
+                'dosenPenguji2',
             ])
-            ->orderBy('updated_at', 'desc')
+            ->orderBy('tanggal_waktu_sidang', 'desc') // Order by date, newest first
             ->get();
 
-        return view('dosen.dashboard', compact('unreadNotifications', 'sidangInvitations', 'approvedSidangs', 'rejectedSidangs', 'upcomingSidangs', 'pengajuansInvolved'));
+        return view('dosen.dashboard', compact('unreadNotifications', 'sidangInvitations', 'approvedSidangs', 'rejectedSidangs', 'upcomingSidangs', 'pastSidangs'));
     }
 
     public function editProfileForm()
