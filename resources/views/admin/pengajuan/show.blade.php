@@ -211,7 +211,11 @@
 
         <div class="info-group">
             <label>Mahasiswa:</label>
-            <p>{{ $pengajuan->mahasiswa->nama_lengkap }} (NIM: {{ $pengajuan->mahasiswa->nim }})</p>
+            <p>{{ $pengajuan->mahasiswa->nama_lengkap }}</p>
+        </div>
+        <div class="info-group">
+            <label>NIM:</label>
+            <p>{{ $pengajuan->mahasiswa->nim }}</p>
         </div>
         <div class="info-group">
             <label>Jenis Pengajuan:</label>
