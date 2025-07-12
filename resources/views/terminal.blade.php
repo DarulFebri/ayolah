@@ -875,18 +875,21 @@
                     <p>NIM: 2311081019<br>Guardian of quality: menguji, melaporkan, dan memvalidasi untuk pengalaman pengguna yang bebas bug.</p>
                 </div>
             </a>
-            <a href="https://www.instagram.com/nranisadina/" target="_blank" style="text-decoration: none;">
-                <div class="card">
-                    <img src="{{ asset('assets/images/dina.png') }}" alt="Nuranisa Dina">
-                    <h3>Nuranisa Dina</h3>
-                    <p>NIM: 2311081027<br>Women Designer: Mencipta antarmuka yang indah dan pengalaman yang intuitif yang di mana estetika bertemu fungsionalitas.</p>
-                </div>
-            </a>
             <a href="https://www.instagram.com/daruler.12/" target="_blank" style="text-decoration: none;">
                 <div class="card">
                     <img src="{{ asset('assets/images/darul.png') }}" alt="Darul Febri">
                     <h3>Darul Febri</h3>
                     <p>NIM: 2311082010<br>Problem solver dengan logika kuat dan kreativitas tak terbatas – membangun fitur, memperbaiki bug, dan menghidupkan ide.</p>
+                </div>
+            </a>
+        </div>
+        <br>
+        <div class="card-container">
+            <a href="https://www.instagram.com/nranisadina/" target="_blank" style="text-decoration: none;">
+                <div class="card">
+                    <img src="{{ asset('assets/images/dina.png') }}" alt="Nuranisa Dina">
+                    <h3>Nuranisa Dina</h3>
+                    <p>NIM: 2311081027<br>Women Designer: Mencipta antarmuka yang indah dan pengalaman yang intuitif yang di mana estetika bertemu fungsionalitas.</p>
                 </div>
             </a>
             <a href="https://www.instagram.com/zhafira_2504/" target="_blank" style="text-decoration: none;">

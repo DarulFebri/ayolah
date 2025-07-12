@@ -61,6 +61,10 @@
             </div>
         @endif
 
+        <div class="alert alert-info mb-4">
+            <strong>Perhatian:</strong> Halaman ini hanya dapat diubah sekali. Mohon isi data dengan benar dan teliti.
+        </div>
+
         <form action="{{ route('mahasiswa.profile.update') }}" method="POST" enctype="multipart/form-data" class="profile-edit-form" id="profile-form">
             @csrf
             @method('POST')
@@ -68,7 +72,7 @@
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="nama"><i class="fas fa-user"></i> Nama Lengkap</label>
+                    <label for="nama"><i class="fas fa-user"></i> Nama Lengkap <small class="text-muted">(Tidak dapat diubah)</small></label>
                     <input type="text" id="nama_lengkap" name="nama_lengkap" value="{{ old('nama_lengkap', $mahasiswa->nama_lengkap) }}" required class="form-input @error('nama') is-invalid @enderror" readonly>
                     @error('nama')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -76,11 +80,16 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="nim"><i class="fas fa-id-card"></i> NIM</label>
+                    <label for="nim"><i class="fas fa-id-card"></i> NIM <small class="text-muted">(Tidak dapat diubah)</small></label>
                     <input type="text" id="nim" name="nim" value="{{ old('nim', $mahasiswa->nim) }}" required class="form-input @error('nim') is-invalid @enderror" readonly>
                     @error('nim')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="prodi"><i class="fas fa-graduation-cap"></i> Program Studi <small class="text-muted">(Tidak dapat diubah)</small></label>
+                    <input type="text" id="prodi" name="prodi" value="{{ $mahasiswa->prodi->nama_prodi ?? 'N/A' }}" class="form-input" readonly>
                 </div>
 
                 <div class="form-group">
@@ -89,11 +98,6 @@
                     @error('email')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="prodi"><i class="fas fa-graduation-cap"></i> Program Studi</label>
-                    <input type="text" id="prodi" name="prodi" value="{{ $mahasiswa->prodi->nama_prodi ?? 'N/A' }}" class="form-input" readonly>
                 </div>
 
                 <div class="form-group">
