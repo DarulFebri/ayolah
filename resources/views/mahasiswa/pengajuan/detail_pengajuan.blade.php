@@ -1,7 +1,7 @@
 @extends('mahasiswa.layout')
 
 @section('title', 'Detail Pengajuan')
-@section('page_title', 'Detail Pengajuan')
+@section('page_title', 'Destail Pengajuan')
 
 @push('styles')
 <style>
@@ -96,7 +96,7 @@
         <!-- Informasi Utama -->
         <div class="info-grid">
             <div class="info-item">
-                <p class="label">Judul Laporan PKL</p>
+                <p class="label">Judul Laporan</p>
                 <p class="value">{{ $pengajuan->judul_pengajuan ?? '-' }}</p>
             </div>
             <div class="info-item">
