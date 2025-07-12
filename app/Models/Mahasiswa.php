@@ -20,6 +20,7 @@ class Mahasiswa extends Model
         'otp_expires_at',
         'foto_profil',
         'nomor_hp',
+        'profile_edited_at',
     ];
 
     /**

@@ -61,9 +61,17 @@
             </div>
         @endif
 
-        <div class="alert alert-info mb-4">
-            <strong>Perhatian:</strong> Halaman ini hanya dapat diubah sekali. Mohon isi data dengan benar dan teliti.
-        </div>
+        @if (! $profileEdited)
+            <div class="alert alert-warning mb-4" style="background-color: #fff3cd; border-color: #ffeeba; color: #664d03;">
+                <strong>Perhatian:</strong> Halaman ini hanya dapat diubah sekali. Mohon isi data dengan benar dan teliti.
+            </div>
+        @endif
+
+        @if ($profileEdited)
+            <div class="alert alert-warning">
+                <h2>Profil Anda telah berhasil diperbarui sebelumnya. Data di bawah ini tidak dapat diubah lagi.</h2>
+            </div>
+        @endif
 
         <form action="{{ route('mahasiswa.profile.update') }}" method="POST" enctype="multipart/form-data" class="profile-edit-form" id="profile-form">
             @csrf
@@ -94,7 +102,7 @@
 
                 <div class="form-group">
                     <label for="email"><i class="fas fa-envelope"></i> Email</label>
-                    <input type="email" id="email" name="email" value="{{ old('email', $mahasiswa->user->email) }}" required class="form-input @error('email') is-invalid @enderror">
+                    <input type="email" id="email" name="email" value="{{ old('email', $mahasiswa->user->email) }}" required class="form-input @error('email') is-invalid @enderror" {{ $profileEdited ? 'readonly' : '' }}>
                     @error('email')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -102,7 +110,7 @@
 
                 <div class="form-group">
                     <label for="nomor_hp"><i class="fas fa-phone"></i> Nomor HP</label>
-                    <input type="text" id="nomor_hp" name="nomor_hp" value="{{ old('nomor_hp', $mahasiswa->nomor_hp) }}" class="form-input @error('nomor_hp') is-invalid @enderror">
+                    <input type="text" id="nomor_hp" name="nomor_hp" value="{{ old('nomor_hp', $mahasiswa->nomor_hp) }}" class="form-input @error('nomor_hp') is-invalid @enderror" {{ $profileEdited ? 'readonly' : '' }}>
                     @error('nomor_hp')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -110,7 +118,7 @@
 
                 <div class="form-group">
                     <label for="foto_profil"><i class="fas fa-image"></i> Foto Profil</label>
-                    <input type="file" id="foto_profil" name="foto_profil" class="form-input @error('foto_profil') is-invalid @enderror" accept="image/*">
+                    <input type="file" id="foto_profil" name="foto_profil" class="form-input @error('foto_profil') is-invalid @enderror" accept="image/*" {{ $profileEdited ? 'disabled' : '' }}>
                     @error('foto_profil')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -122,9 +130,11 @@
                 <a href="{{ route('mahasiswa.dashboard') }}" class="btn btn-secondary action-btn-back">
                     <i class="fas fa-arrow-left"></i> Kembali
                 </a>
-                <button type="submit" class="btn btn-primary action-btn-save">
-                    <i class="fas fa-save"></i> Simpan Perubahan
-                </button>
+                @if (! $profileEdited)
+                    <button type="submit" class="btn btn-primary action-btn-save">
+                        <i class="fas fa-save"></i> Simpan Perubahan
+                    </button>
+                @endif
             </div>
         </form>
     </div>

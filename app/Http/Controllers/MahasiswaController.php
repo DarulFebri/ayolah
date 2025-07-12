@@ -617,7 +617,9 @@ class MahasiswaController extends Controller
 
         $prodis = Prodi::all(); // Fetch all program studies
 
-        return view('mahasiswa.edit_profile', compact('mahasiswa', 'prodis'));
+        $profileEdited = ! is_null($mahasiswa->profile_edited_at);
+
+        return view('mahasiswa.edit_profile', compact('mahasiswa', 'prodis', 'profileEdited'));
     }
 
     /**
@@ -666,6 +668,10 @@ class MahasiswaController extends Controller
         }
 
         $mahasiswa->update($dataToUpdate);
+        // Set profile_edited_at timestamp after the first successful update
+        if (is_null($mahasiswa->profile_edited_at)) {
+            $mahasiswa->update(['profile_edited_at' => now()]);
+        }
         Log::info('Profil mahasiswa diperbarui: ', $dataToUpdate);
 
         if ($user->email !== $request->email) {
