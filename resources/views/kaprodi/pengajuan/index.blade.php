@@ -493,4 +493,10 @@
         </div>
     @endif
     </div>
+
+    <div class="back-to-dashboard">
+        <a href="{{ route('kaprodi.dashboard') }}" class="btn btn-info">
+            <i class="fas fa-arrow-circle-left"></i> Kembali ke Dashboard
+        </a>
+    </div>
 </html>
