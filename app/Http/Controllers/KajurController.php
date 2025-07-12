@@ -181,7 +181,7 @@ class KajurController extends Controller
 
             DB::commit();
 
-            return redirect()->route('kajur.pengajuan.terverifikasi')->with('success', 'Pengajuan berhasil diverifikasi oleh Kajur.');
+            return redirect()->route('kajur.pengajuan.sudah_verifikasi')->with('success', 'Pengajuan berhasil diverifikasi oleh Kajur.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -192,9 +192,10 @@ class KajurController extends Controller
 
     public function showPengajuanDetail(Pengajuan $pengajuan)
     {
-        $pengajuan->load(['mahasiswa', 'dosenPembimbing', 'dosenPenguji1']); // Assuming these are sufficient for a general detail view
+        $pengajuan->load(['mahasiswa', 'sidang.dosenPembimbing', 'sidang.dosenPenguji1']); // Load through sidang relationship
 
-        return view('kajur.pengajuan.detail', compact('pengajuan'));
+        $kajur_for_layout = Auth::user()->kajur; // Fetch Kajur data for layout
+        return view('kajur.pengajuan.show', compact('pengajuan', 'kajur_for_layout'));
     }
 
     public function daftarDosen()
