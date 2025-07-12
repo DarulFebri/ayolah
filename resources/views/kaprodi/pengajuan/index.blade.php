@@ -470,7 +470,7 @@
                         <tr>
                             <td>{{ $pengajuan->id }}</td>
                             <td>{{ $pengajuan->mahasiswa->nama_lengkap }} <br> ({{ $pengajuan->mahasiswa->nim }})</td>
-                            <td>{{ $pengajuan->judul ?? 'N/A' }}</td>
+                            <td>{{ $pengajuan->judul_pengajuan ?? 'N/A' }}</td>
                             <td>
                                 <span class="status-badge {{ str_contains($pengajuan->status, 'ditolak') ? 'tolak' : 'setuju' }}">
                                     {{ ucfirst(str_replace('_', ' ', $pengajuan->status)) }}

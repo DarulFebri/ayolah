@@ -360,14 +360,18 @@
                 }
             @endphp
 
-            @if ($bisaDifinalisasi && ($pengajuan->status === 'menunggu_persetujuan_dosen' || $pengajuan->status === 'dosen_menyetujui'))
-                <form action="{{ route('kaprodi.pengajuan.finalkan.jadwal', $pengajuan->id) }}" method="POST">
+            @if ($bisaDifinalisasi)
+                <div class="info-message" style="background-color: #e6ffed; border-left-color: #28a745; color: #155724;">
+                    <i class="fas fa-check-circle"></i>
+                    Semua dosen yang ditugaskan telah menyetujui jadwal sidang. Silakan finalkan jadwal.
+                </div>
+                <form action="{{ route('kaprodi.pengajuan.finalkan.jadwal', $pengajuan->id) }}" method="POST" style="margin-top: 15px;">
                     @csrf
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-primary" style="background-color: #28a745; border-color: #28a745;">
                         <i class="fas fa-check-circle"></i> Finalkan Jadwal Sidang
                     </button>
                 </form>
-            @elseif ($pengajuan->status === 'diverifikasi_admin' || $pengajuan->status === 'perlu_penjadwalan_ulang' || $pengajuan->status === 'menunggu_persetujuan_dosen')
+            @elseif (in_array($pengajuan->status, ['diverifikasi_admin', 'perlu_penjadwalan_ulang', 'menunggu_persetujuan_dosen']))
                 <h4>Form Penjadwalan Sidang</h4>
                 <form action="{{ route('kaprodi.pengajuan.jadwalkan.storeUpdate', $pengajuan->id) }}" method="POST">
                     @csrf
@@ -478,6 +482,11 @@
 
                 
             
+			@elseif ($pengajuan->status === 'sidang_dijadwalkan_final')
+                <div class="info-message" style="background-color: #e6ffed; border-left-color: #28a745; color: #155724;">
+                    <i class="fas fa-check-circle"></i>
+                    Jadwal sidang ini telah difinalisasi.
+                </div>
             @else
                 <p class="info-message">Tidak ada aksi yang tersedia untuk status pengajuan ini ({{ str_replace('_', ' ', ucfirst($pengajuan->status)) }}).</p>
             @endif

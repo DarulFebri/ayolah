@@ -413,30 +413,44 @@ class KaprodiController extends Controller
 
         // Logika untuk menentukan apakah tombol finalisasi bisa ditampilkan
         $bisaDifinalisasi = false;
-        if ($pengajuan->sidang && ($pengajuan->status === 'menunggu_persetujuan_dosen' || $pengajuan->status === 'dosen_menyetujui')) {
+        // Tombol finalisasi hanya bisa muncul jika jadwal sudah ada
+        if ($pengajuan->sidang && $pengajuan->sidang->tanggal_waktu_sidang && $pengajuan->sidang->ruangan_sidang) {
             $sidang = $pengajuan->sidang;
+            $allDosenAgreed = true;
 
-            // Periksa persetujuan semua dosen yang terlibat
-            $allRequiredDosenAgreed = true;
-
-            // Dosen Pembimbing selalu wajib
-            if ($sidang->dosen_pembimbing_id && $sidang->persetujuan_dosen_pembimbing !== 'setuju') {
-                $allRequiredDosenAgreed = false;
+            $rolesToCheck = [];
+            if ($pengajuan->jenis_pengajuan === 'ta') {
+                $rolesToCheck = [
+                    'dosen_pembimbing_id' => 'persetujuan_dosen_pembimbing',
+                    'dosen_penguji1_id' => 'persetujuan_dosen_penguji1', // Ini adalah Pembimbing 2
+                    'sekretaris_sidang_dosen_id' => 'persetujuan_sekretaris_sidang',
+                    'anggota1_sidang_dosen_id' => 'persetujuan_anggota1_sidang', // Ini adalah Penguji 1
+                ];
+                // Penguji 2 (anggota2) bersifat opsional, jadi hanya periksa jika ada
+                if ($sidang->anggota2_sidang_dosen_id) {
+                    $rolesToCheck['anggota2_sidang_dosen_id'] = 'persetujuan_anggota2_sidang';
+                }
+            } elseif ($pengajuan->jenis_pengajuan === 'pkl') {
+                $rolesToCheck = [
+                    'dosen_pembimbing_id' => 'persetujuan_dosen_pembimbing',
+                    'dosen_penguji1_id' => 'persetujuan_dosen_penguji1',
+                ];
             }
 
-            // Dosen Penguji 1 juga wajib untuk TA dan PKL
-            if ($sidang->dosen_penguji1_id && $sidang->persetujuan_dosen_penguji1 !== 'setuju') {
-                $allRequiredDosenAgreed = false;
+            foreach ($rolesToCheck as $dosenIdField => $approvalField) {
+                // Jika dosen untuk peran ini belum diatur atau belum setuju, maka finalisasi belum bisa dilakukan
+                if (empty($sidang->$dosenIdField) || $sidang->$approvalField !== 'setuju') {
+                    $allDosenAgreed = false;
+                    break;
+                }
             }
 
-            // Untuk TA, pastikan ketua sidang sudah ditentukan
-            $ketuaSidangDitentukan = true;
-            if ($pengajuan->jenis_pengajuan === 'ta' && empty($sidang->ketua_sidang_dosen_id)) {
-                $ketuaSidangDitentukan = false;
+            // Tombol finalisasi akan muncul jika semua dosen yang diperlukan telah setuju dan statusnya belum final.
+            if ($allDosenAgreed && $pengajuan->status !== 'sidang_dijadwalkan_final') {
+                $bisaDifinalisasi = true;
             }
-
-            $bisaDifinalisasi = $allRequiredDosenAgreed && $ketuaSidangDitentukan;
         }
+
 
         // Ambil daftar dosen untuk dropdown di form penjadwalan
         $dosens = Dosen::orderBy('nama')->get();
