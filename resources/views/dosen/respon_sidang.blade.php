@@ -330,7 +330,7 @@
                     @error('respon') <span class="error-message">{{ $message }}</span> @enderror
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" id="catatan-group" style="display: none;">
                     <label for="catatan">Catatan (Opsional):</label>
                     <textarea name="catatan" id="catatan" rows="4" class="form-control" placeholder="Tulis catatan jika diperlukan">{{ old('catatan') }}</textarea>
                     @error('catatan') <span class="error-message">{{ $message }}</span> @enderror
@@ -438,6 +438,24 @@
                     enlargedImageModal.style.display = 'none';
                 }
             });
+
+            // Logic for showing/hiding catatan field based on respon selection
+            const responSelect = document.getElementById('respon');
+            const catatanGroup = document.getElementById('catatan-group');
+
+            function toggleCatatanField() {
+                if (responSelect.value === 'tolak') {
+                    catatanGroup.style.display = 'block';
+                } else {
+                    catatanGroup.style.display = 'none';
+                }
+            }
+
+            // Initial check on page load
+            toggleCatatanField();
+
+            // Add event listener for changes to the select box
+            responSelect.addEventListener('change', toggleCatatanField);
         });
     </script>
 </body>

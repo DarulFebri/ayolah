@@ -599,22 +599,40 @@ class DosenController extends Controller
         if ($sidang->pengajuan->jenis_pengajuan === 'pkl' && $sidang->dosen_pembimbing_id === $dosen->id && $sidang->persetujuan_dosen_pembimbing === 'pending') {
             // For PKL, Dosen Pembimbing 1 is also Ketua Sidang, but we only need one approval for 'dosen_pembimbing'
             $sidang->persetujuan_dosen_pembimbing = $respon;
+            if ($respon === 'tolak') {
+                $sidang->alasan_penolakan_dosen_pembimbing = $catatan;
+            }
             $peranDosen = 'Dosen Pembimbing 1 (Ketua Sidang)';
 
         } elseif ($sidang->sekretaris_sidang_dosen_id === $dosen->id && $sidang->persetujuan_sekretaris_sidang === 'pending') {
             $sidang->persetujuan_sekretaris_sidang = $respon;
+            if ($respon === 'tolak') {
+                $sidang->alasan_penolakan_sekretaris_sidang = $catatan;
+            }
             $peranDosen = 'Sekretaris Sidang';
         } elseif ($sidang->anggota1_sidang_dosen_id === $dosen->id && $sidang->persetujuan_anggota1_sidang === 'pending') {
             $sidang->persetujuan_anggota1_sidang = $respon;
+            if ($respon === 'tolak') {
+                $sidang->alasan_penolakan_anggota1_sidang = $catatan;
+            }
             $peranDosen = 'Anggota Sidang 1';
         } elseif ($sidang->anggota2_sidang_dosen_id === $dosen->id && $sidang->persetujuan_anggota2_sidang === 'pending') {
             $sidang->persetujuan_anggota2_sidang = $respon;
+            if ($respon === 'tolak') {
+                $sidang->alasan_penolakan_anggota2_sidang = $catatan;
+            }
             $peranDosen = 'Anggota Sidang 2';
         } elseif ($sidang->dosen_pembimbing_id === $dosen->id && $sidang->persetujuan_dosen_pembimbing === 'pending') {
             $sidang->persetujuan_dosen_pembimbing = $respon;
+            if ($respon === 'tolak') {
+                $sidang->alasan_penolakan_dosen_pembimbing = $catatan;
+            }
             $peranDosen = 'Dosen Pembimbing 1';
         } elseif ($sidang->dosen_penguji1_id === $dosen->id && $sidang->persetujuan_dosen_penguji1 === 'pending') {
             $sidang->persetujuan_dosen_penguji1 = $respon;
+            if ($respon === 'tolak') {
+                $sidang->alasan_penolakan_dosen_penguji1 = $catatan;
+            }
             $peranDosen = 'Dosen Pembimbing 2';
         } else {
             return back()->with('error', 'Anda tidak dapat merespon undangan ini lagi atau tidak terkait.');

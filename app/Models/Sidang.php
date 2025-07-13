@@ -27,6 +27,11 @@ class Sidang extends Model
         'persetujuan_anggota2_sidang',
         'persetujuan_dosen_pembimbing',
         'persetujuan_dosen_penguji1',
+        'alasan_penolakan_dosen_pembimbing',
+        'alasan_penolakan_dosen_penguji1',
+        'alasan_penolakan_sekretaris_sidang',
+        'alasan_penolakan_anggota1_sidang',
+        'alasan_penolakan_anggota2_sidang',
         'status',
     ];
 

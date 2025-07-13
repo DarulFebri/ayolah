@@ -278,6 +278,11 @@
                             <span class="status-badge {{ $pengajuan->sidang->persetujuan_dosen_pembimbing === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_dosen_pembimbing === 'tolak' ? 'tolak' : 'menunggu') }}">
                                 {{ ucfirst($pengajuan->sidang->persetujuan_dosen_pembimbing) }}
                             </span>
+                            @if($pengajuan->sidang->persetujuan_dosen_pembimbing === 'tolak' && $pengajuan->sidang->alasan_penolakan_dosen_pembimbing)
+                                <p class="rejection-reason" style="margin-left: 160px; color: #e74c3c; font-size: 0.9em;">
+                                    Alasan Penolakan Dosen Pembimbing 1: {{ $pengajuan->sidang->alasan_penolakan_dosen_pembimbing }}
+                                </p>
+                            @endif
                         @endif
                     </p>
                     <p><strong>Dosen Pembimbing 2:</strong> {{ $pengajuan->sidang->dosenPenguji1 ? $pengajuan->sidang->dosenPenguji1->nama : 'N/A' }}
@@ -285,6 +290,11 @@
                             <span class="status-badge {{ $pengajuan->sidang->persetujuan_dosen_penguji1 === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_dosen_penguji1 === 'tolak' ? 'tolak' : 'menunggu') }}">
                                 {{ ucfirst($pengajuan->sidang->persetujuan_dosen_penguji1) }}
                             </span>
+                            @if($pengajuan->sidang->persetujuan_dosen_penguji1 === 'tolak' && $pengajuan->sidang->alasan_penolakan_dosen_penguji1)
+                                <p class="rejection-reason" style="margin-left: 160px; color: #e74c3c; font-size: 0.9em;">
+                                    Alasan Penolakan Dosen Pembimbing 2: {{ $pengajuan->sidang->alasan_penolakan_dosen_penguji1 }}
+                                </p>
+                            @endif
                         @endif
                     </p>
                     <p><strong>Sekretaris Sidang:</strong> {{ $pengajuan->sidang->sekretarisSidang ? $pengajuan->sidang->sekretarisSidang->nama : 'N/A' }}
@@ -292,6 +302,11 @@
                             <span class="status-badge {{ $pengajuan->sidang->persetujuan_sekretaris_sidang === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_sekretaris_sidang === 'tolak' ? 'tolak' : 'menunggu') }}">
                                 {{ ucfirst($pengajuan->sidang->persetujuan_sekretaris_sidang) }}
                             </span>
+                            @if($pengajuan->sidang->persetujuan_sekretaris_sidang === 'tolak' && $pengajuan->sidang->alasan_penolakan_sekretaris_sidang)
+                                <p class="rejection-reason" style="margin-left: 160px; color: #e74c3c; font-size: 0.9em;">
+                                    Alasan Penolakan Sekretaris Sidang: {{ $pengajuan->sidang->alasan_penolakan_sekretaris_sidang }}
+                                </p>
+                            @endif
                         @endif
                     </p>
                     <p><strong>Dosen Penguji 1:</strong> {{ $pengajuan->sidang->anggota1Sidang ? $pengajuan->sidang->anggota1Sidang->nama : 'N/A' }}
@@ -299,6 +314,11 @@
                             <span class="status-badge {{ $pengajuan->sidang->persetujuan_anggota1_sidang === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_anggota1_sidang === 'tolak' ? 'tolak' : 'menunggu') }}">
                                 {{ ucfirst($pengajuan->sidang->persetujuan_anggota1_sidang) }}
                             </span>
+                            @if($pengajuan->sidang->persetujuan_anggota1_sidang === 'tolak' && $pengajuan->sidang->alasan_penolakan_anggota1_sidang)
+                                <p class="rejection-reason" style="margin-left: 160px; color: #e74c3c; font-size: 0.9em;">
+                                    Alasan Penolakan Dosen Penguji 1: {{ $pengajuan->sidang->alasan_penolakan_anggota1_sidang }}
+                                </p>
+                            @endif
                         @endif
                     </p>
                     <p><strong>Dosen Penguji 2:</strong> {{ $pengajuan->sidang->anggota2Sidang ? $pengajuan->sidang->anggota2Sidang->nama : 'N/A' }}
@@ -306,6 +326,11 @@
                             <span class="status-badge {{ $pengajuan->sidang->persetujuan_anggota2_sidang === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_anggota2_sidang === 'tolak' ? 'tolak' : 'menunggu') }}">
                                 {{ ucfirst($pengajuan->sidang->persetujuan_anggota2_sidang) }}
                             </span>
+                            @if($pengajuan->sidang->persetujuan_anggota2_sidang === 'tolak' && $pengajuan->sidang->alasan_penolakan_anggota2_sidang)
+                                <p class="rejection-reason" style="margin-left: 160px; color: #e74c3c; font-size: 0.9em;">
+                                    Alasan Penolakan Dosen Penguji 2: {{ $pengajuan->sidang->alasan_penolakan_anggota2_sidang }}
+                                </p>
+                            @endif
                         @endif
                     </p>
                     <p><strong>Ruangan Sidang:</strong> {{ $pengajuan->sidang->ruangan_sidang ?? 'N/A' }}</p>
@@ -317,6 +342,11 @@
                             <span class="status-badge {{ $pengajuan->sidang->persetujuan_dosen_pembimbing === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_dosen_pembimbing === 'tolak' ? 'tolak' : 'menunggu') }}">
                                 {{ ucfirst($pengajuan->sidang->persetujuan_dosen_pembimbing) }}
                             </span>
+                            @if($pengajuan->sidang->persetujuan_dosen_pembimbing === 'tolak' && $pengajuan->sidang->alasan_penolakan_dosen_pembimbing)
+                                <p class="rejection-reason" style="margin-left: 160px; color: #e74c3c; font-size: 0.9em;">
+                                    Alasan Penolakan Dosen Pembimbing: {{ $pengajuan->sidang->alasan_penolakan_dosen_pembimbing }}
+                                </p>
+                            @endif
                         @endif
                     </p>
                     <p><strong>Dosen Penguji:</strong> {{ $pengajuan->sidang->dosenPenguji1 ? $pengajuan->sidang->dosenPenguji1->nama : 'N/A' }}
@@ -324,6 +354,11 @@
                             <span class="status-badge {{ $pengajuan->sidang->persetujuan_dosen_penguji1 === 'setuju' ? 'setuju' : ($pengajuan->sidang->persetujuan_dosen_penguji1 === 'tolak' ? 'tolak' : 'menunggu') }}">
                                 {{ ucfirst($pengajuan->sidang->persetujuan_dosen_penguji1) }}
                             </span>
+                            @if($pengajuan->sidang->persetujuan_dosen_penguji1 === 'tolak' && $pengajuan->sidang->alasan_penolakan_dosen_penguji1)
+                                <p class="rejection-reason" style="margin-left: 160px; color: #e74c3c; font-size: 0.9em;">
+                                    Alasan Penolakan Dosen Penguji: {{ $pengajuan->sidang->alasan_penolakan_dosen_penguji1 }}
+                                </p>
+                            @endif
                         @endif
                     </p>
                     <p><strong>Ruangan Sidang:</strong> {{ $pengajuan->sidang->ruangan_sidang ?? 'N/A' }}</p>
