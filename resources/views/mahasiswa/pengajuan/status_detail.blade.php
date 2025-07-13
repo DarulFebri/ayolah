@@ -27,7 +27,7 @@
                                data-dosen-email="{{ $pengajuan->sidang->dosenPembimbing->user->email ?? 'N/A' }}"
                                data-dosen-nomor-hp="{{ $pengajuan->sidang->dosenPembimbing->nomor_hp ?? 'N/A' }}"
                                data-dosen-jenis-kelamin="{{ $pengajuan->sidang->dosenPembimbing->jenis_kelamin ?? 'N/A' }}"
-                               data-dosen-prodi="{{ $pengajuan->sidang->dosenPembimbing->prodi->nama ?? 'N/A' }}"
+                               data-dosen-prodi="{{ $pengajuan->sidang->dosenPembimbing->prodi->nama_prodi ?? 'N/A' }}"
                                data-dosen-foto-profil="{{ asset('images/default-profile.png') }}" {{-- Default image as foto_profil is not available for Dosen --}}
                             >
                                 <i class="fas fa-info-circle"></i> Detail
@@ -60,7 +60,7 @@
                                    data-dosen-email="{{ $pengajuan->sidang->sekretarisSidang->user->email ?? 'N/A' }}"
                                    data-dosen-nomor-hp="{{ $pengajuan->sidang->sekretarisSidang->nomor_hp ?? 'N/A' }}"
                                    data-dosen-jenis-kelamin="{{ $pengajuan->sidang->sekretarisSidang->jenis_kelamin ?? 'N/A' }}"
-                                   data-dosen-prodi="{{ $pengajuan->sidang->sekretarisSidang->prodi->nama ?? 'N/A' }}"
+                                   data-dosen-prodi="{{ $pengajuan->sidang->sekretarisSidang->prodi->nama_prodi ?? 'N/A' }}"
                                    data-dosen-foto-profil="{{ asset('images/default-profile.png') }}"
                                 >
                                     <i class="fas fa-info-circle"></i> Detail
@@ -83,7 +83,7 @@
                                    data-dosen-email="{{ $pengajuan->sidang->anggota1Sidang->user->email ?? 'N/A' }}"
                                    data-dosen-nomor-hp="{{ $pengajuan->sidang->anggota1Sidang->nomor_hp ?? 'N/A' }}"
                                    data-dosen-jenis-kelamin="{{ $pengajuan->sidang->anggota1Sidang->jenis_kelamin ?? 'N/A' }}"
-                                   data-dosen-prodi="{{ $pengajuan->sidang->anggota1Sidang->prodi->nama ?? 'N/A' }}"
+                                   data-dosen-prodi="{{ $pengajuan->sidang->anggota1Sidang->prodi->nama_prodi ?? 'N/A' }}"
                                    data-dosen-foto-profil="{{ asset('images/default-profile.png') }}"
                                 >
                                     <i class="fas fa-info-circle"></i> Detail
@@ -106,7 +106,7 @@
                                    data-dosen-email="{{ $pengajuan->sidang->anggota2Sidang->user->email ?? 'N/A' }}"
                                    data-dosen-nomor-hp="{{ $pengajuan->sidang->anggota2Sidang->nomor_hp ?? 'N/A' }}"
                                    data-dosen-jenis-kelamin="{{ $pengajuan->sidang->anggota2Sidang->jenis_kelamin ?? 'N/A' }}"
-                                   data-dosen-prodi="{{ $pengajuan->sidang->anggota2Sidang->prodi->nama ?? 'N/A' }}"
+                                   data-dosen-prodi="{{ $pengajuan->sidang->anggota2Sidang->prodi->nama_prodi ?? 'N/A' }}"
                                    data-dosen-foto-profil="{{ asset('images/default-profile.png') }}"
                                 >
                                     <i class="fas fa-info-circle"></i> Detail
@@ -130,7 +130,7 @@
                                    data-dosen-email="{{ $pengajuan->sidang->dosenPenguji1->user->email ?? 'N/A' }}"
                                    data-dosen-nomor-hp="{{ $pengajuan->sidang->dosenPenguji1->nomor_hp ?? 'N/A' }}"
                                    data-dosen-jenis-kelamin="{{ $pengajuan->sidang->dosenPenguji1->jenis_kelamin ?? 'N/A' }}"
-                                   data-dosen-prodi="{{ $pengajuan->sidang->dosenPenguji1->prodi->nama ?? 'N/A' }}"
+                                   data-dosen-prodi="{{ $pengajuan->sidang->dosenPenguji1->prodi->nama_prodi ?? 'N/A' }}"
                                    data-dosen-foto-profil="{{ asset('images/default-profile.png') }}"
                                 >
                                     <i class="fas fa-info-circle"></i> Detail
