@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-100: #e6f2ff;
+            --primary-100: #e6f2ff; 
             --primary-200: #b3d7ff;
             --primary-300: #80bdff;
             --primary-400: #4da3ff;

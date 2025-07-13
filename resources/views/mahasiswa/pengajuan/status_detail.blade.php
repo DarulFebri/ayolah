@@ -1,4 +1,4 @@
-@extends('mahasiswa.layout')
+@extends('layouts.mahasiswa')
 
 @section('title', 'Detail Status Sidang')
 @section('page_title', 'Detail Status Sidang')

@@ -1155,6 +1155,95 @@
         }
     </style>
     @stack('styles') {{-- Allows child views to push additional styles --}}
+    <style>
+        /* Dosen Select Modal Styles */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1040;
+            display: none;
+        }
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            width: 90%;
+            max-width: 500px;
+            z-index: 1050;
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-700);
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: #000;
+            text-shadow: 0 1px 0 #fff;
+            opacity: .5;
+            cursor: pointer;
+        }
+        .modal-close:hover {
+            opacity: .75;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .dosen-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .dosen-list li {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        .dosen-list li:last-child {
+            border-bottom: none;
+        }
+        .dosen-list li:hover {
+            background-color: var(--primary-100);
+        }
+        .dosen-list li .text-muted {
+            font-size: 0.85em;
+        }
+        .form-dosen-select {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-dosen-select .form-control[readonly] {
+            background-color: #e9ecef;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -1304,6 +1393,46 @@
         <div class="notification-message">Anda berhasil logout. Mengarahkan ke halaman login...</div>
     </div>
 
+    @stack('modals')
+    <script>
+        // Dosen Select Modal Functions
+        function openDosenModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.getElementById(modalId + '-backdrop').style.display = 'block';
+        }
+
+        function closeDosenModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.getElementById(modalId + '-backdrop').style.display = 'none';
+        }
+
+        function filterDosenList(modalId) {
+            const input = document.getElementById(modalId + '-search');
+            const filter = input.value.toUpperCase();
+            const ul = document.querySelector(`#${modalId} .dosen-list`);
+            const li = ul.getElementsByTagName('li');
+
+            for (let i = 0; i < li.length; i++) {
+                const txtValue = li[i].textContent || li[i].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
+            }
+        }
+
+        function selectDosen(modalId, inputName, displayName, element) {
+            const dosenId = element.getAttribute('data-id');
+            const dosenName = element.getAttribute('data-name');
+            
+            document.querySelector(`input[name="${inputName}"]`).value = dosenId;
+            document.getElementById(displayName).value = dosenName;
+            
+            closeDosenModal(modalId);
+        }
+    </script>
+    @stack('scripts') {{-- Allows child views to push additional scripts --}}
     <script>
         // Toggle sidebar
         const toggleSidebar = document.getElementById('toggleSidebar');
@@ -1463,6 +1592,6 @@
             }
         }
     </script>
-    @stack('scripts') {{-- Allows child views to push additional scripts --}}
+    
 </body>
 </html>

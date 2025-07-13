@@ -118,6 +118,7 @@
     </div>
 </div>
 
+@push('modals')
 {{-- Include Dosen Select Modal --}}
 @include('components.dosen-select-modal', [
     'dosens' => $dosens,
@@ -125,4 +126,5 @@
     'inputName' => 'dosen_pembimbing_id',
     'displayName' => 'dosen_pembimbing_display'
 ])
+@endpush
 @endsection
