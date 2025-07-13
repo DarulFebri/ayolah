@@ -80,7 +80,7 @@
             </div>
         </a>
         
-        <a href="{{ route('admin.sidang.kalender') }}" class="card-link">
+        <!--<a href="{{ route('admin.sidang.kalender') }}" class="card-link">
             <div class="card clickable-card">
                 <div class="card-icon">
                     <i class="fas fa-calendar-alt"></i>
@@ -89,7 +89,7 @@
                     Jadwal Sidang
                 </h3>
             </div>
-        </a>
+        </a>-->
         
         <a href="{{ route('admin.activities.index') }}" class="card-link">
             <div class="card clickable-card">

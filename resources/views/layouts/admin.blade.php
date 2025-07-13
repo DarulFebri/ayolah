@@ -884,7 +884,7 @@
                 </div>
             </a>
             
-            <div class="menu-item tooltip" onclick="toggleSubmenu('jadwal', event)">
+            <!--<div class="menu-item tooltip" onclick="toggleSubmenu('jadwal', event)">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Jadwal</span>
                 <span class="tooltiptext">Jadwal</span>
@@ -904,7 +904,7 @@
                         <span class="tooltiptext">Daftar Sidang</span>
                     </div>
                 </a>
-            </div>
+            </div>-->
             
             <a href="{{ route('admin.sidang.index') }}" style="text-decoration: none; color: inherit;">
                 <div class="menu-item tooltip {{ request()->routeIs('admin.sidang.index') ? 'active' : '' }}">
