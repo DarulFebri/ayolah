@@ -829,17 +829,19 @@
         .notification-modal {
             display: none;
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
             background-color: var(--white);
-            padding: 20px 30px;
-            border-radius: 10px;
-            width: 400px;
+            padding: 30px; /* Increased padding */
+            border-radius: 12px; /* Slightly larger border-radius */
+            width: 420px; /* Slightly wider */
+            max-width: 90%; /* Ensure responsiveness */
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25); /* Stronger shadow */
             z-index: 3000;
             animation: fadeIn 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05); /* Subtle border */
         }
 
         .notification-modal.show {
@@ -847,49 +849,58 @@
         }
 
         .notification-icon {
-            font-size: 40px;
-            margin-bottom: 15px;
+            font-size: 50px; /* Larger icon */
+            margin-bottom: 30px; /* Increased space below icon */
+            color: var(--primary-500); /* Consistent primary color for icons */
         }
 
         .notification-message {
-            font-size: 18px;
-            color: var(--primary-700);
+            font-size: 1.1rem; /* Slightly larger font */
+            color: var(--text-color); /* Use general text color */
             font-weight: 500;
+            line-height: 1.5; /* Better readability */
+            margin-bottom: 30px; /* Increased space before buttons */
         }
 
         .notification-confirm {
-            color: var(--warning);
+            color: var(--warning); /* Keep warning color for specific icon */
         }
 
         .notification-success {
-            color: var(--success);
+            color: var(--success); /* Keep success color for specific icon */
         }
 
         /* Custom Buttons for Notification Modal */
-        /* These .btn styles are for specific modal buttons, not the general ones */
-        .btn.btn-gray { /* Specificity for modal buttons */
-            background-color: #d1d5db;
-            color: var(--text-color);
-            padding: 10px 20px; /* Keep consistent with general btn */
-            border-radius: 6px; /* Keep consistent with general btn */
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
+        .modal-footer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 0; /* Reset margin-top as it's handled by notification-message margin-bottom */
+        }
+
+        .btn.btn-gray, .btn.btn-blue {
+            padding: 12px 25px; /* Larger buttons */
+            border-radius: 8px; /* More rounded corners */
+            font-weight: 600; /* Bolder text */
+            font-size: 1rem; /* Consistent font size */
+            transition: all 0.3s ease; /* Smooth transition for all properties */
+        }
+
+        .btn.btn-gray {
+            background-color: #e2e8f0; /* Light gray from general btn-secondary */
+            color: #4a5568; /* Dark text color from general btn-secondary */
             border: none;
         }
 
         .btn.btn-gray:hover {
-            background-color: #b3b7bc;
+            background-color: #cbd5e0; /* Darker gray on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Subtle shadow on hover */
         }
 
-        .btn.btn-blue { /* Specificity for modal buttons */
+        .btn.btn-blue {
             background: linear-gradient(45deg, var(--primary-500), var(--primary-600));
             color: white;
-            padding: 10px 20px; /* Keep consistent with general btn */
-            border-radius: 6px; /* Keep consistent with general btn */
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
             border: none;
         }
 
@@ -908,7 +919,7 @@
 
         .btn.btn-blue:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(26, 136, 255, 0.3);
+            box-shadow: 0 6px 20px rgba(26, 136, 255, 0.4); /* Stronger shadow on hover */
         }
 
 
