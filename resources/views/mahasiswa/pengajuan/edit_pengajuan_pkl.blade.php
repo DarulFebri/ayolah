@@ -1,4 +1,4 @@
-@extends('mahasiswa.layout')
+@extends('layouts.mahasiswa')
 
 @section('title', 'Edit Pengajuan PKL')
 @section('page_title', 'Edit Pengajuan PKL')
@@ -7,7 +7,7 @@
 <style>
     .form-section-card {
         background-color: var(--white);
-        border-radius: var(--card-border-radius);
+        border-radius: var(--card-border-radius); 
         padding: var(--card-padding);
         box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         border: 1px solid #e2e8f0;
@@ -137,13 +137,15 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="upload-action">
+                                <div class="upload-action d-flex align-items-center">
                                     @if (isset($uploadedDocuments[$docName]))
+                                        <span id="{{ $docName }}_filename" class="me-2 text-muted">{{ basename($uploadedDocuments[$docName]) }}</span>
                                         <label for="{{ $docName }}" class="btn btn-secondary"><i class="fas fa-upload"></i> Ganti</label>
                                     @else
+                                        <span id="{{ $docName }}_filename" class="me-2 text-muted">Belum ada file dipilih</span>
                                         <label for="{{ $docName }}" class="btn btn-primary"><i class="fas fa-folder-open"></i> Choose File</label>
                                     @endif
-                                    <input type="file" name="{{ $docName }}" id="{{ $docName }}" class="d-none" style="display: none;" accept=".pdf">
+                                    <input type="file" name="{{ $docName }}" id="{{ $docName }}" class="d-none file-input" style="display: none;" accept=".pdf">
                                 </div>
                             </div>
                         @endforeach
@@ -183,4 +185,21 @@
     'displayName' => 'dosen_pembimbing_display'
 ])
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.file-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const filenameSpan = document.getElementById(this.id + '_filename');
+                if (this.files.length > 0) {
+                    filenameSpan.textContent = this.files[0].name;
+                } else {
+                    filenameSpan.textContent = 'Belum ada file dipilih';
+                }
+            });
+        });
+    });
+</script>
+@endpush
 
