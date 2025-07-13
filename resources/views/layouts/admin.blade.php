@@ -826,7 +826,6 @@
                 <i class="fas fa-file-alt"></i>
                 <span>Pengajuan Sidang</span>
                 <span class="tooltiptext">Pengajuan Sidang</span>
-                <i class="fas fa-chevron-down" style="margin-left: auto;"></i>
             </div>
             <div class="submenu" id="pengajuan-submenu">
                 <a href="{{ route('admin.pengajuan.verifikasi.index') }}" style="text-decoration: none; color: inherit;">
@@ -889,7 +888,6 @@
                 <i class="fas fa-calendar-alt"></i>
                 <span>Jadwal</span>
                 <span class="tooltiptext">Jadwal</span>
-                <i class="fas fa-chevron-down" style="margin-left: auto;"></i>
             </div>
             <div class="submenu" id="jadwal-submenu">
                 <a href="{{ route('admin.sidang.kalender') }}" style="text-decoration: none; color: inherit;">

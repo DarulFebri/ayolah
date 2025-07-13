@@ -14,22 +14,22 @@
     </div>
     
     <div class="stats-grid">
-        <div class="stats-card" style="animation-delay: 0.1s;">
+        <div class="stats-card"> {{-- Removed inline animation-delay, handled by CSS nth-child --}}
             <div class="stats-icon icon-blue">
                 <i class="fas fa-user-graduate"></i>
             </div>
             <div class="stats-content">
-                <h3>{{ $totalMahasiswa }}</h3>
+                <h3>{{ $totalMahasiswa ?? '0' }}</h3> {{-- Added default value --}}
                 <p>Total Mahasiswa</p>
             </div>
         </div>
         
-        <div class="stats-card" style="animation-delay: 0.2s;">
+        <div class="stats-card"> {{-- Removed inline animation-delay, handled by CSS nth-child --}}
             <div class="stats-icon icon-green">
                 <i class="fas fa-chalkboard-teacher"></i>
             </div>
             <div class="stats-content">
-                <h3>{{ $totalDosen }}</h3>
+                <h3>{{ $totalDosen ?? '0' }}</h3> {{-- Added default value --}}
                 <p>Total Dosen</p>
             </div>
         </div>
@@ -37,7 +37,7 @@
     
     <div class="card-container">
         <a href="{{ route('admin.pengajuan.sidang.pilih-jenis') }}" class="card-link">
-            <div class="card clickable-card medium">
+            <div class="card clickable-card"> {{-- Removed 'medium' class, handled by base .card style --}}
                 <div class="card-icon">
                     <i class="fas fa-file-contract"></i>
                 </div>
@@ -48,7 +48,7 @@
         </a>
         
         <a href="{{ route('admin.mahasiswa.index') }}" class="card-link">
-            <div class="card clickable-card medium">
+            <div class="card clickable-card">
                 <div class="card-icon">
                     <i class="fas fa-user-graduate"></i>
                 </div>
@@ -59,7 +59,7 @@
         </a>
         
         <a href="{{ route('admin.prodi.index') }}" class="card-link">
-            <div class="card clickable-card medium">
+            <div class="card clickable-card">
                 <div class="card-icon">
                     <i class="fas fa-book"></i>
                 </div>
@@ -70,7 +70,7 @@
         </a>
 
         <a href="{{ route('admin.kelas.index') }}" class="card-link">
-            <div class="card clickable-card medium">
+            <div class="card clickable-card">
                 <div class="card-icon">
                     <i class="fas fa-chalkboard"></i>
                 </div>
@@ -81,7 +81,7 @@
         </a>
         
         <a href="{{ route('admin.sidang.kalender') }}" class="card-link">
-            <div class="card clickable-card medium">
+            <div class="card clickable-card">
                 <div class="card-icon">
                     <i class="fas fa-calendar-alt"></i>
                 </div>
@@ -92,7 +92,7 @@
         </a>
         
         <a href="{{ route('admin.activities.index') }}" class="card-link">
-            <div class="card clickable-card medium">
+            <div class="card clickable-card">
                 <div class="card-icon">
                     <i class="fas fa-bell"></i>
                 </div>
@@ -103,7 +103,7 @@
         </a>
         
         <a href="{{ route('admin.dosen.index') }}" class="card-link">
-            <div class="card clickable-card medium">
+            <div class="card clickable-card">
                 <div class="card-icon">
                     <i class="fas fa-user-tie"></i>
                 </div>
@@ -114,7 +114,7 @@
         </a>
 
         <a href="{{ route('admin.sidang.index') }}" class="card-link">
-            <div class="card clickable-card medium">
+            <div class="card clickable-card">
                 <div class="card-icon">
                     <i class="fas fa-gavel"></i> {{-- Icon for sidang management --}}
                 </div>

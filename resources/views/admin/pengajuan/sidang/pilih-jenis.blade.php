@@ -2,21 +2,12 @@
 
 @section('title', 'Pengajuan Sidang - SIPRAKTA')
 
+@section('header_title', 'Pengajuan Sidang') {{-- Mengatur judul di header agar konsisten --}}
+
 @section('styles')
     <style>
         /* Halaman Pengajuan Sidang */
-        .page-title {
-            color: var(--primary-700);
-            margin-bottom: 25px;
-            font-size: 28px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .page-title i {
-            margin-right: 15px;
-            font-size: 32px;
-        }
+        /* .page-title styles are now inherited from admin.blade.php */
         
         .section-description {
             color: var(--text-color);
@@ -30,6 +21,7 @@
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 30px;
             margin-top: 20px;
+            animation: fadeIn 0.6s 0.5s both; /* Added fadeIn animation */
         }
         
         .sidang-card {
@@ -185,7 +177,7 @@
 @endsection
 
 @section('content')
-    <div class="welcome-box">
+    <div class="welcome-box"> {{-- Menggunakan kelas welcome-box untuk konsistensi --}}
         <h2 class="welcome-title">
             <i class="fas fa-file-contract" style="margin-right: 10px;"></i> Manajemen Pengajuan Sidang
         </h2>

@@ -1,3 +1,41 @@
+darul
+page expired
+infokan
+awak nak cek fitur ubah sandi di masing" user
+Jangan Ubah Namaku
+[RAWR]
+ — 18.10
+nih login
+ParahGuwehGaDiajak — 18.10
+dah
+page expired smwa
+CEPATLAH BALEEKK
+AWAK NAK LOGIN
+Darul Febri — 18.35
+coba kembali dan dan refresh  ctrl + shift + r
+ParahGuwehGaDiajak — 18.47
+wokeh
+gamau
+@Darul Febri
+page expired
+Darul Febri — 18.49
+sharescreen la fir
+ParahGuwehGaDiajak — 18.49
+bagi link lagi lek
+Darul Febri — 18.49
+untuk apa?
+ParahGuwehGaDiajak — 18.49
+login
+link ngrok ngrok
+Darul Febri — 18.51
+dari mana mu dapat page expired kalo bukan dari link ngrok. aku bingung. mu bilang page expired (berarti kamu sudah masuk ke project menggunakan link ngrok (karena itu satu satunya caramu masuk ke project)). lalu mu nanya soal link ngrok lagi.
+ParahGuwehGaDiajak — 18.57
+IYA
+MAKANYA COBA KIRIM ULANG LINKNYA
+TENGGELAMMM
+AKUH TUTUP TAB TADI
+duh lupa matiin keploks
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -406,6 +444,7 @@
                         <i class="fas fa-check-circle"></i> Finalkan Jadwal Sidang
                     </button>
                 </form>
+                
             @elseif (in_array($pengajuan->status, ['diverifikasi_admin', 'perlu_penjadwalan_ulang', 'menunggu_persetujuan_dosen', 'dosen_menolak_jadwal']))
                 <h4>Form Penjadwalan Sidang</h4>
                 <form action="{{ route('kaprodi.pengajuan.jadwalkan.storeUpdate', $pengajuan->id) }}" method="POST">
@@ -501,6 +540,7 @@
                         <input type="date" name="tanggal_sidang" id="tanggal_sidang" class="form-control"
                                value="{{ optional($pengajuan->sidang)->tanggal_waktu_sidang ? \Carbon\Carbon::parse(optional($pengajuan->sidang)->tanggal_waktu_sidang)->format('Y-m-d') : '' }}" required>
                     </div>
+                    
 
                     <div class="form-group">
                         <label for="waktu_sidang">Waktu Sidang:</label>
