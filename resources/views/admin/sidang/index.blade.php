@@ -12,7 +12,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-        @endif
+        @endif 
 
         @if (session('error'))
             <div class="alert alert-danger">

@@ -630,7 +630,12 @@ class AdminController extends Controller
 
     public function exportSidang()
     {
-        return Excel::download(new SidangExport, 'data_persidangan.xlsx'); // Perbaikan: singular
+        try {
+            return Excel::download(new SidangExport, 'data_persidangan.xlsx');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Excel Export Error: ' . $e->getMessage());
+            return back()->with('error', 'Gagal mengekspor data sidang: ' . $e->getMessage());
+        }
     }
 
     // Dibawah ini Untuk Log aktivitas

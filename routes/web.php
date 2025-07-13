@@ -94,11 +94,12 @@ Route::prefix('admin')->group(function () {
         // Sidang Management
         Route::get('/sidang', [AdminController::class, 'daftarSidang'])->name('admin.sidang.index');
         Route::get('/sidang/kalender', [AdminController::class, 'kalenderSidang'])->name('admin.sidang.kalender');
-        Route::get('/sidang/{sidang}', [AdminController::class, 'detailSidang'])->name('admin.sidang.show');
         Route::get('/sidang/export', [AdminController::class, 'exportSidang'])->name('admin.sidang.export');
+        Route::get('/sidang/{sidang}', [AdminController::class, 'detailSidang'])->name('admin.sidang.show');
+        
 
         // Activities Log
-        Route::get('/activities', [AdminController::class, 'showActivities'])->name('admin.activities.index');
+        Route::get('/activities', [AdminController::class, 'showActivities'])->name('admin.activities.index'); 
 
         // Admin Profile Management
         Route::get('/profile/change-password', [App\Http\Controllers\Admin\ProfileController::class, 'showChangePasswordForm'])->name('admin.profile.change-password.form');
