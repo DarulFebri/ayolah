@@ -1274,14 +1274,14 @@
                 </a>
                 {{-- Rute 'mahasiswa.pengajuan.pilih' tidak ada lagi, langsung ke create PKL/TA --}}
                 <a href="{{ route('mahasiswa.pengajuan.create', 'pkl') }}" style="text-decoration: none; color: inherit;">
-                    <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.pengajuan.create') && request()->route('jenis_pengajuan') == 'pkl' ? 'active' : '' }}">
+                    <div class="submenu-item tooltip {{ request()->is('mahasiswa/pengajuan/create/pkl*') || request()->is('mahasiswa/pengajuan/edit/pkl*') ? 'active' : '' }}">
                         <i class="fas fa-chevron-right"></i>
                         <span>Buat Pengajuan PKL</span>
                         <span class="tooltiptext">Buat Pengajuan PKL</span>
                     </div>
                 </a>
                 <a href="{{ route('mahasiswa.pengajuan.create', 'ta') }}" style="text-decoration: none; color: inherit;">
-                    <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.pengajuan.create') && request()->route('jenis_pengajuan') == 'ta' ? 'active' : '' }}">
+                    <div class="submenu-item tooltip {{ request()->is('mahasiswa/pengajuan/create/ta*') || request()->is('mahasiswa/pengajuan/edit/ta*') ? 'active' : '' }}">
                         <i class="fas fa-chevron-right"></i>
                         <span>Buat Pengajuan TA</span>
                         <span class="tooltiptext">Buat Pengajuan TA</span>

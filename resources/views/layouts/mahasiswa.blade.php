@@ -1283,7 +1283,7 @@
                 </div>
                 <div class="submenu {{ Request::routeIs('mahasiswa.pengajuan.create','pkl') || Request::routeIs('mahasiswa.jadwal.pkl') ? 'show' : '' }}" id="sidang-pkl-submenu" style="padding-left: 20px;">
                     <a href="{{ route('mahasiswa.pengajuan.create', 'pkl') }}" style="text-decoration: none; color: inherit;">
-                        <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.pengajuan.create', 'pkl') ? 'active' : '' }}">
+                        <div class="submenu-item tooltip {{ (Request::route()->getName() == 'mahasiswa.pengajuan.create' && Request::route('jenis_pengajuan') == 'pkl') ? 'active' : '' }}">
                             <i class="fas fa-plus-circle"></i>
                             <span>Pengajuan</span>
                             <span class="tooltiptext">Pengajuan PKL</span>
@@ -1305,7 +1305,7 @@
                 </div>
                 <div class="submenu {{ Request::routeIs('mahasiswa.pengajuan.create','ta') || Request::routeIs('mahasiswa.jadwal.ta') ? 'show' : '' }}" id="sidang-ta-submenu" style="padding-left: 20px;">
                     <a href="{{ route('mahasiswa.pengajuan.create', 'ta') }}" style="text-decoration: none; color: inherit;">
-                        <div class="submenu-item tooltip {{ Request::routeIs('mahasiswa.pengajuan.create', 'ta') ? 'active' : '' }}">
+                        <div class="submenu-item tooltip {{ (Request::route()->getName() == 'mahasiswa.pengajuan.create' && Request::route('jenis_pengajuan') == 'ta') ? 'active' : '' }}">
                             <i class="fas fa-plus-circle"></i>
                             <span>Pengajuan</span>
                             <span class="tooltiptext">Pengajuan TA</span>
