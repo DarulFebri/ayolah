@@ -1,9 +1,9 @@
-@extends('layouts.dosen')
+@extends('layouts.dosen_base')
 
 @section('title', 'Ubah Sandi Dosen')
 @section('page_title', 'Ubah Sandi Dosen')
 
-@section('content')
+@section('content') 
     <div class="main-card">
         <h2 class="form-title"><i class="fas fa-key"></i> Ubah Sandi</h2>
 
