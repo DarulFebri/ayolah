@@ -15,9 +15,9 @@ class PengajuanObserver
     {
         if ($pengajuan->isDirty('status')) {
             // Pastikan mahasiswa memiliki email sebelum mengirim
-            // if ($pengajuan->mahasiswa && $pengajuan->mahasiswa->user && $pengajuan->mahasiswa->user->email) {
-            //     Mail::to($pengajuan->mahasiswa->user->email)->send(new PengajuanStatusNotification($pengajuan));
-            // }
+            if ($pengajuan->mahasiswa && $pengajuan->mahasiswa->user && $pengajuan->mahasiswa->user->email) {
+                Mail::to($pengajuan->mahasiswa->user->email)->send(new PengajuanStatusNotification($pengajuan));
+            }
         }
     }
 
