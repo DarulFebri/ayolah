@@ -397,6 +397,8 @@ class KaprodiController extends Controller
     public function indexPengajuan()
     {
         $kaprodi_for_layout = Auth::user()->kaprodi;
+        $kaprodiProdiId = $kaprodi_for_layout->prodi_id;
+
         // 1. Ambil pengajuan yang sedang menunggu aksi Kaprodi
         $pengajuansKaprodi = Pengajuan::where(function ($query) {
             $query->whereIn('status', [
@@ -409,6 +411,9 @@ class KaprodiController extends Controller
                     ->orWhere('persetujuan_dosen_penguji1', 'tolak');
             });
         })
+            ->whereHas('mahasiswa', function ($query) use ($kaprodiProdiId) {
+                $query->where('prodi_id', $kaprodiProdiId);
+            })
             ->with('mahasiswa')
             ->orderBy('created_at', 'desc')
             ->paginate(10); // Atau gunakan get() jika tidak ada pagination di bagian ini
@@ -418,6 +423,9 @@ class KaprodiController extends Controller
         // Status 'ditolak_kaprodi' berarti sudah ditolak Kaprodi.
         // Status 'diverifikasi_kajur' berarti sudah diverifikasi oleh Kajur.
         $pengajuansSelesaiKaprodi = Pengajuan::whereIn('status', ['sidang_dijadwalkan_final', 'ditolak_kaprodi', 'diverifikasi_kajur'])
+            ->whereHas('mahasiswa', function ($query) use ($kaprodiProdiId) {
+                $query->where('prodi_id', $kaprodiProdiId);
+            })
             ->with('mahasiswa') // Eager load relasi mahasiswa
             ->orderBy('updated_at', 'desc') // Urutkan berdasarkan update terakhir
             ->get(); // Atau gunakan paginate(10) jika Anda ingin pagination di bagian ini juga
