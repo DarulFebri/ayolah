@@ -366,7 +366,13 @@
                     <tr>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ ucfirst($user->role) }}</td>
+                        <td>
+                            @if ($user->role === 'kaprodi')
+                                {{ ucfirst($user->role) }} ({{ $user->kaprodi?->prodi?->nama_prodi ?? '-' }})
+                            @else
+                                {{ ucfirst($user->role) }}
+                            @endif
+                        </td>
                         <td>
                             <a href="{{ route('admin.users.edit', $user->id) }}" class="action-icon edit-icon" title="Edit">
                                 <i class="fas fa-edit"></i>

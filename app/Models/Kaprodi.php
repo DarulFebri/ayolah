@@ -16,10 +16,16 @@ class Kaprodi extends Model
         'nip',
         'nomor_hp',
         'foto_profil',
+        'prodi_id',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function prodi()
+    {
+        return $this->belongsTo(Prodi::class);
     }
 }

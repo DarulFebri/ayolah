@@ -259,9 +259,11 @@
             function toggleProdiField() {
                 if (roleSelect.value === 'kaprodi') {
                     prodiIdGroup.style.display = 'block';
+                    prodiIdSelect.removeAttribute('disabled');
                     prodiIdSelect.setAttribute('required', 'required');
                 } else {
                     prodiIdGroup.style.display = 'none';
+                    prodiIdSelect.setAttribute('disabled', 'disabled');
                     prodiIdSelect.removeAttribute('required');
                     prodiIdSelect.value = ''; // Clear selection when hidden
                 }

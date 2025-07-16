@@ -15,7 +15,9 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::whereIn('role', ['admin', 'kaprodi'])->get();
+        $users = User::whereIn('role', ['admin', 'kaprodi'])
+                      ->with(['kaprodi.prodi'])
+                      ->get();
         return view('admin.user.index', compact('users'));
     }
 

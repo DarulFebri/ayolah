@@ -255,13 +255,16 @@
             const prodiIdGroup = document.getElementById('prodi_id_group');
 
             function toggleProdiField() {
+                const prodiIdSelect = document.getElementById('prodi_id');
                 if (roleSelect.value === 'kaprodi') {
                     prodiIdGroup.style.display = 'block';
-                    prodiIdGroup.querySelector('select').setAttribute('required', 'required');
+                    prodiIdSelect.removeAttribute('disabled');
+                    prodiIdSelect.setAttribute('required', 'required');
                 } else {
                     prodiIdGroup.style.display = 'none';
-                    prodiIdGroup.querySelector('select').removeAttribute('required');
-                    prodiIdGroup.querySelector('select').value = ''; // Clear selection when hidden
+                    prodiIdSelect.setAttribute('disabled', 'disabled');
+                    prodiIdSelect.removeAttribute('required');
+                    prodiIdSelect.value = ''; // Clear selection when hidden
                 }
             }
 
