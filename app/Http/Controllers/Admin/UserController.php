@@ -146,7 +146,7 @@ class UserController extends Controller
         if ($user->role === 'kaprodi') {
             Kaprodi::where('user_id', $user->id)->delete();
         } elseif ($user->role === 'admin') {
-            Admin::where('user_id', $user->id)->delete();
+            Admin::where('email', $user->email)->delete();
         }
         
         $user->delete();
