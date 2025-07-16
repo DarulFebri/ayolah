@@ -123,8 +123,8 @@ class UserController extends Controller
             Admin::where('user_id', $user->id)->delete(); // Delete if role changed from admin
         } elseif ($user->role === 'admin') {
             Admin::updateOrCreate(
-                ['user_id' => $user->id],
-                ['nama' => $user->name, 'email' => $user->email]
+                ['email' => $user->email],
+                ['nama' => $user->name]
             );
             Kaprodi::where('user_id', $user->id)->delete(); // Delete if role changed from kaprodi
         } else {
