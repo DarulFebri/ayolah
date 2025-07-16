@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Kaprodi;
 use App\Models\Admin;
+use App\Models\Prodi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -20,7 +21,8 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('admin.user.create');
+        $prodis = Prodi::all();
+        return view('admin.user.create', compact('prodis'));
     }
 
     public function store(Request $request)
@@ -30,7 +32,14 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => ['required', Rule::in(['admin', 'kaprodi'])],
+            'prodi_id' => 'nullable|exists:prodis,id',
         ]);
+
+        if ($request->role === 'kaprodi') {
+            $request->validate([
+                'prodi_id' => 'required',
+            ]);
+        }
 
         $user = User::create([
             'name' => $request->name,
@@ -42,14 +51,14 @@ class UserController extends Controller
         if ($request->role === 'kaprodi') {
             Kaprodi::create([
                 'user_id' => $user->id,
-                'nama_lengkap' => $request->name, // Assuming nama_lengkap is the same as user name
+                'nama' => $request->name,
                 'email' => $request->email,
-                // Add other kaprodi specific fields if necessary
+                'prodi_id' => $request->prodi_id,
             ]);
         } elseif ($request->role === 'admin') {
             Admin::create([
                 'user_id' => $user->id,
-                'nama_lengkap' => $request->name, // Assuming nama_lengkap is the same as user name
+                'nama' => $request->name,
                 'email' => $request->email,
                 // Add other admin specific fields if necessary
             ]);
@@ -63,7 +72,12 @@ class UserController extends Controller
         if (!in_array($user->role, ['admin', 'kaprodi'])) {
             abort(403, 'Unauthorized action.');
         }
-        return view('admin.user.edit', compact('user'));
+        $prodis = Prodi::all();
+        // Load the related Kaprodi model if the user is a kaprodi
+        if ($user->role === 'kaprodi') {
+            $user->load('kaprodi');
+        }
+        return view('admin.user.edit', compact('user', 'prodis'));
     }
 
     public function update(Request $request, User $user)
@@ -83,7 +97,14 @@ class UserController extends Controller
             ],
             'password' => 'nullable|string|min:8|confirmed',
             'role' => ['required', Rule::in(['admin', 'kaprodi'])],
+            'prodi_id' => 'nullable|exists:prodis,id',
         ]);
+
+        if ($request->role === 'kaprodi') {
+            $request->validate([
+                'prodi_id' => 'required',
+            ]);
+        }
 
         $user->name = $request->name;
         $user->email = $request->email;
@@ -97,13 +118,13 @@ class UserController extends Controller
         if ($user->role === 'kaprodi') {
             Kaprodi::updateOrCreate(
                 ['user_id' => $user->id],
-                ['nama_lengkap' => $user->name, 'email' => $user->email]
+                ['nama' => $user->name, 'email' => $user->email, 'prodi_id' => $request->prodi_id]
             );
             Admin::where('user_id', $user->id)->delete(); // Delete if role changed from admin
         } elseif ($user->role === 'admin') {
             Admin::updateOrCreate(
                 ['user_id' => $user->id],
-                ['nama_lengkap' => $user->name, 'email' => $user->email]
+                ['nama' => $user->name, 'email' => $user->email]
             );
             Kaprodi::where('user_id', $user->id)->delete(); // Delete if role changed from kaprodi
         } else {

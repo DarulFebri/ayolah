@@ -232,10 +232,47 @@
                 </select>
             </div>
 
+            <div class="form-group" id="prodi_id_group" style="display: none;">
+                <label for="prodi_id">Program Studi:</label>
+                <select name="prodi_id" id="prodi_id">
+                    <option value="">-- Pilih Program Studi --</option>
+                    @foreach ($prodis as $prodi)
+                        <option value="{{ $prodi->id }}" {{ old('prodi_id', $user->kaprodi->prodi_id ?? '') == $prodi->id ? 'selected' : '' }}>
+                            {{ $prodi->nama_prodi }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             <button type="submit">Update User</button>
         </form>
 
         <a href="{{ route('admin.users.index') }}" class="back-link">Kembali ke Daftar User</a>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const roleSelect = document.getElementById('role');
+            const prodiIdGroup = document.getElementById('prodi_id_group');
+            const prodiIdSelect = document.getElementById('prodi_id');
+
+            function toggleProdiField() {
+                if (roleSelect.value === 'kaprodi') {
+                    prodiIdGroup.style.display = 'block';
+                    prodiIdSelect.setAttribute('required', 'required');
+                } else {
+                    prodiIdGroup.style.display = 'none';
+                    prodiIdSelect.removeAttribute('required');
+                    prodiIdSelect.value = ''; // Clear selection when hidden
+                }
+            }
+
+            // Initial check on page load
+            toggleProdiField();
+
+            // Listen for changes in the role select box
+            roleSelect.addEventListener('change', toggleProdiField);
+        });
+    </script>
 </body>
 </html>

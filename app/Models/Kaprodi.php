@@ -11,7 +11,8 @@ class Kaprodi extends Model
 
     protected $fillable = [
         'user_id',
-        'nama_lengkap',
+        'nama',
+        'email',
         'nip',
         'nomor_hp',
         'foto_profil',
