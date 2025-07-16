@@ -366,7 +366,7 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>NIDN</th>
+                    <th>NIDN/NIP</th>
                     <th>Nama Lengkap</th>
                     <th>Email</th>
                     <th>Prodi</th>

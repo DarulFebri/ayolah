@@ -161,7 +161,7 @@
 
         <div class="detail-section">
             <div class="detail-row">
-                <div class="detail-label">NIDN</div>
+                <div class="detail-label">NIDN/NIP</div>
                 <div class="detail-value"><strong>{{ $dosen->nidn }}</strong></div>
             </div>
             <div class="detail-row">
