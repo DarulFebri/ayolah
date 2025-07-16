@@ -122,7 +122,7 @@ class UserController extends Controller
                 ['user_id' => $user->id],
                 ['nama' => $user->name, 'email' => $user->email, 'prodi_id' => $request->prodi_id]
             );
-            Admin::where('user_id', $user->id)->delete(); // Delete if role changed from admin
+            Admin::where('email', $user->email)->delete(); // Delete if role changed from admin
         } elseif ($user->role === 'admin') {
             Admin::updateOrCreate(
                 ['email' => $user->email],
@@ -132,7 +132,7 @@ class UserController extends Controller
         } else {
             // If role changed to something else (shouldn't happen with current validation)
             Kaprodi::where('user_id', $user->id)->delete();
-            Admin::where('user_id', $user->id)->delete();
+            Admin::where('email', $user->email)->delete();
         }
 
         return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
