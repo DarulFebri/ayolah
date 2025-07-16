@@ -126,6 +126,19 @@ Route::prefix('admin')->group(function () {
             'destroy' => 'admin.kelas.destroy',
         ]);
 
+        // User Management (Admin and Kaprodi roles)
+        Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->parameters([
+            'users' => 'user',
+        ])->names([
+            'index' => 'admin.users.index',
+            'create' => 'admin.users.create',
+            'store' => 'admin.users.store',
+            'show' => 'admin.users.show',
+            'edit' => 'admin.users.edit',
+            'update' => 'admin.users.update',
+            'destroy' => 'admin.users.destroy',
+        ]);
+
         // Rute untuk admin melihat dokumen
         Route::get('/dokumen/{dokumen}/lihat', [DokumenController::class, 'lihatDokumenAdmin'])->name('admin.dokumen.lihat');
     });

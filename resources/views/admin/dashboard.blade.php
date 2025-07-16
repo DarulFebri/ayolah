@@ -123,5 +123,16 @@
                 </h3>
             </div>
         </a>
+
+        <a href="{{ route('admin.users.index') }}" class="card-link">
+            <div class="card clickable-card">
+                <div class="card-icon">
+                    <i class="fas fa-users"></i> {{-- Icon for user management --}}
+                </div>
+                <h3 class="card-title">
+                    Manajemen User
+                </h3>
+            </div>
+        </a>
     </div>
 @endsection
