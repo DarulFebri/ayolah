@@ -50,35 +50,17 @@ class DosenSidangInvitation extends Notification
         $tanggalSidang = $this->sidang->tanggal_waktu_sidang ? $this->sidang->tanggal_waktu_sidang->translatedFormat('d F Y H:i') : 'Belum ditentukan';
         $ruanganSidang = $this->sidang->ruangan_sidang ?? 'Belum ditentukan';
 
-        // Generate signed URLs for accept/reject to ensure authenticity and prevent tampering
-        // The URL will include the sidang ID and the dosen ID (from $notifiable->id)
-        // We'll use temporary signed URLs for a limited time (e.g., 7 days)
-        $acceptUrl = URL::temporarySignedRoute(
-            'dosen.sidang.respon.form', // Use the form route, but pass a parameter to indicate acceptance
-            now()->addDays(2),
-            ['sidang' => $this->sidang->id, 'action' => 'accept']
-        );
-
-        $rejectUrl = URL::temporarySignedRoute(
-            'dosen.sidang.respon.form', // Use the form route, but pass a parameter to indicate rejection
-            now()->addDays(2),
-            ['sidang' => $this->sidang->id, 'action' => 'reject']
-        );
-
         return (new MailMessage)
-            ->subject('Undangan Partisipasi Sidang ' . $jenisPengajuan . ' Mahasiswa ' . $mahasiswaNama)
+            ->subject('Informasi Jadwal Sidang ' . $jenisPengajuan . ' Mahasiswa ' . $mahasiswaNama)
             ->greeting('Yth. Bapak/Ibu ' . $notifiable->dosen->nama . ',')
-            ->line('Anda telah diundang sebagai ' . $peranDosenFormatted . ' dalam Sidang ' . $jenisPengajuan . ' mahasiswa ' . $mahasiswaNama . '.')
+            ->line('Anda telah ditunjuk sebagai ' . $peranDosenFormatted . ' dalam Sidang ' . $jenisPengajuan . ' mahasiswa ' . $mahasiswaNama . '.')
             ->line('Berikut detail jadwal sidang:')
             ->line('**Judul Pengajuan:** ' . $this->pengajuan->judul_pengajuan)
             ->line('**Tanggal & Waktu:** ' . $tanggalSidang)
             ->line('**Ruangan:** ' . $ruanganSidang)
             ->line('')
-            ->line('Mohon berikan konfirmasi persetujuan Anda melalui tautan di bawah ini:')
-            ->action('Setujui Jadwal', $acceptUrl)
-            ->action('Tolak Jadwal', $rejectUrl)
-            ->line('Jika Anda menolak, Anda akan diminta untuk memberikan alasan penolakan.')
-            ->line('Mohon segera berikan respon Anda. Terima kasih atas perhatian dan kerjasamanya.');
+            ->line('Mohon periksa jadwal Anda dan pastikan ketersediaan. Informasi lebih lanjut dapat dilihat di sistem.')
+            ->line('Terima kasih atas perhatian dan kerjasamanya.');
     }
 
     /**
