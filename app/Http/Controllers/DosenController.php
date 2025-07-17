@@ -530,38 +530,78 @@ class DosenController extends Controller
         return redirect()->route('dosen.sidang.nilai.edit', $sidang->id)->with('success', 'Nilai sidang berhasil disimpan.');
     }
 
-    public function formResponSidang(Sidang $sidang)
+    public function formResponSidang(Request $request, Sidang $sidang)
     {
+        // Validate the signed URL
+        if (! URL::hasValidSignature($request)) {
+            return redirect()->route('dosen.dashboard')->with('error', 'Tautan undangan tidak valid atau sudah kadaluarsa.');
+        }
+
         $dosen = Auth::user()->dosen;
         $dosenLoginId = $dosen->id;
+        $action = $request->query('action'); // Get the action from query parameter
 
         // Determine if the logged-in dosen is involved and still has a pending response
         $isPending = false;
+        $peranDosen = null; // To store the specific role of the dosen
 
-        if ($sidang->sekretaris_sidang_dosen_id === $dosenLoginId && $sidang->persetujuan_sekretaris_sidang === 'pending') {
-            $isPending = true;
+        // Check all possible roles for the logged-in dosen
+        if ($sidang->dosen_pembimbing_id === $dosenLoginId) {
+            if ($sidang->persetujuan_dosen_pembimbing === 'pending') {
+                $isPending = true;
+                $peranDosen = 'dosen_pembimbing';
+            }
         }
-        if ($sidang->anggota1_sidang_dosen_id === $dosenLoginId && $sidang->persetujuan_anggota1_sidang === 'pending') {
-            $isPending = true;
+        if ($sidang->dosen_penguji1_id === $dosenLoginId) {
+            if ($sidang->persetujuan_dosen_penguji1 === 'pending') {
+                $isPending = true;
+                $peranDosen = 'dosen_penguji1';
+            }
         }
-        if ($sidang->anggota2_sidang_dosen_id === $dosenLoginId && $sidang->persetujuan_anggota2_sidang === 'pending') {
-            $isPending = true;
+        if ($sidang->sekretaris_sidang_dosen_id === $dosenLoginId) {
+            if ($sidang->persetujuan_sekretaris_sidang === 'pending') {
+                $isPending = true;
+                $peranDosen = 'sekretaris_sidang';
+            }
         }
-        if ($sidang->dosen_pembimbing_id === $dosenLoginId && $sidang->persetujuan_dosen_pembimbing === 'pending') {
-            $isPending = true;
+        if ($sidang->anggota1_sidang_dosen_id === $dosenLoginId) {
+            if ($sidang->persetujuan_anggota1_sidang === 'pending') {
+                $isPending = true;
+                $peranDosen = 'anggota1_sidang';
+            }
         }
-        if ($sidang->dosen_penguji1_id === $dosenLoginId && $sidang->persetujuan_dosen_penguji1 === 'pending') {
-            $isPending = true;
+        if ($sidang->anggota2_sidang_dosen_id === $dosenLoginId) {
+            if ($sidang->persetujuan_anggota2_sidang === 'pending') {
+                $isPending = true;
+                $peranDosen = 'anggota2_sidang';
+            }
         }
 
         if ($isPending) {
             $sidang->load('pengajuan.mahasiswa.prodi', 'pengajuan.mahasiswa.kelas', 'pengajuan.mahasiswa.user', 'ketuaSidang', 'sekretarisSidang', 'anggota1Sidang', 'anggota2Sidang', 'dosenPembimbing', 'dosenPenguji1');
 
-            return view('dosen.respon_sidang', compact('sidang', 'dosen'));
+            // If action is 'accept', directly process it
+            if ($action === 'accept') {
+                // Create a dummy request for submitResponSidang
+                $acceptRequest = Request::create(route('dosen.sidang.respon.submit', $sidang->id), 'POST', [
+                    'respon' => 'setuju',
+                    'catatan' => null,
+                    '_token' => csrf_token(), // Include CSRF token
+                ]);
+                // Manually set the user for the request
+                Auth::login($dosen->user);
+                $acceptRequest->setUserResolver(function () use ($dosen) {
+                    return $dosen->user;
+                });
+
+                return $this->submitResponSidang($acceptRequest, $sidang);
+            }
+
+            // If action is 'reject' or no action specified, show the form
+            return view('dosen.respon_sidang', compact('sidang', 'dosen', 'action', 'peranDosen'));
         }
 
         // If dosen is not involved with a pending response, they are redirected.
-        // We can optionally check if they were involved at all to give a more specific message.
         $wasInvolved = false;
         if (
             $sidang->ketua_sidang_dosen_id === $dosenLoginId ||

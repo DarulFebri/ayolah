@@ -4,17 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Dosen;
 use App\Models\Pengajuan;
-use App\Models\PengajuanStatusHistory; // Pastikan model Sidang di-import
-use App\Models\Sidang; // Import the new model
+use App\Models\PengajuanStatusHistory;
+use App\Models\Sidang;
 use App\Models\User;
 use App\Notifications\SidangDijadwalkanFinalNotification;
+use App\Notifications\DosenSidangInvitation; // Import the DosenSidangInvitation notification
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // Untuk validasi unique
-// Pastikan ini di-import
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator; // Add this import
-use Illuminate\Validation\Rule; // Add this import
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class KaprodiController extends Controller
 {
@@ -115,13 +115,19 @@ class KaprodiController extends Controller
         }
         $validatedData = $validator->validated();
 
-        // Debugging: Dump validated data
-        // dd($validatedData);
-
         DB::beginTransaction();
         try {
             $oldDosenPenguji1Id = $sidang->dosen_penguji1_id; // Capture old Penguji 1 ID
             $oldPersetujuanDosenPenguji1 = $sidang->persetujuan_dosen_penguji1; // Capture old Penguji 1 approval
+
+            // Store current dosen IDs and their approval statuses before update
+            $currentDosenRoles = [
+                'dosen_pembimbing' => ['id' => $sidang->dosen_pembimbing_id, 'status' => $sidang->persetujuan_dosen_pembimbing],
+                'dosen_penguji1' => ['id' => $sidang->dosen_penguji1_id, 'status' => $sidang->persetujuan_dosen_penguji1],
+                'sekretaris_sidang' => ['id' => $sidang->sekretaris_sidang_dosen_id, 'status' => $sidang->persetujuan_sekretaris_sidang],
+                'anggota1_sidang' => ['id' => $sidang->anggota1_sidang_dosen_id, 'status' => $sidang->persetujuan_anggota1_sidang],
+                'anggota2_sidang' => ['id' => $sidang->anggota2_sidang_dosen_id, 'status' => $sidang->persetujuan_anggota2_sidang],
+            ];
 
             // Update Dosen Penguji 1 (for PKL)
             if ($isPkl) {
@@ -146,19 +152,40 @@ class KaprodiController extends Controller
                 $sidang->anggota2_sidang_dosen_id = $validatedData['dosen_penguji_2_id'] ?? null;
             }
 
-            // Debugging: Dump sidang object before save
-            // dd($sidang);
-
             $sidang->ketua_sidang_dosen_id = $sidang->dosen_pembimbing_id;
             $sidang->save();
 
             $dosenChanged = false;
-            if ($oldDosenPenguji1Id !== $sidang->dosen_penguji1_id) { // Check if Dosen Penguji 1 changed
-                $dosenChanged = true;
+            $dosensToNotify = []; // Array to store dosen objects that need notification
+
+            // Check for changes in assigned dosen and collect those with 'pending' status
+            $newDosenRoles = [
+                'dosen_pembimbing' => ['id' => $sidang->dosen_pembimbing_id, 'status_field' => 'persetujuan_dosen_pembimbing'],
+                'dosen_penguji1' => ['id' => $sidang->dosen_penguji1_id, 'status_field' => 'persetujuan_dosen_penguji1'],
+                'sekretaris_sidang' => ['id' => $sidang->sekretaris_sidang_dosen_id, 'status_field' => 'persetujuan_sekretaris_sidang'],
+                'anggota1_sidang' => ['id' => $sidang->anggota1_sidang_dosen_id, 'status_field' => 'persetujuan_anggota1_sidang'],
+                'anggota2_sidang' => ['id' => $sidang->anggota2_sidang_dosen_id, 'status_field' => 'persetujuan_anggota2_sidang'],
+            ];
+
+            foreach ($newDosenRoles as $role => $data) {
+                $dosenId = $data['id'];
+                $statusField = $data['status_field'];
+
+                if ($dosenId) {
+                    // Check if dosen ID changed or if status is pending
+                    $oldDosenId = $currentDosenRoles[$role]['id'];
+                    $oldStatus = $currentDosenRoles[$role]['status'];
+
+                    if ($oldDosenId !== $dosenId || $sidang->$statusField === 'pending') {
+                        $dosenChanged = true;
+                        $dosen = Dosen::find($dosenId);
+                        if ($dosen && $dosen->user) {
+                            $dosensToNotify[] = ['dosen' => $dosen->user, 'peran' => $role];
+                        }
+                    }
+                }
             }
 
-            // If any dosen changed, reset pengajuan status to 'menunggu_persetujuan_dosen'
-            // Otherwise, keep the current pengajuan status (e.g., 'sidang_dijadwalkan_final' if already finalized)
             $oldPengajuanStatus = $pengajuan->status;
             if ($dosenChanged) {
                 $pengajuan->status = 'menunggu_persetujuan_dosen';
@@ -168,8 +195,10 @@ class KaprodiController extends Controller
                 $this->logPengajuanStatusChange($pengajuan, $oldPengajuanStatus, $pengajuan->status, 'Jadwal sidang diperbarui oleh Kaprodi.');
             }
 
-            // Notify newly assigned dosens
-            // (Logic for notification remains the same)
+            // Send notifications to collected dosens
+            foreach ($dosensToNotify as $notificationData) {
+                $notificationData['dosen']->notify(new DosenSidangInvitation($sidang, $pengajuan, $notificationData['peran']));
+            }
 
             DB::commit();
 
