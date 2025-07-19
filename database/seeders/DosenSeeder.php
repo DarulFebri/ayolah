@@ -7,7 +7,8 @@ use App\Models\Prodi;
 use App\Models\User; // Tambahkan ini
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash; // Pastikan Carbon diimpor
+use Illuminate\Support\Facades\Hash;
+use Faker\Factory as Faker;
 
 class DosenSeeder extends Seeder
 {
@@ -16,11 +17,15 @@ class DosenSeeder extends Seeder
      */
     public function run(): void
     {
-        $dosensData = [
+        $faker = Faker::create('id_ID'); // Menggunakan lokal Indonesia untuk data yang lebih relevan
+        $prodis = Prodi::all(); // Ambil semua prodi yang ada
+
+        // Data dosen yang sudah ada (jika ada, bisa dihapus atau biarkan)
+        $existingDosensData = [
             [
                 'name' => 'Prof. Dr. Andi Wijaya',
                 'email' => 'andi.wijaya@example.com',
-                'password' => 'password123', // Password untuk tabel User
+                'password' => 'password123',
                 'nidn' => '197001012000011001',
                 'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Laki-laki',
@@ -52,7 +57,7 @@ class DosenSeeder extends Seeder
             [
                 'name' => 'Ilham Widajaya',
                 'email' => 'ilham@example.com',
-                'password' => '12345678', // Password untuk tabel User
+                'password' => '12345678',
                 'nidn' => '1234567890',
                 'prodi_nama' => 'Rekayasa Perangkat Lunak',
                 'jenis_kelamin' => 'Laki-laki',
@@ -75,10 +80,7 @@ class DosenSeeder extends Seeder
             ],
         ];
 
-        foreach ($dosensData as $data) {
-            // Cari user yang sudah ada (dibuat di UserSeeder)
-            // firstOrCreate di sini akan memastikan user dibuat jika belum ada,
-            // atau diambil jika sudah ada. Ini penting jika Anda menjalankan seeder secara terpisah.
+        foreach ($existingDosensData as $data) {
             $user = User::firstOrCreate(
                 ['email' => $data['email']],
                 [
@@ -89,7 +91,6 @@ class DosenSeeder extends Seeder
                 ]
             );
 
-            // Kemudian buat/update detail dosen di tabel dosens
             $prodi = Prodi::where('nama_prodi', $data['prodi_nama'])->first();
 
             Dosen::firstOrCreate(
@@ -97,8 +98,42 @@ class DosenSeeder extends Seeder
                 [
                     'user_id' => $user->id,
                     'nama' => $data['name'],
-                    'prodi_id' => $prodi ? $prodi->id : null, // Gunakan prodi_id
+                    'prodi_id' => $prodi ? $prodi->id : null,
                     'jenis_kelamin' => $data['jenis_kelamin'],
+                ]
+            );
+        }
+
+        // Generate 50 new dosen users
+        for ($i = 1; $i <= 50; $i++) {
+            $gender = $faker->randomElement(['Laki-laki', 'Perempuan']);
+            $firstName = $gender === 'Laki-laki' ? $faker->firstNameMale : $faker->firstNameFemale;
+            $lastName = $faker->lastName;
+            $fullName = $firstName . ' ' . $lastName;
+            $email = strtolower(str_replace(' ', '.', $firstName)) . '.' . strtolower(str_replace(' ', '.', $lastName)) . $i . '@example.com';
+            $nidn = $faker->unique()->numerify('##################'); // 18 digit NIDN
+            $password = 'password123'; // Password default
+
+            // Pilih prodi secara acak dari yang sudah ada
+            $randomProdi = $prodis->random();
+
+            $user = User::firstOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $fullName,
+                    'password' => Hash::make($password),
+                    'role' => 'dosen',
+                    'email_verified_at' => Carbon::now(),
+                ]
+            );
+
+            Dosen::firstOrCreate(
+                ['nidn' => $nidn],
+                [
+                    'user_id' => $user->id,
+                    'nama' => $fullName,
+                    'prodi_id' => $randomProdi->id,
+                    'jenis_kelamin' => $gender,
                 ]
             );
         }

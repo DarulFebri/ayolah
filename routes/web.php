@@ -450,7 +450,7 @@ Route::prefix('kajur')->group(function () {
 
 Route::get('/test-otp-email', function () {
     $otp = \Illuminate\Support\Str::random(6); // Generate OTP dummy
-    $recipientEmail = 'darulfer097@gmail.com'; // Alamat email tujuan yang sama
+    $recipientEmail = 'darulfebri37@gmail.com'; // Alamat email tujuan yang sama
 
     try {
         Mail::to($recipientEmail)->send(new OtpMail($otp));
