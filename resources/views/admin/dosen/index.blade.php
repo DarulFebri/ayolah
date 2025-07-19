@@ -341,31 +341,6 @@
             <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
         </form>
 
-        <!-- Sort Dropdown -->
-        <div class="sort-dropdown" style="margin-left: 15px;">
-            <form action="{{ route('admin.dosen.index') }}" method="GET">
-                <select name="sort" onchange="this.form.submit()" style="padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <option value="">Urutkan berdasarkan</option>
-                    <optgroup label="Nama">
-                        <option value="nama_asc" {{ request('sort') == 'nama_asc' ? 'selected' : '' }}>A-Z</option>
-                        <option value="nama_desc" {{ request('sort') == 'nama_desc' ? 'selected' : '' }}>Z-A</option>
-                    </optgroup>
-                    <optgroup label="NIDN">
-                        <option value="nidn_asc" {{ request('sort') == 'nidn_asc' ? 'selected' : '' }}>Terendah</option>
-                        <option value="nidn_desc" {{ request('sort') == 'nidn_desc' ? 'selected' : '' }}>Tertinggi</option>
-                    </optgroup>
-                    <optgroup label="Prodi">
-                        <option value="prodi_asc" {{ request('sort') == 'prodi_asc' ? 'selected' : '' }}>A-Z</option>
-                        <option value="prodi_desc" {{ request('sort') == 'prodi_desc' ? 'selected' : '' }}>Z-A</option>
-                    </optgroup>
-                    <optgroup label="Jenis Kelamin">
-                        <option value="jk_asc" {{ request('sort') == 'jk_asc' ? 'selected' : '' }}>Laki-laki → Perempuan</option>
-                        <option value="jk_desc" {{ request('sort') == 'jk_desc' ? 'selected' : '' }}>Perempuan → Laki-laki</option>
-                    </optgroup>
-                </select>
-                <input type="hidden" name="search" value="{{ request('search') }}">
-            </form>
-        </div>
     </div>
 
     <div class="table-container">
