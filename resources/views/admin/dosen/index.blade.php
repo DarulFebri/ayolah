@@ -294,6 +294,12 @@
                 box-shadow: 0 0 0 3px rgba(26, 136, 255, 0.2);
             }
         }
+        .pagination-container {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 @endsection
 
@@ -366,6 +372,7 @@
         <table class="table table-hover">
             <thead>
                 <tr>
+                    <th>No.</th>
                     <th>NIDN/NIP</th>
                     <th>Nama Lengkap</th>
                     <th>Email</th>
@@ -377,12 +384,13 @@
             <tbody>
                 @forelse ($dosens as $dosen)
                     <tr>
-                        <td>{{ $dosen->nidn }}</td>
-                        <td>{{ $dosen->nama }}</td>
-                        <td>{{ $dosen->user->email }}</td>
-                        <td>{{ $dosen->prodi->nama_prodi ?? '-' }}</td>
-                        <td>{{ $dosen->jenis_kelamin }}</td>
-                        <td>
+                        <td data-label="No.">{{ ($dosens->currentPage() - 1) * $dosens->perPage() + $loop->iteration }}</td>
+                        <td data-label="NIDN/NIP">{{ $dosen->nidn }}</td>
+                        <td data-label="Nama Lengkap">{{ $dosen->nama }}</td>
+                        <td data-label="Email">{{ $dosen->user->email }}</td>
+                        <td data-label="Prodi">{{ $dosen->prodi->nama_prodi ?? '-' }}</td>
+                        <td data-label="Jenis Kelamin">{{ $dosen->jenis_kelamin }}</td>
+                        <td data-label="Aksi">
                             <a href="{{ route('admin.dosen.show', $dosen->id) }}" class="action-icon view-icon" title="Detail">
                                 <i class="fas fa-eye"></i>
                             </a>
@@ -400,11 +408,14 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center">Data dosen tidak ditemukan.</td>
+                        <td colspan="7" class="text-center">Data dosen tidak ditemukan.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
+        <div class="pagination-container">
+            {{ $dosens->links() }}
+        </div>
     </div>
 @endsection
 
