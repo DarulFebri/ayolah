@@ -684,7 +684,7 @@ class KaprodiController extends Controller
     {
         $kaprodi_for_layout = Auth::user()->kaprodi;
 
-        return view('kaprodi.password.change', compact('kaprodi_for_layout'));
+        return view('kaprodi.change-password', compact('kaprodi_for_layout'));
     }
 
     // Method untuk memproses ubah sandi Kaprodi

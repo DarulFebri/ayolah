@@ -851,7 +851,7 @@
                         <i class="fas fa-chevron-down" style="margin-left: 8px; font-size: 12px;"></i>
                         
                         <div class="profile-dropdown" id="profileDropdown">
-                            <a href="#" class="dropdown-item">
+                            <a href="{{ route('kaprodi.password.change.form') }}" class="dropdown-item">
                                 <i class="fas fa-key"></i>
                                 <span>Ubah Sandi</span>
                             </a>
