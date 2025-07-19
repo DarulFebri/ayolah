@@ -13,10 +13,11 @@ use Illuminate\Validation\Rule;
 // Tambahkan ini
 // Tambahkan ini (opsional, untuk melihat kegagalan)
 // Tambahkan ini (opsional)
-use Maatwebsite\Excel\Concerns\ToCollection; // Untuk validasi unique email dan NIDN
-use Maatwebsite\Excel\Concerns\WithHeadingRow; // Tambahkan ini
+use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithValidation;
 
-class DosenImport implements ToCollection, WithHeadingRow
+class DosenImport implements ToCollection, WithHeadingRow, WithValidation
 {
     /**
      * @param  Collection  $collection
@@ -26,47 +27,29 @@ class DosenImport implements ToCollection, WithHeadingRow
         Log::info('Memulai impor dosen. Jumlah baris: '.$rows->count());
 
         foreach ($rows as $row) {
-            // Pastikan nilai dari Excel dibaca dengan benar
-            $nidn = (string) $row['nidn']; // Tetap paksa NIDN jadi string
+            $nidn = (string) $row['nidn'];
             $jenisKelamin = trim($row['jenis_kelamin']);
-            $email = trim($row['email']); // <--- PENTING: Ambil email langsung dari baris Excel
-
+            $email = trim($row['email']);
             $prodiNama = trim($row['prodi']);
+
             $prodi = Prodi::where('nama_prodi', $prodiNama)->first();
 
             if (! $prodi) {
                 Log::error('Prodi tidak ditemukan untuk baris: '.json_encode($row->toArray()).' Prodi: '.$prodiNama);
-
-                continue; // Lewati baris ini jika prodi tidak ditemukan
-            }
-            $validator = Validator::make([
-                'nidn' => $nidn,
-                'nama_lengkap' => $row['nama_lengkap'],
-                'prodi' => $row['prodi'],
-                'jenis_kelamin' => $jenisKelamin,
-                'email' => $email, // <--- PENTING: Tambahkan validasi untuk email
-            ], $this->rules());
-
-            if ($validator->fails()) {
-                Log::error('Gagal impor dosen (validasi): '.json_encode($row->toArray()).' Errors: '.json_encode($validator->errors()));
-
+                // Melewatkan baris ini bisa dilakukan, atau lemparkan exception kustom
+                // Untuk sekarang, kita lewati saja agar impor tidak berhenti total
                 continue;
             }
 
-            // --- Tidak perlu lagi logic finalEmail dan counter karena email diambil dari Excel ---
-            // Cukup gunakan $email yang sudah divalidasi
-
             try {
-                // --- Buat User Baru ---
                 $user = User::create([
                     'name' => $row['nama_lengkap'],
-                    'email' => $email, // <--- Gunakan email dari Excel
+                    'email' => $email,
                     'password' => Hash::make('password123'),
                     'role' => 'dosen',
                 ]);
                 Log::info('User baru dibuat dengan ID: '.$user->id.' dan email: '.$user->email);
 
-                // --- Buat Dosen Baru ---
                 Dosen::create([
                     'user_id' => $user->id,
                     'nidn' => $nidn,
@@ -81,7 +64,6 @@ class DosenImport implements ToCollection, WithHeadingRow
                 if (isset($user) && $user->exists) {
                     $user->delete();
                 }
-
                 continue;
             }
         }
@@ -104,5 +86,11 @@ class DosenImport implements ToCollection, WithHeadingRow
                 Rule::unique('users', 'email'), // Email harus unik di tabel users
             ],
         ];
+    }
+
+    public function prepareForValidation($data, $index)
+    {
+        $data['nidn'] = isset($data['nidn']) ? (string) $data['nidn'] : null;
+        return $data;
     }
 }

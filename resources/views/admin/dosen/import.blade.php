@@ -308,8 +308,45 @@
                     <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ $message }}</div>
                 @enderror
             </div>
-            <button type="submit"><i class="fas fa-upload"></i> Impor Data</button>
+            <div class="form-buttons">
+                <button type="submit"><i class="fas fa-upload"></i> Impor Data</button>
+                <a href="{{ route('admin.dosen.template') }}" class="btn-template">
+                    <i class="fas fa-download"></i> Unduh Template
+                </a>
+            </div>
         </form>
+
+        <style>
+            .form-buttons {
+                display: flex;
+                gap: 15px;
+                align-items: center;
+                margin-top: 15px;
+            }
+            .btn-template {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 25px;
+                background-color: var(--success-color);
+                color: var(--white);
+                border: none;
+                border-radius: var(--border-radius);
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background-color 0.3s ease, transform 0.2s ease;
+                box-shadow: var(--shadow-medium);
+                text-decoration: none;
+            }
+            .btn-template:hover {
+                background-color: #218838;
+                transform: translateY(-2px);
+            }
+            button[type="submit"] {
+                margin-top: 0;
+            }
+        </style>
 
         <p class="info-text">
             Pastikan file Excel Anda memiliki kolom dengan header persis seperti di bawah ini (tidak sensitif huruf besar/kecil):
@@ -348,10 +385,63 @@
             <i class="fas fa-info-circle"></i> Password akun dosen yang baru diimpor akan disetel default <code>password123</code>. Harap informasikan kepada dosen untuk mengubahnya setelah login pertama kali.
         </p>
 
+        <div class="prodi-info-box">
+            <h4><i class="fas fa-graduation-cap"></i> Program Studi Tersedia</h4>
+            <p>Pastikan kolom 'Prodi' di file Excel Anda sesuai dengan salah satu nama prodi berikut:</p>
+            <ul>
+                @forelse ($prodis as $prodi)
+                    <li>{{ $prodi->nama_prodi }}</li>
+                @empty
+                    <li>Belum ada data program studi di sistem.</li>
+                @endforelse
+            </ul>
+        </div>
+
         <div class="back-links-group">
             <a href="{{ route('admin.dashboard') }}"><i class="fas fa-arrow-left"></i> Kembali ke Dashboard Admin</a>
             <a href="{{ route('admin.dosen.index') }}"><i class="fas fa-list"></i> Lihat Daftar Dosen</a>
         </div>
     </div>
+
+    <style>
+        .prodi-info-box {
+            background-color: #f0f7ff;
+            border: 1px solid #b3d7ff;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 25px;
+        }
+        .prodi-info-box h4 {
+            color: var(--primary-blue);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .prodi-info-box p {
+            font-size: 15px;
+            color: var(--dark-grey);
+            margin-bottom: 15px;
+        }
+        .prodi-info-box ul {
+            list-style-type: none;
+            padding-left: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .prodi-info-box ul li {
+            background-color: var(--white);
+            border: 1px solid var(--medium-grey);
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+            box-shadow: var(--shadow-light);
+        }
+    </style>
 </body>
 </html>

@@ -64,6 +64,7 @@ Route::prefix('admin')->group(function () {
         // Dosen Import/Export
         Route::get('/dosen/import', [AdminController::class, 'importForm'])->name('admin.dosen.import.form');
         Route::post('/dosen/import', [AdminController::class, 'import'])->name('admin.dosen.import');
+        Route::get('/dosen/template', [AdminController::class, 'downloadTemplate'])->name('admin.dosen.template');
         Route::get('/dosen/export', [AdminController::class, 'exportDosen'])->name('admin.dosen.export');
 
         // Dosen Management

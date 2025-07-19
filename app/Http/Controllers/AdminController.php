@@ -94,7 +94,8 @@ class AdminController extends Controller
 
     public function importForm()
     {
-        return view('admin.dosen.import');
+        $prodis = Prodi::all();
+        return view('admin.dosen.import', compact('prodis'));
     }
 
     // Method untuk memproses file Excel
@@ -120,6 +121,28 @@ class AdminController extends Controller
             // Tangani error umum lainnya
             return redirect()->back()->with('error', 'Terjadi kesalahan saat mengimpor data dosen: '.$e->getMessage());
         }
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new class implements \Maatwebsite\Excel\Concerns\FromCollection, \Maatwebsite\Excel\Concerns\WithHeadings
+        {
+            public function collection()
+            {
+                return collect([]);
+            }
+
+            public function headings(): array
+            {
+                return [
+                    'NIDN',
+                    'Nama Lengkap',
+                    'Prodi',
+                    'Jenis Kelamin',
+                    'Email',
+                ];
+            }
+        }, 'template_dosen.xlsx');
     }
 
     public function pilihJenisPengajuanSidang()
