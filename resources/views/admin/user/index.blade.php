@@ -9,20 +9,7 @@
     <style>
 
 
-        @media (max-width: 768px) {
-            .search-sort-container {
-                flex-direction: column;
-            }
-            
-            .sort-dropdown {
-                margin-left: 0;
-                margin-top: 10px;
-            }
-            
-            .sort-dropdown select {
-                width: 100%;
-            }
-        }
+        
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -115,6 +102,9 @@
         .search-button:hover {
             background: var(--primary-600);
         }
+
+
+        
 
         .table-container {
             background: var(--white);
@@ -272,27 +262,12 @@
                 max-width: 100%;
             }
 
-            .search-sort-container {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 20px;
-                gap: 15px;
+            .search-bar {
+                width: 100%;
+                max-width: 100%;
             }
 
-            .sort-dropdown select {
-                padding: 10px 15px;
-                border: 1px solid #e2e8f0;
-                border-radius: 8px;
-                background-color: white;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-
-            .sort-dropdown select:focus {
-                outline: none;
-                border-color: var(--primary-500);
-                box-shadow: 0 0 0 3px rgba(26, 136, 255, 0.2);
-            }
+            
         }
     </style>
 @endsection
@@ -325,30 +300,14 @@
         </div>
     </div>
 
+    
+
     <div class="search-sort-container" style="display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap;">
         <!-- Search Bar -->
         <form action="{{ route('admin.users.index') }}" method="GET" class="search-bar" style="flex: 1; min-width: 300px;">
             <input type="text" name="search" placeholder="Cari user..." value="{{ request('search') }}">
             <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
         </form>
-
-        <!-- Sort Dropdown -->
-        <div class="sort-dropdown" style="margin-left: 15px;">
-            <form action="{{ route('admin.users.index') }}" method="GET">
-                <select name="sort" onchange="this.form.submit()" style="padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <option value="">Urutkan berdasarkan</option>
-                    <optgroup label="Nama">
-                        <option value="nama_asc" {{ request('sort') == 'nama_asc' ? 'selected' : '' }}>A-Z</option>
-                        <option value="nama_desc" {{ request('sort') == 'nama_desc' ? 'selected' : '' }}>Z-A</option>
-                    </optgroup>
-                    <optgroup label="Role">
-                        <option value="role_asc" {{ request('sort') == 'role_asc' ? 'selected' : '' }}>A-Z</option>
-                        <option value="role_desc" {{ request('sort') == 'role_desc' ? 'selected' : '' }}>Z-A</option>
-                    </optgroup>
-                </select>
-                <input type="hidden" name="search" value="{{ request('search') }}">
-            </form>
-        </div>
     </div>
 
     <div class="table-container">

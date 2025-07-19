@@ -13,11 +13,20 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::whereIn('role', ['admin', 'kaprodi'])
-                      ->with(['kaprodi.prodi'])
-                      ->get();
+        $query = User::whereIn('role', ['admin', 'kaprodi'])
+                     ->with(['kaprodi.prodi']);
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        $users = $query->get();
         return view('admin.user.index', compact('users'));
     }
 
