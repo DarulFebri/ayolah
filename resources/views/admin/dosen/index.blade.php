@@ -337,7 +337,7 @@
     <div class="search-sort-container" style="display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap;">
         <!-- Search Bar -->
         <form action="{{ route('admin.dosen.index') }}" method="GET" class="search-bar" style="flex: 1; min-width: 300px;">
-            <input type="text" name="search" placeholder="Cari dosen..." value="{{ request('search') }}">
+            <input type="text" name="search" placeholder="Cari Dosen atau Prodi" value="{{ request('search') }}">
             <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
         </form>
 
