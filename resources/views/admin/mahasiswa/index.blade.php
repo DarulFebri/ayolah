@@ -493,6 +493,9 @@
                     @endforelse
                 </tbody>
             </table>
+            <div class="pagination">
+                {{ $mahasiswas->links() }}
+            </div>
         </div>
     </div>
 @endsection

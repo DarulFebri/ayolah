@@ -91,7 +91,7 @@ class MahasiswaController extends Controller
         }
 
         // Get the filtered (or unfiltered) students
-        $mahasiswas = $query->get(); // If you have many students, consider using ->paginate(10) instead of ->get()
+        $mahasiswas = $query->paginate(10); // Use paginate(10) to enable pagination
 
         // Pass the students data to the view
         return view('admin.mahasiswa.index', compact('mahasiswas')); // Adjust view path if necessary
