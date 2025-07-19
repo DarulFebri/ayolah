@@ -151,26 +151,90 @@ class AdminController extends Controller
     }
 
     // New method to list TA submissions
-    public function daftarPengajuanTa()
+    public function daftarPengajuanTa(Request $request)
     {
-        $pengajuans = Pengajuan::with('mahasiswa')
+        $query = Pengajuan::with('mahasiswa')
             ->where('jenis_pengajuan', 'ta')
-            ->where('status', '!=', 'draft')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->where('status', '!=', 'draft');
 
-        return view('admin.pengajuan.sidang.ta', compact('pengajuans'));
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('judul_pengajuan', 'like', "%{$search}%")
+                    ->orWhereHas('mahasiswa', function ($q) use ($search) {
+                        $q->where('nama_lengkap', 'like', "%{$search}%")
+                          ->orWhere('nim', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // Sorting functionality
+        $sort = $request->get('sort', 'created_at_desc');
+        $sort_parts = explode('_', $sort);
+        $sort_by = $sort_parts[0];
+        $sort_order = count($sort_parts) > 1 ? $sort_parts[1] : 'asc';
+
+        if ($sort_by === 'mahasiswa') {
+            $query->select('pengajuans.*')
+                  ->join('mahasiswas', 'pengajuans.mahasiswa_id', '=', 'mahasiswas.id')
+                  ->orderBy('mahasiswas.nama_lengkap', $sort_order);
+        } elseif ($sort_by === 'nim') {
+            $query->select('pengajuans.*')
+                  ->join('mahasiswas', 'pengajuans.mahasiswa_id', '=', 'mahasiswas.id')
+                  ->orderBy('mahasiswas.nim', $sort_order);
+        } elseif ($sort_by === 'tanggal') {
+            $query->orderBy('created_at', $sort_order);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $pengajuans = $query->paginate(10)->withQueryString();
+
+        return view('admin.pengajuan.sidang.ta', compact('pengajuans', 'sort'));
     }
 
     // New method to list PKL submissions
-    public function daftarPengajuanPkl()
+    public function daftarPengajuanPkl(Request $request)
     {
-        $pengajuans = Pengajuan::with('mahasiswa')
-            ->where('jenis_pengajuan', 'pkl')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $query = Pengajuan::with('mahasiswa')
+            ->where('jenis_pengajuan', 'pkl');
 
-        return view('admin.pengajuan.sidang.pkl', compact('pengajuans'));
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('judul_pengajuan', 'like', "%{$search}%")
+                    ->orWhereHas('mahasiswa', function ($q) use ($search) {
+                        $q->where('nama_lengkap', 'like', "%{$search}%")
+                          ->orWhere('nim', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // Sorting functionality
+        $sort = $request->get('sort', 'created_at_desc');
+        $sort_parts = explode('_', $sort);
+        $sort_by = $sort_parts[0];
+        $sort_order = count($sort_parts) > 1 ? $sort_parts[1] : 'asc';
+
+        if ($sort_by === 'mahasiswa') {
+            $query->select('pengajuans.*')
+                  ->join('mahasiswas', 'pengajuans.mahasiswa_id', '=', 'mahasiswas.id')
+                  ->orderBy('mahasiswas.nama_lengkap', $sort_order);
+        } elseif ($sort_by === 'nim') {
+            $query->select('pengajuans.*')
+                  ->join('mahasiswas', 'pengajuans.mahasiswa_id', '=', 'mahasiswas.id')
+                  ->orderBy('mahasiswas.nim', $sort_order);
+        } elseif ($sort_by === 'tanggal') {
+            $query->orderBy('created_at', $sort_order);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $pengajuans = $query->paginate(10)->withQueryString();
+
+        return view('admin.pengajuan.sidang.pkl', compact('pengajuans', 'sort'));
     }
 
     // ... existing Pengajuan Methods (setujuiPengajuan, tolakPengajuan, detailPengajuan)

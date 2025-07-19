@@ -1459,26 +1459,31 @@
 
             <div class="table-container">
                 <div class="table-controls">
-                    <div class="search-box">
+                    <form action="{{ route('admin.pengajuan.sidang.ta') }}" method="GET" class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Cari pengajuan...">
-                    </div>
+                        <input type="text" name="search" placeholder="Cari berdasarkan nama, NIM, atau judul..." value="{{ request('search') }}">
+                    </form>
                     <div class="filter-controls">
-                        <select class="filter-select">
-                            <option value="">Semua Status</option>
-                            <option value="diajukan_mahasiswa">Menunggu Verifikasi Admin</option>
-                            <option value="diverifikasi_admin">Diverifikasi Admin</option>
-                            <option value="ditolak_admin">Ditolak Admin</option>
-                        </select>
+                        <form action="{{ route('admin.pengajuan.sidang.ta') }}" method="GET">
+                            <input type="hidden" name="search" value="{{ request('search') }}">
+                            <select name="sort" class="filter-select" onchange="this.form.submit()">
+                                <option value="tanggal_desc" {{ $sort === 'tanggal_desc' ? 'selected' : '' }}>Terbaru</option>
+                                <option value="tanggal_asc" {{ $sort === 'tanggal_asc' ? 'selected' : '' }}>Terlama</option>
+                                <option value="mahasiswa_asc" {{ $sort === 'mahasiswa_asc' ? 'selected' : '' }}>Nama Mahasiswa (A-Z)</option>
+                                <option value="mahasiswa_desc" {{ $sort === 'mahasiswa_desc' ? 'selected' : '' }}>Nama Mahasiswa (Z-A)</option>
+                                <option value="nim_asc" {{ $sort === 'nim_asc' ? 'selected' : '' }}>NIM (Asc)</option>
+                                <option value="nim_desc" {{ $sort === 'nim_desc' ? 'selected' : '' }}>NIM (Desc)</option>
+                            </select>
+                        </form>
                     </div>
                 </div>
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>NIM</th>
-                            <th>Nama Mahasiswa</th>
+                            <th><a href="{{ route('admin.pengajuan.sidang.ta', ['sort' => $sort === 'nim_asc' ? 'nim_desc' : 'nim_asc', 'search' => request('search')]) }}">NIM</a></th>
+                            <th><a href="{{ route('admin.pengajuan.sidang.ta', ['sort' => $sort === 'mahasiswa_asc' ? 'mahasiswa_desc' : 'mahasiswa_asc', 'search' => request('search')]) }}">Nama Mahasiswa</a></th>
                             <th>Status</th>
-                            <th>Tanggal Diajukan</th>
+                            <th><a href="{{ route('admin.pengajuan.sidang.ta', ['sort' => $sort === 'tanggal_asc' ? 'tanggal_desc' : 'tanggal_asc', 'search' => request('search')]) }}">Tanggal Diajukan</a></th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -1507,7 +1512,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" style="text-align: center; padding: 20px; color: #777;">Tidak ada pengajuan sidang Tugas Akhir yang perlu diverifikasi saat ini.</td>
+                                <td colspan="5" style="text-align: center; padding: 20px; color: #777;">Tidak ada pengajuan sidang Tugas Akhir yang cocok dengan pencarian Anda.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -1515,7 +1520,7 @@
             </div>
 
             <div class="pagination">
-                {{ $pengajuans->links() }}
+                {{ $pengajuans->withQueryString()->links() }}
             </div>
 
             <div class="back-to-dashboard">
