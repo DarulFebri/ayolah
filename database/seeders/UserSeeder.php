@@ -149,17 +149,6 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // Kaprodi User
-        User::firstOrCreate(
-            ['email' => 'kaprodi@example.com'],
-            [
-                'name' => 'Kaprodi',
-                'password' => Hash::make('12345678'),
-                'role' => 'kaprodi',
-                'email_verified_at' => Carbon::now(),
-            ]
-        );
-
         // Kajur User
         User::firstOrCreate(
             ['email' => 'kajur@example.com'],
