@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             DosenSeeder::class,     // Ketiga, buat detail dosen
             KelasSeeder::class,     // Tambahkan ini untuk mengisi data kelas
             MahasiswaSeeder::class, // Keempat, buat detail mahasiswa
+            KaprodiSeeder::class,
             // Tambahkan seeder lain jika ada
         ]);
     }
