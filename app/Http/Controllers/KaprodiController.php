@@ -524,7 +524,7 @@ class KaprodiController extends Controller
             }
 
             // Tombol finalisasi akan muncul jika semua dosen yang diperlukan telah setuju dan statusnya belum final.
-            if ($allDosenAgreed && $pengajuan->status === 'menunggu_persetujuan_dosen') {
+            if ($allDosenAgreed && in_array($pengajuan->status, ['menunggu_persetujuan_dosen', 'dosen_menyetujui'])) {
                 $bisaDifinalisasi = true;
             }
         }
