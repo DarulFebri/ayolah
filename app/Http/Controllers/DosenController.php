@@ -12,6 +12,7 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Auth; // Import this!
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage; // Import the new model
+use Illuminate\Support\Facades\URL;
 
 class DosenController extends Controller
 {
@@ -532,10 +533,6 @@ class DosenController extends Controller
 
     public function formResponSidang(Request $request, Sidang $sidang)
     {
-        // Validate the signed URL
-        if (! URL::hasValidSignature($request)) {
-            return redirect()->route('dosen.dashboard')->with('error', 'Tautan undangan tidak valid atau sudah kadaluarsa.');
-        }
 
         $dosen = Auth::user()->dosen;
         $dosenLoginId = $dosen->id;
