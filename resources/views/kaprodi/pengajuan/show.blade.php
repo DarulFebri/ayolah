@@ -6,6 +6,7 @@
     <title>Detail Pengajuan Sidang - Kaprodi</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -420,7 +421,7 @@
                         </div>
                         <div class="form-group">
                             <label for="sekretaris_sidang_id">Sekretaris Sidang:</label>
-                            <select name="sekretaris_sidang_id" id="sekretaris_sidang_id" class="form-control" required>
+                            <select name="sekretaris_sidang_id" id="sekretaris_sidang_id" class="form-control select2-dosen" required>
                                 <option value="">Pilih Sekretaris Sidang</option>
                                 @foreach ($dosens as $dosen)
                                     @php
@@ -436,7 +437,7 @@
                         </div>
                         <div class="form-group">
                             <label for="dosen_penguji_1_id">Dosen Penguji 1:</label>
-                            <select name="dosen_penguji_1_id" id="dosen_penguji_1_id" class="form-control" required>
+                            <select name="dosen_penguji_1_id" id="dosen_penguji_1_id" class="form-control select2-dosen" required>
                                 <option value="">Pilih Dosen Penguji 1</option>
                                 @foreach ($dosens as $dosen)
                                     @php
@@ -452,7 +453,7 @@
                         </div>
                         <div class="form-group">
                             <label for="dosen_penguji_2_id">Dosen Penguji 2:</label>
-                            <select name="dosen_penguji_2_id" id="dosen_penguji_2_id" class="form-control">
+                            <select name="dosen_penguji_2_id" id="dosen_penguji_2_id" class="form-control select2-dosen">
                                 <option value="">Pilih Dosen Penguji 2 (opsional)</option>
                                 @foreach ($dosens as $dosen)
                                     @php
@@ -469,7 +470,7 @@
                     @elseif ($pengajuan->jenis_pengajuan === 'pkl')
                         <div class="form-group">
                             <label for="dosen_penguji_id">Dosen Penguji:</label>
-                            <select name="dosen_penguji_id" id="dosen_penguji_id" class="form-control" required>
+                            <select name="dosen_penguji_id" id="dosen_penguji_id" class="form-control select2-dosen" required>
                                 <option value="">Pilih Dosen Penguji</option>
                                 @foreach ($dosens as $dosen)
                                     @php
@@ -530,5 +531,15 @@
         </div>
 
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2-dosen').select2({
+                placeholder: "Pilih Dosen",
+                allowClear: true
+            });
+        });
+    </script>
 </body>
 </html>
